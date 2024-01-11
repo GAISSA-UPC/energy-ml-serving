@@ -1,0 +1,78 @@
+""" 
+Script to save models with ONNX and OpenVINO formats
+
+ORTModelForSeq2SeqLM -> t5 models
+ORTModelForCausalLM -> codegen, gpt-neo, pythia (gptneox), codeparrot
+
+OVModelForCausalLM
+"""
+#from optimum.onnxruntime import ORTModelForMaskedLM, ORTModelForQuestionAnswering, ORTModelForCausalLM, ORTModelForSeq2SeqLM
+
+from transformers import AutoTokenizer
+from optimum.intel import OVModelForCausalLM, OVModelForSeq2SeqLM
+
+re = 'ov'
+model_checkpoints = ["bert-base-uncased", 't5-small', "Salesforce/codegen-350M-mono","EleutherAI/pythia-70m", "Salesforce/codet5p-220m"]
+models = [ 'codet5-base', 'codet5p-220', 'codegen-350M-mono', 'gpt-neo-125m', 'codeparrot-small', 'pythia-410m'] # bloom, pythia
+
+# 
+#model_checkpoints = ["Salesforce/codet5-base", 'Salesforce/codet5p-220m', "Salesforce/codegen-350M-mono",
+#                     "EleutherAI/gpt-neo-125M",'codeparrot/codeparrot-small']
+
+model_checkpoint = {'codet5-base':"Salesforce/codet5-base", 'codet5p-220':'Salesforce/codet5p-220m', 
+                    'codegen-350M-mono':"Salesforce/codegen-350M-mono", 'gpt-neo-125m':"EleutherAI/gpt-neo-125M",
+                    'codeparrot-small':'codeparrot/codeparrot-small', 'pythia-410m':"EleutherAI/pythia-410m"} # model:checkpoint
+
+# codegen not converted in GCP vm
+
+# select checkpoint
+
+for model in models:
+    try:
+        #name = models[0]
+        checkpoint = model_checkpoint[model]
+        #model = name
+
+        # change to your directory
+        save_directory = f"models/{re}/{model}/"
+
+        print(f"Saving {model} ...\n")
+        print(f"Checkpoint {checkpoint} ...\n")
+
+        if model in [ 'codet5-base','codet5p-220']:
+            ov_model = OVModelForSeq2SeqLM.from_pretrained(checkpoint, export=True, use_cache = True) # t5, 
+        else:
+            ov_model = OVModelForCausalLM.from_pretrained(checkpoint, export=True, use_cache = True) # codegen, gpt-neo, pythia (gptneox), codeparrot
+
+        #ov_model = OVModelForCausalLM.from_pretrained("EleutherAI/pythia-410m",
+        #    revision="step3000",
+        #    cache_dir="../pythia-410m/step3000", export=True, use_cache = True)
+
+        # [codegen]
+        tokenizer = AutoTokenizer.from_pretrained(checkpoint)
+
+        # tokenizer = AutoTokenizer.from_pretrained(
+        #     "EleutherAI/pythia-410m",
+        #     revision="step3000",
+        #     cache_dir="../pythia-410m/step3000",
+        #     )
+
+        text = "def hello_world():"
+
+        # tokenize
+        inputs = tokenizer(text, return_tensors="pt")
+
+        # generate
+        #tokens = ov_model.generate(**inputs)
+        #print(tokens)
+        # Save the onnx model and tokenizer
+
+        ov_model.save_pretrained(save_directory)
+        print(f"\nModel '{model}' successfully saved in '{save_directory}'")
+        print(f"----------------------------------------------------------")
+
+    except Exception as e:
+        print(f"Error saving model: {e}")
+        print(f"----------------------------------------------------------")
+
+    #tokenizer.save_pretrained(save_directory)

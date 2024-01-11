@@ -1,0 +1,12 @@
+fastapi
+uvicorn
+requests
+torch
+transformers
+onnx
+onnxruntime
+openvino
+optimum[openvino,nncf]
+optimum[onnxruntime]
+optimum[exporters]
+codecarbon

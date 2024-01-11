@@ -1,0 +1,12 @@
+fastapi==0.70.0
+uvicorn==0.17.6
+requests==2.26.0
+scikit-learn==1.0.1
+transformers==4.28.1
+torch
+accelerate
+sentencepiece==0.1.*
+protobuf==3.20.*
+
+httptools==0.1.*
+codecarbon

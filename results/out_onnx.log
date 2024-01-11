@@ -1,0 +1,99 @@
+None
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+INFRASTRUCTURE -> onnx
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Running experiment infrastructure -> onnx, model -> codet5-base, dataset -> testing/inputs.txt, reps -> 1
+
+------------------------------
+
+---------------- Rep 1 out of 1: 
+
+Running POST requests infrastructure -> onnx, model -> codet5-base, dataset -> testing/inputs.txt
+
+Dataset: ['def hello_world():', 'for i in range(10):', 'print("Hello, world!")', 'if x > 5:']
+---
+Running POST requests infrastructure -> onnx, model -> codet5-base, dataset -> ['def hello_world():', 'for i in range(10):', 'print("Hello, world!")', 'if x > 5:']
+
+___________________________________
+Endpoint: http://localhost:8000/huggingface_models/codet5-base/onnx
+{'message': 'OK', 'method': 'POST', 'status-code': 200, 'timestamp': '2023-12-13T00:44:10.535990', 'url': 'http://localhost:8000/huggingface_models/codet5-base/onnx', 'data': {'model-type': 'Codet5_base', 'input_text': 'def hello_world():', 'prediction': {'prediction': ' : :::::'}}}
+Inference successful!
+{'prediction': ' : :::::'}
+___________________________________
+Endpoint: http://localhost:8000/huggingface_models/codet5-base/onnx
+{'message': 'OK', 'method': 'POST', 'status-code': 200, 'timestamp': '2023-12-13T00:44:17.338247', 'url': 'http://localhost:8000/huggingface_models/codet5-base/onnx', 'data': {'model-type': 'Codet5_base', 'input_text': 'for i in range(10):', 'prediction': {'prediction': ' i ii'}}}
+Inference successful!
+{'prediction': ' i ii'}
+___________________________________
+Endpoint: http://localhost:8000/huggingface_models/codet5-base/onnx
+{'message': 'OK', 'method': 'POST', 'status-code': 200, 'timestamp': '2023-12-13T00:44:22.635843', 'url': 'http://localhost:8000/huggingface_models/codet5-base/onnx', 'data': {'model-type': 'Codet5_base', 'input_text': 'print("Hello, world!")', 'prediction': {'prediction': ' : :::::'}}}
+Inference successful!
+{'prediction': ' : :::::'}
+___________________________________
+Endpoint: http://localhost:8000/huggingface_models/codet5-base/onnx
+{'message': 'OK', 'method': 'POST', 'status-code': 200, 'timestamp': '2023-12-13T00:44:30.567375', 'url': 'http://localhost:8000/huggingface_models/codet5-base/onnx', 'data': {'model-type': 'Codet5_base', 'input_text': 'if x > 5:', 'prediction': {'prediction': ' : :::::'}}}
+Inference successful!
+{'prediction': ' : :::::'}
+
+
+CodeCarbon Results: results/emissions_codet5-base.csv
+------------------------------
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Running experiment infrastructure -> onnx, model -> codet5p-220, dataset -> testing/inputs.txt, reps -> 1
+
+------------------------------
+
+---------------- Rep 1 out of 1: 
+
+Running POST requests infrastructure -> onnx, model -> codet5p-220, dataset -> testing/inputs.txt
+
+Dataset: ['def hello_world():', 'for i in range(10):', 'print("Hello, world!")', 'if x > 5:']
+---
+Running POST requests infrastructure -> onnx, model -> codet5p-220, dataset -> ['def hello_world():', 'for i in range(10):', 'print("Hello, world!")', 'if x > 5:']
+
+___________________________________
+Endpoint: http://localhost:8000/huggingface_models/codet5p-220/onnx
+{'message': 'OK', 'method': 'POST', 'status-code': 200, 'timestamp': '2023-12-13T00:44:42.516583', 'url': 'http://localhost:8000/huggingface_models/codet5p-220/onnx', 'data': {'model-type': 'Codet5p_220m', 'input_text': 'def hello_world():', 'prediction': {'prediction': '\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n'}}}
+Inference successful!
+{'prediction': '\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n'}
+___________________________________
+Endpoint: http://localhost:8000/huggingface_models/codet5p-220/onnx
+{'message': 'OK', 'method': 'POST', 'status-code': 200, 'timestamp': '2023-12-13T00:44:50.446006', 'url': 'http://localhost:8000/huggingface_models/codet5p-220/onnx', 'data': {'model-type': 'Codet5p_220m', 'input_text': 'for i in range(10):', 'prediction': {'prediction': '\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n'}}}
+Inference successful!
+{'prediction': '\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n'}
+___________________________________
+Endpoint: http://localhost:8000/huggingface_models/codet5p-220/onnx
+{'message': 'OK', 'method': 'POST', 'status-code': 200, 'timestamp': '2023-12-13T00:45:01.956386', 'url': 'http://localhost:8000/huggingface_models/codet5p-220/onnx', 'data': {'model-type': 'Codet5p_220m', 'input_text': 'print("Hello, world!")', 'prediction': {'prediction': '\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n'}}}
+Inference successful!
+{'prediction': '\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n'}
+___________________________________
+Endpoint: http://localhost:8000/huggingface_models/codet5p-220/onnx
+{'message': 'OK', 'method': 'POST', 'status-code': 200, 'timestamp': '2023-12-13T00:45:09.938560', 'url': 'http://localhost:8000/huggingface_models/codet5p-220/onnx', 'data': {'model-type': 'Codet5p_220m', 'input_text': 'if x > 5:', 'prediction': {'prediction': '\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n'}}}
+Inference successful!
+{'prediction': '\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n'}
+
+
+CodeCarbon Results: results/emissions_codet5p-220.csv
+------------------------------
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Running experiment infrastructure -> onnx, model -> gpt-neo-125m, dataset -> testing/inputs.txt, reps -> 1
+
+------------------------------
+
+---------------- Rep 1 out of 1: 
+
+Running POST requests infrastructure -> onnx, model -> gpt-neo-125m, dataset -> testing/inputs.txt
+
+Dataset: ['def hello_world():', 'for i in range(10):', 'print("Hello, world!")', 'if x > 5:']
+---
+Running POST requests infrastructure -> onnx, model -> gpt-neo-125m, dataset -> ['def hello_world():', 'for i in range(10):', 'print("Hello, world!")', 'if x > 5:']
+
+___________________________________
+Endpoint: http://localhost:8000/huggingface_models/gpt-neo-125m/onnx
