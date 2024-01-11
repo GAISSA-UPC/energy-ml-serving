@@ -115,6 +115,8 @@ if __name__ == "__main__":
         #models_list = [ 'codet5-base', 'codet5p-220', 'gpt-neo-125m', 'codeparrot-small', 'pythia-410m'] 
         models_list = [ 'codet5-base', 'codet5p-220', 'codeparrot-small', 'pythia-410m']  #'gpt-neo-125m',
         models_list = [ 'codet5-base', 'codet5p-220',]  #'gpt-neo-125m',
+        models_list = [ 'pythia-410m',]  #'gpt-neo-125m',
+
 
         #models_list = [ 'codet5-base']  #'gpt-neo-125m',
          
