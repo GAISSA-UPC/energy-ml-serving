@@ -1,8 +1,0 @@
-tensorflow==2.5.0
-numpy==1.19.5
-matplotlib
-pandas
-uvicorn
-typing-extensions
-pydantic
-requests
