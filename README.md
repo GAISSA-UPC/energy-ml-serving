@@ -1,8 +1,8 @@
-# cloud-api
+# Energy consumption of ML serving infrastructure: runtime engines
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## Summary
-Guidelines to deploy AI models in different cloud providers aligned with green AI goals.
+Guidelines to serve models using runtime engine (+ web framework API) as serving infrastructure
 
 ## Repository Structure
 
@@ -36,36 +36,15 @@ Guide:
 9. [Other](manuals/other.md). Other notes.
 
 
-## Cloud providers*
-
-\* Initial proposed cloud providers
-
-<pre/>
-- Amazon Elastic Compute Cloud (Amazon EC2) from Amazon Web Services (AWS)
-  | URL: https://aws.amazon.com/
-- Azure Virtual Machines from Microsoft Windows Azure
-  | URL: https://azure.microsoft.com/
-- Google Compute Engine from Google Cloud Platform (GCP)
-  | URL: https://cloud.google.com/
-- Virtech, UPC cloud provider (By OpenNebula)
-  | URL: https://www.fib.upc.edu/es/la-fib/servicios-tic/cloud-docente-fib
-  | URL: https://opennebula.io/
-</pre>
-
-### Amazon EC2
-### Google Compute Engine
-### Virtech, UPC cloud provider
-### Azure Virtual Machines
-
 # ML Serving
 
 Guidelines to serve models using runtime engine (+ web framework API) as serving infrastructure
 
-## Runtime Engines
-
+## Runtime Engine + Web framework
 ### ONNX Runtime
 ### OpenVINO
 ### Torch.jit
+### No runtime (Using only ML framework)
 
 
 ## Models*
@@ -77,15 +56,6 @@ Guidelines to serve models using runtime engine (+ web framework API) as serving
 - Pythia-70m
 - CNN model
 - Codet5p-220m
-### Text Generation
-- BERT
-  - https://huggingface.co/bert-base-uncased
-
-- T5
-  - https://huggingface.co/t5-base
-### Computer Vision
-- CNN model
-  - https://github.com/fjdurlop/guided-retraining/tree/main/models
 
 ### Code Generation
 - CodeGen
@@ -100,30 +70,40 @@ See [manuals/01_create_api.md](manuals/01_create_api.md) to check how to create 
 
 ### FastAPI
 
-## ML frameworks
-- TensorFlow
-- PyTorch
-
-## ML model formats
-- ONNX
-- h5, complete model
-- h5, weights only
-- Pickle
-
-
-## Roles
-Role: ML Engineer
-
-- Data engineer: Manage DBs
-- Data scientist: Train ML models
-- BI: Dashboards, analytics, BI
-- ML Engineer: SE --deploy--> ML systems
 
 ## Energy tracking metrics
 - codecarbon
 - ...
 
+## Data collection
+Dataset:
+[testing/inputs.txt](testing/inputs.txt)
 
+```bash
+Run server:
+uvicorn app.api_code:app  --host 0.0.0.0 --port 8000  --reload --reload-dir app
+
+Make inferences:
+python3 testing/main.py -i torch -r 5 | tee -a results/out_torch.log
+python3 testing/main.py -i onnx -r 5 | tee -a results/out_onnx.log
+python3 testing/main.py -i ov -r 5 | tee -a results/out_ov.log
+python3 testing/main.py -i torchscript -r 5 | tee -a results/out_torchscript.log
+
+python3 testing/main.py -i torch -r 5 | tee -a results/out_torch.log;
+python3 testing/main.py -i onnx -r 5 | tee -a results/out_onnx.log;
+python3 testing/main.py -i ov -r 5 | tee -a results/out_ov.log;
+python3 testing/main.py -i torchscript -r 5 | tee -a results/out_torchscript.log;
+
+
+```
+Results are saved in [results/](results/)
+
+- check steps in repo:
+https://github.com/MLOps-essi-upc/MLOps2023Course-demo/blob/main/docs/deployment/01_deploy_general.md
+
+Manual to configure proxy server
+- check service is up
+service nginx status
 
 ## References
 See manuals/references
