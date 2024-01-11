@@ -1,1 +1,2 @@
 models/* filter=lfs diff=lfs merge=lfs -text
+models/torchscript/pythia-410m.pt filter=lfs diff=lfs merge=lfs -text
