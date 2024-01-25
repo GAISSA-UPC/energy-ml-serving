@@ -1,0 +1,44 @@
+digraph G {
+    rankdir=LR;
+    node [shape=box, style=rounded, fontname="Arial"];
+    
+    subgraph cluster_local {
+        label="Local";
+        style=dashed;
+        
+        user_interface [label="User Interface"];
+    }
+    
+    subgraph cluster_vm1 {
+        label="rdlab_login";
+        style=dotted;
+            
+        subgraph cluster_vm {
+            label="rdlab_vm";
+            style=dotted;
+            
+            python_script [label="Python Script"];
+            server_unicorn [label="Server Unicorn"];
+            runtime [label="Runtime"];
+            model_registry [label="Model Registry"];
+        }
+    }
+    
+    
+
+    
+    
+    user_interface -> python_script [label="ssh"];
+    
+    python_script -> server_unicorn [label="[con_2]"];
+    server_unicorn -> python_script [label="[con_2]"];
+    
+    server_unicorn -> runtime [label="[con_2]"];
+    runtime -> server_unicorn [label="[con_2]"];
+    
+    model_registry -> runtime [label="[con_2]"];
+    //runtime -> model_registry [label="[con_2]"];
+    
+    
+
+}
