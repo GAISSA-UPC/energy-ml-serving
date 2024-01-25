@@ -28,12 +28,7 @@ Guide:
 1. [API creation](manuals/01_create_api.md). Guide to create an API to deploy ML models.
 2. [Add pretrained model](manuals/02_add_models.md). Guide to add pretrained ML models (from HuggingFace, hdf5 format, pickle format) to do inferences through an API.
 3. [Deploy ML models in a cloud provider (General)](manuals/03_deploy_general.md). Guide to deploy ML models using an API in a cloud provider.
-4. [Deploy in Virtech](manuals/04_deploy_fib.md). Virtech setup, Guide to deploy ML models using an API in an AWS VM.
-5. [AWS](manuals/05_deploy_aws.md). AWS setup, Guide to deploy ML models using an API in an AWS VM.
-6. [GCP](manuals/06_deploy_gcp.md). GCP setup, Guide to deploy ML models using an API in an GCP VM.
-7. [Azure](manuals/07_deploy_azure.md). Azure setup, Guide to deploy ML models using an API in an Azure VM.
-8. [FAQ](manuals/FAQ.md). Documentation with problems arised during deployments.
-9. [Other](manuals/other.md). Other notes.
+
 
 
 # ML Serving
@@ -65,10 +60,6 @@ Guidelines to serve models using runtime engine (+ web framework API) as serving
 - Codet5p-220m
   - https://huggingface.co/Salesforce/codet5p-220m
 
-## API
-See [manuals/01_create_api.md](manuals/01_create_api.md) to check how to create an API to deploy ML models.
-
-### FastAPI
 
 
 ## Energy tracking metrics
@@ -108,30 +99,7 @@ service nginx status
 ## References
 See manuals/references
 
--------------------
-
-**ToDo:**
-
-- [ ] 
-- [ ] 
 
 -------------------
 
 Machine information for runtime engine experiments:
-
-Tipo de máquina
-    e2-standard-4
-Plataforma de CPU
-    Intel Broadwell
-Plataforma de CPU mínima
-    Ninguna
-Arquitectura
-    x86‑64
-Zona
-    europe-southwest1-a
-Memoria
-    80 GB 
-Tipo de licencia
-    Gratis
-Imagen
-Ubuntu 20.04 LTS 
