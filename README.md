@@ -29,7 +29,12 @@ Guide:
 2. [Add pretrained model](manuals/02_add_models.md). Guide to add pretrained ML models (from HuggingFace, hdf5 format, pickle format) to do inferences through an API.
 3. [Deploy ML models in a cloud provider (General)](manuals/03_deploy_general.md). Guide to deploy ML models using an API in a cloud provider.
 
+# Replication package
 
+1. Edit files with experiment parameters (time,files,...), check CONSTANTS in scripts:
+  - runall.sh
+  - testing/main.py
+  - models_code.py
 
 # ML Serving
 
@@ -80,10 +85,10 @@ python3 testing/main.py -i onnx -r 5 | tee -a results/out_onnx.log
 python3 testing/main.py -i ov -r 5 | tee -a results/out_ov.log
 python3 testing/main.py -i torchscript -r 5 | tee -a results/out_torchscript.log
 
-python3 testing/main.py -i torch -r 5 | tee -a results/out_torch.log;
-python3 testing/main.py -i onnx -r 5 | tee -a results/out_onnx.log;
-python3 testing/main.py -i ov -r 5 | tee -a results/out_ov.log;
-python3 testing/main.py -i torchscript -r 5 | tee -a results/out_torchscript.log;
+python3 testing/main.py -i torch -r 2 | tee -a results/out_torch.log;
+python3 testing/main.py -i onnx -r 2 | tee -a results/out_onnx.log;
+python3 testing/main.py -i ov -r 2 | tee -a results/out_ov.log;
+python3 testing/main.py -i torchscript -r 2 | tee -a results/out_torchscript.log;
 
 
 ```
