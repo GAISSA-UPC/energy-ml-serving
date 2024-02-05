@@ -9,8 +9,11 @@ import sagemaker
 import boto3
 from sagemaker.huggingface import HuggingFaceModel
 
-import os
-import argparse
+from utils import *
+
+script_name = os.path.basename(__file__)
+def print(*args, **kwargs):
+    builtins.print(f"[{script_name}] ",*args, **kwargs)
 
 parser = argparse.ArgumentParser(description='Serve ML models.')
 
@@ -26,10 +29,6 @@ args = parser.parse_args()
 infrastructure = args.infrastructure
 models = args.models
 
-
-model_checkpoint = {'codet5-base':"Salesforce/codet5-base", 'codet5p-220':'Salesforce/codet5p-220m', 
-                        'codegen-350-mono':"Salesforce/codegen-350M-mono", 'gpt-neo-125m':"EleutherAI/gpt-neo-125M",
-                        'codeparrot-small':'codeparrot/codeparrot-small', 'pythia-410m':"EleutherAI/pythia-410m"} # model:checkpoint
 
 def set_up_infrastructure(models, serving_infrastructure):
     print(f"Setting up infrastructure -> {serving_infrastructure} models -> {models}\n")
