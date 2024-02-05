@@ -1,0 +1,67 @@
+digraph G {
+    compound=true;
+    rankdir=LR;
+    node [shape=box, style=rounded, fontname="Arial"];
+    
+    subgraph cluster_local {
+        label="Local";
+        style=dashed;
+        
+        user_interface [label="User Interface"];
+    }
+    
+    subgraph cluster_vm {
+        label="VM";
+        style=dotted;
+        
+        subgraph cluster_scripts {
+            label="Python";
+            style=dashed;
+            
+            bash_script [label="Bash script"];
+            main_script [label="Main.py"];
+            inference_script [label="inference_requests.py"];
+        }
+        
+        subgraph cluster_server {
+            label="Server";
+            style=dashed;
+            
+            asgi_server [label="ASGI server"];
+            web_framework [label="Web framework\nFastAPI"];
+            protocol [label="Communication protocol\nREST"];
+            
+        }
+        
+        runtime [label="Runtime"];
+        model_registry [label="Model Registry"];
+        dataset [label="Dataset"];
+    }
+
+    
+    user_interface -> bash_script [label="ssh",lhead=cluster_scripts];
+    
+    bash_script -> main_script [label="(runtime,reps)",];
+    main_script -> inference_script [label="(runtime,model,inputs)",];
+    
+    inference_script -> asgi_server [label="request",lhead=cluster_server];
+    asgi_server -> inference_script [label="response",ltail=cluster_server];
+    
+    web_framework -> runtime [label="inference",ltail=cluster_server];
+    runtime -> web_framework [label="result",lhead=cluster_server];
+    
+    
+    dataset -> main_script [label="fetch inputs"];
+    
+    //python_script -> server_unicorn [label="[con_2]"];
+    //server_unicorn -> python_script [label="[con_2]"];
+    
+    //server_unicorn -> runtime [label="[con_2]"];
+    //runtime -> server_unicorn [label="[con_2]"];
+    
+    model_registry -> runtime [label="fetch model"];
+    //runtime -> model_registry [label="[con_2]"];
+    
+    
+
+}
