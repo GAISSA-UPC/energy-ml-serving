@@ -14,10 +14,19 @@ Analysis:
     File for each model and ServingInfrastructure
 
 """
-import argparse
+#import gc
 
-#from inference_requests import inference_sagemaker, inference_fastapi, inference_torchserve, endpoints
-from inference_requests import  inference_fastapi,  endpoints
+from inference_requests import  inference_fastapi
+from utils import *
+
+script_name = os.path.basename(__file__)
+def print(*args, **kwargs):
+    builtins.print(f"[{script_name}] ",*args, **kwargs)
+
+if TESTING:
+    COOLDOWN_REP = 0
+    WARM_UP = False
+    print(f"** WARNING: TESTING mode ** ")
 
 parser = argparse.ArgumentParser(description='Make inferences.')
 
@@ -25,7 +34,6 @@ parser = argparse.ArgumentParser(description='Make inferences.')
 parser.add_argument('-i', '--infrastructure', type=str, default=None, help='Example: ["torch","onnx","ov","torchscript", "torchserve", "sagemaker"]')
 parser.add_argument('-m', '--models', type=str, default=None, help="Example: [ 'codet5-base', 'codet5p-220', 'gpt-neo-125m', 'codeparrot-small', 'pythia-410m']")
 parser.add_argument('-r', '--reps', type=int, default=1, help="Number of repetitions")
-
 
 
 # Parse the command line arguments
@@ -37,11 +45,25 @@ models = args.models
 reps = args.reps
 
 
-# Input
-DATASET_PATH = "testing/inputs.txt"
-# Output 
-RESULTS_PATH = "results"
+def warm_up(models, serving_infrastructure, dataset = DATASET_WARM_UP):
+    """_summary_ Run once the inferences (using the inputs from dataset) using each model
 
+    Args:
+        models (_type_): _description_
+        serving_infrastructure (_type_): _description_
+        dataset (_type_): _description_
+    """
+    print(f"++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
+    
+    print(f"warm_up(): Start -> {serving_infrastructure}, models -> {models}, dataset -> {dataset}, reps -> 1\n")
+    print(f"------------------------------\n")
+
+    for model in models:
+        make_inferences(model, serving_infrastructure, dataset) if not TEST_SCRIPTS_FLOW else print("**TEST_SCRIPTS_FLOW**")
+    
+    print(f"Waiting {COOLDOWN_REP} seconds to cooldown")
+    time.sleep(COOLDOWN_REP)
+    print(f"warm_up(): End")
 
 def run_experiment(model, serving_infrastructure, dataset, reps):
     """_summary_ Run experiments using dataset for an specific model and serving infrastructure
@@ -51,7 +73,7 @@ def run_experiment(model, serving_infrastructure, dataset, reps):
         serving_infrastructure (_type_): _description_
         dataset (_type_): _description_
     """
-    print(f"+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
+    print(f"++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
     
     print(f"Running experiment infrastructure -> {serving_infrastructure}, model -> {model}, dataset -> {dataset}, reps -> {reps}\n")
 
@@ -61,7 +83,12 @@ def run_experiment(model, serving_infrastructure, dataset, reps):
     
     # Run inference using dataset through API POST requests
     for i in range(reps):
+        #print(f'gc: {gc.collect()}')
+
         print(f"---------------- Rep {i+1} out of {reps}: \n")
+        if COOLDOWN_REP > 0:
+            print(f"Waiting {COOLDOWN_REP} seconds to cooldown")
+            time.sleep(COOLDOWN_REP)
         make_inferences(model, serving_infrastructure, dataset)
     
     # Stop server, delete resources...
@@ -77,47 +104,43 @@ def make_inferences(model, serving_infrastructure, dataset):
         examples = my_file.read().splitlines()
     print(f'Dataset: {examples}')
     
-    if serving_infrastructure == 'torch':
-        print("---")
-        inference_fastapi(model,serving_infrastructure,examples)
-    elif serving_infrastructure == 'onnx':
-        print("---")
-        inference_fastapi(model,serving_infrastructure,examples)
-    elif serving_infrastructure == 'ov':
-        print("---")
-        inference_fastapi(model,serving_infrastructure,examples)
-    elif serving_infrastructure == 'torchscript':
-        print("---")
+    if serving_infrastructure in ['torch','onnx','torchscript','ov']:
+        print("-------------------------------------------------")
         inference_fastapi(model,serving_infrastructure,examples)
     elif serving_infrastructure == 'torchserve':
-        print("---")
+        print("-------------------------------------------------")
         inference_torchserve(model,serving_infrastructure,examples)
     elif serving_infrastructure == 'sagemaker':
-        print("---")
+        print("-------------------------------------------------")
         inference_sagemaker(model,serving_infrastructure,examples)
     else:
         print("Error: Infrastructure is wrong")
 
 
-# def finish_infrastructure(model, serving_infrastructure):
-#     print(f"Finishing infrastructure -> {serving_infrastructure} model -> {model}\n")
+def end():
+    print(f"_________________________________________________________________")
+    print(f"                    finished inferencing")
+    print(f"_________________________________________________________________")
+
+    if WARM_UP:
+        dataset = DATASET_PATH
+        with open(dataset) as my_file:
+            examples = my_file.read().splitlines()
+
+        print(f"*Note: Remember to remove the warm_up() inferences in csv files, number of lines: {len(examples)} for each runtime engine")
 
 
 if __name__ == "__main__":
 
     serving_infrastructures = ["torch","onnx", "ov", "torchscript"]
     serving_infrastructure = infrastructure
+    assert serving_infrastructure in serving_infrastructures, f"'{serving_infrastructure}' not registered, you must use one of these: {serving_infrastructures}"
 
-    print(models)
+    print(f'models in args: {models}')
 
     if models is None :
-        #models_list = [ 'codet5-base', 'codet5p-220',  'codeparrot-small',]#'gpt-neo-125m',
-        #models_list = [ 'codet5-base', 'codet5p-220', 'gpt-neo-125m', 'codeparrot-small', 'pythia-410m'] 
-        models_list = [ 'codet5-base', 'codet5p-220', 'codeparrot-small', 'pythia-410m']  #'gpt-neo-125m',
-        models_list = [ 'pythia-410m']  #'gpt-neo-125m',
-
-        #models_list = [ 'codet5-base']  #'gpt-neo-125m',
-         
+        models_list = MODELS
+        
     else:
         if "," in models:
             models_list = models.split(",")
@@ -127,14 +150,27 @@ if __name__ == "__main__":
             print(model)
             assert model in endpoints.keys()
 
-
     dataset = DATASET_PATH
+    print(f"++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
 
-
-    print(f"+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
     print(f"INFRASTRUCTURE -> {serving_infrastructure}\n")
+    print(f"MODELS -> {models_list}\n")
+
+    
+    warm_up(models_list, serving_infrastructure,) if WARM_UP else print("** no warm_up() **")
+
     # Be sure the serving infrastructure is set up
+    print(f"++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
+    print(f"STARTING EXPERIMENT \n")
+    model_counter = 0
     for model in models_list:
-        #print(model, serving_infrastructure, dataset)
-        run_experiment(model, serving_infrastructure, dataset, reps)
+
+        #print(f'gc: {gc.collect()}')
+        print(f"---------------- Model {model_counter+1} out of {len(models_list)}: \n")
+
+        run_experiment(model, serving_infrastructure, dataset, reps) if not TEST_SCRIPTS_FLOW else print("**TEST_SCRIPTS_FLOW**")
+        model_counter+=1
+
+    #run final steps
+    end()
     
