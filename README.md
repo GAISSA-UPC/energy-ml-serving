@@ -32,9 +32,11 @@ Guide:
 # Replication package
 
 1. Edit files with experiment parameters (time,files,...), check CONSTANTS in scripts:
-  - runall.sh
-  - testing/main.py
-  - models_code.py
+  - utils.py
+2. Run server
+3. Run experiments
+
+
 
 # ML Serving
 
@@ -48,24 +50,8 @@ Guidelines to serve models using runtime engine (+ web framework API) as serving
 
 
 ## Models*
-\* Initial proposed models
 
-- BERT model
-- T5
-- CodeGen
-- Pythia-70m
-- CNN model
-- Codet5p-220m
-
-### Code Generation
-- CodeGen
-  - https://huggingface.co/Salesforce/codegen-350M-mono
-- Pythia-70m
-  - https://huggingface.co/EleutherAI/pythia-70m
-- Codet5p-220m
-  - https://huggingface.co/Salesforce/codet5p-220m
-
-
+MODELS = [ 'codet5-base', 'codeparrot-small', 'pythia-410m', 'codet5p-220']
 
 ## Energy tracking metrics
 - codecarbon
