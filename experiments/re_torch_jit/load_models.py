@@ -3,6 +3,8 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 
 # 'codegen-350M-mono',
 models = [ 'codet5-base', 'codet5p-220',  'gpt-neo-125m', 'codeparrot-small', 'pythia-410m'] # bloom, pythia
+models = [ 'codet5-base', 'codet5p-220', 'codeparrot-small', 'pythia-410m'] # bloom, pythia
+
 model_checkpoint = {'codet5-base':"Salesforce/codet5-base",
                     'codet5p-220':'Salesforce/codet5p-220m',
                     'codegen-350M-mono':"Salesforce/codegen-350M-mono",
@@ -12,7 +14,7 @@ model_checkpoint = {'codet5-base':"Salesforce/codet5-base",
 
 def infer(text: str, model, tokenizer) -> str:
     #text = "def greet(user): print(f'hello <extra_id_0>!')"
-    input_ids = tokenizer(text, return_tensors="pt").input_ids
+    input_ids = tokenizer(text, return_tensors="pt",max_length=20,padding='max_length').input_ids
 
     # simply generate a single sequence
     #generated_ids = model.generate(input_ids, max_length=8)
@@ -32,7 +34,7 @@ if 2<3:
         print(f"------------------------ Loading model: {checkpoint} ------------------------")
 
         # Load the TorchScript model
-        loaded_model = torch.jit.load(f"models/torchscript/{model_name}.pt")
+        loaded_model = torch.jit.load(f"models/torchscript2/{model_name}.pt")
         #print(loaded_model.code)
 
         loaded_model.eval()  # Set the model to evaluation mode, turn off gradients computation
@@ -42,16 +44,18 @@ if 2<3:
 
 
         input_text = "def hello_world():"
-
+        input_text = "if condition:\n            return condition\n        else:\n            return None\n\n    def _get_condition(self"
+        input_text = "def hello_world(): print("
         #tokenizer.add_special_tokens({'pad_token': '[PAD]'})
 
         #dummy_input = "def hello_world():"
         #inputs = tokenizer.encode_plus(dummy_input,max_length = int(20),pad_to_max_length = True, add_special_tokens = True, return_tensors = 'pt')
         #inputs = tokenizer.encode_plus(input_text,max_length = int(30),padding = True, add_special_tokens = True, return_tensors = 'pt',truncation=True)
-        inputs = tokenizer.encode_plus(input_text, return_tensors = 'pt')
-
+        inputs = tokenizer.encode_plus(input_text, return_tensors = 'pt',max_length=20,padding='max_length')
+        #input_ids = tokenizer(input_text, return_tensors="pt",max_length=20,padding='max_length').input_ids
+        print("input_ids: ",inputs)
         input_ids = inputs["input_ids"]
-
+    
         attention_mask = inputs["attention_mask"]
         input_tuple = [input_ids,attention_mask,input_ids] # decoder_input_ids["input_ids"]
 

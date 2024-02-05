@@ -11,6 +11,10 @@ from transformers import T5ForConditionalGeneration
 from transformers import T5Tokenizer, RobertaTokenizer
 
 models = [ 'codet5-base', 'codet5p-220', 'codegen-350M-mono', 'gpt-neo-125m', 'codeparrot-small', 'pythia-410m'] # bloom, pythia
+models = [ 'codet5-base', 'codet5p-220', 'codeparrot-small', 'pythia-410m'] # bloom, pythia
+models = [ 'codeparrot-small', 'pythia-410m'] # bloom, pythia
+
+
 model_checkpoint = {'codet5-base':"Salesforce/codet5-base", 'codet5p-220':'Salesforce/codet5p-220m', 
                     'codegen-350M-mono':"Salesforce/codegen-350M-mono", 'gpt-neo-125m':"EleutherAI/gpt-neo-125M",
                     'codeparrot-small':'codeparrot/codeparrot-small', 'pythia-410m':"EleutherAI/pythia-410m"} # model:checkpoint
@@ -23,7 +27,7 @@ for model in models:
         checkpoint = model_checkpoint[model_name]
 
         # change to your directory
-        save_directory = f"models/torchscript/{model_name}/"
+        save_directory = f"models/torchscript2/{model_name}/"
 
         print(f"Saving {model_name} ...\n")
         print(f"Checkpoint {checkpoint} ...\n")
@@ -44,16 +48,26 @@ for model in models:
 
         #tokenizer.add_special_tokens({'pad_token': '[PAD]'})
 
+        #if condition:\n            return condition\n        else:\n            return None\n\n    def _get_condition(self
         dummy_input = "def hello_world():"
+        #dummy_input = "if condition:\n            return condition\n        else:\n            return None\n\n    def _get_condition(self"
         #inputs = tokenizer.encode_plus(dummy_input,max_length = int(20),pad_to_max_length = True, add_special_tokens = True, return_tensors = 'pt')
         #inputs = tokenizer.encode_plus(dummy_input,max_length = int(20),padding = True, add_special_tokens = True, return_tensors = 'pt',truncation=True)
-        inputs = tokenizer.encode_plus(dummy_input, return_tensors = 'pt',)
+        #inputs = tokenizer.encode_plus(dummy_input, return_tensors = 'pt', max_length = int(20),padding = True)
+        if model_name in ['codeparrot-small', 'pythia-410m']:
+            #tokenizer.add_special_tokens({'pad_token': '[PAD]'})
+            tokenizer.pad_token = tokenizer.eos_token
+            inputs = tokenizer.encode_plus(dummy_input,max_length = int(20), padding = 'max_length', return_tensors = 'pt',truncation='only_second')
+        else:
+            inputs = tokenizer.encode_plus(dummy_input,max_length = int(20), padding = 'max_length', return_tensors = 'pt')
+        #inputs = tokenizer(dummy_input, return_tensors="pt", truncation=True, max_length=int(30))
         print("inputs:",inputs)
 
         input_ids = inputs["input_ids"]
         attention_mask = inputs["attention_mask"]
         input_tuple = (input_ids,attention_mask, input_ids) # decoder_input_ids["input_ids"]
 
+        # If your model has multiple inputs they must passed in order that is defined by your mode
         # script mode by usign torch.jit.trace
         if model_name in [ 'codet5-base','codet5p-220']:
             traced_model = torch.jit.trace(model, input_tuple) # t5 models
@@ -63,7 +77,7 @@ for model in models:
 
 
 
-        save_directory = f"models/torchscript/{model_name}.pt"
+        save_directory = f"models/torchscript2/{model_name}.pt"
 
         #traced model is a TorchScript module
         torch.jit.save(traced_model,save_directory)
