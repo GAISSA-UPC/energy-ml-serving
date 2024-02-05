@@ -1,26 +1,15 @@
 import json
 import requests
+
 #import boto3 # for aws
 #from codecarbon import track_emissions
 
-RESULTS_DIR = 'results/'
+from utils import *
 
-# FastAPI endpoints
-endpoints = {
-  "codet5-base" : "/huggingface_models/codet5-base",
-  "codet5p-220" : "/huggingface_models/codet5p-220",
-  "codegen-350-mono" : "/huggingface_models/codegen-350-mono",
-  "gpt-neo-125m" : "/huggingface_models/gpt-neo-125m",
-  "codeparrot-small" : "/huggingface_models/codeparrot-small",
-  "pythia-410m" : "/huggingface_models/pythia-410m",
-}
+script_name = os.path.basename(__file__)
+def print(*args, **kwargs):
+    builtins.print(f"[{script_name}] ",*args, **kwargs)
 
-model_checkpoint = {'codet5-base':"Salesforce/codet5-base", 'codet5p-220':'Salesforce/codet5p-220m', 
-                        'codegen-350-mono':"Salesforce/codegen-350M-mono", 'gpt-neo-125m':"EleutherAI/gpt-neo-125M",
-                        'codeparrot-small':'codeparrot/codeparrot-small', 'pythia-410m':"EleutherAI/pythia-410m"} # model:checkpoint
-
-
-    
 def inference_fastapi(model, serving_infrastructure, dataset):
     """_summary_ Run inference using dataset
 
@@ -47,6 +36,8 @@ def inference_fastapi(model, serving_infrastructure, dataset):
         return response
 
     for line in dataset:
+        print(f"Waiting {WAIT_BETWEEN_INFERENCE} seconds between inferences")
+        time.sleep(WAIT_BETWEEN_INFERENCE)
         print("___________________________________")
         # Define the data you want to send as a JSON payload
         payload = {
@@ -59,25 +50,23 @@ def inference_fastapi(model, serving_infrastructure, dataset):
 
         # Define the headers (usually "Content-Type: application/json")
         headers = {"Content-Type": "application/json"}
-
-        response = infer(serving_infrastructure)
-
-        data = response.json()
-
-        print(data)        
+        try:
+            response = infer(serving_infrastructure)
+            data = response.json()
+            # Check the response
+            if data["status-code"] == 200:
+                print("Inference successful:")
+                print(data) 
+                print(data['data']['prediction'])
+            else:
+                print(
+                    f"Request failed with status code {data['status-code']}: {data}"
+                )
+        except Exception as e:
+            print(f"Raised exception: {e}")
         
-        # Check the response
-        if data["status-code"] == 200:
-            #result = json.loads(response["Body"].read().decode("utf-8"))
-            print("Inference successful!")
-            print(data['data']['prediction'])
-            # Process the result as needed
-        else:
-            print(
-                f"Request failed with status code {data['status-code']}: {data}"
-            )
 
-    print (f"\n\nCodeCarbon Results: {RESULTS_DIR}emissions_{model}.csv")
+    print (f"CodeCarbon Results: {RESULTS_DIR}emissions_{model}.csv")
 
 
 def inference_torchserve(model, serving_infrastructure, dataset):
@@ -138,7 +127,6 @@ def inference_torchserve(model, serving_infrastructure, dataset):
                 f"Request failed with status code {response.status_code}: {response.text}"
             )
 
-    #print (f"\n\nCodeCarbon Results: {RESULTS_DIR}emissions_{model}.csv")
 
 
 def inference_sagemaker(model, serving_infrastructure, dataset, endpoint_name = None):
