@@ -30,15 +30,13 @@ digraph G {
     
     user_interface -> python_script [label="ssh"];
     
-    python_script -> server_unicorn [label="[con_2]"];
-    server_unicorn -> python_script [label="[con_2]"];
+    python_script -> server_unicorn [label="request"];
+    server_unicorn -> python_script [label="response"];
     
-    server_unicorn -> runtime [label="[con_2]"];
-    runtime -> server_unicorn [label="[con_2]"];
+    server_unicorn -> runtime [label="inference"];
+    runtime -> server_unicorn [label="result"];
     
-    model_registry -> runtime [label="[con_2]"];
+    model_registry -> runtime [label="retrieve M"];
     //runtime -> model_registry [label="[con_2]"];
-    
-    
 
 }
