@@ -1,4 +1,5 @@
 def hello_world():
 for i in range(10):
-print("Hello, world!")
-if x > 5:
+while True:
+for item in range(5):
+if condition:

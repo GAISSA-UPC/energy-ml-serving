@@ -1,13 +1,3 @@
-while True:
-import numpy as np
-x = x + 1
-data = []
-result = add(a, b)
-with open("file.txt", "r") as file:
-class Person:
-for item in my_list:
-for item in range(5):
-if condition:
 if condition and other_condition:
 while not done:
 def calculate_average():
@@ -24,3 +14,11 @@ result = multiply(a, b)
 for key, value in my_dict.items():
 if condition or other_condition:
 data.append(new_item)
+import numpy as np
+x = x + 1
+data = []
+result = add(a, b)
+with open("file.txt", "r") as file:
+if x > 5:
+while True:
+print("Hello, world!")

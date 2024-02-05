@@ -11,3 +11,4 @@ app/__pycache__/
 *.cfg
 scripts/*.exe
 scripts/*activate*
+output.*
