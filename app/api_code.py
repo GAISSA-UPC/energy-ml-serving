@@ -23,7 +23,12 @@ from fastapi.responses import FileResponse
 
 import csv
 import os
+import builtins
 
+
+script_name = os.path.basename(__file__)
+def print(*args, **kwargs):
+    builtins.print(f"[{script_name}] ",*args, **kwargs)
 
 print("------------------------modules loaded!------------------------")
 

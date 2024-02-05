@@ -46,9 +46,12 @@ from transformers import pipeline
 # onnxruntime
 from optimum.onnxruntime import ORTModelForMaskedLM, ORTModelForSeq2SeqLM, ORTModelForCausalLM
 from optimum.intel import OVModelForSeq2SeqLM, OVModelForCausalLM
+import os
+import builtins
 
+MAX_LENGTH = 12
 
-# metrics
+os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
 # Constants
 RESULTS_DIR = 'results/'
@@ -57,6 +60,10 @@ models = [ 'codet5-base', 'codet5p-220', 'codegen-350-mono',
           'gpt-neo-125m', 'codeparrot-small', 'pythia-410m'] # bloom, pythia
 
 runtime_engines = ['onnx','ov','torchscript']
+
+script_name = os.path.basename(__file__)
+def print(*args, **kwargs):
+    builtins.print(f"[{script_name}] ",*args, **kwargs)
 
 class ML_task(Enum):
     MLM = 1 # Masked Language Modeling
@@ -160,11 +167,12 @@ class CodeT5_BaseModel(Model):
         def infer(text: str, model, tokenizer, engine) -> str:
             if(engine != 'torchscript'):
                 #text = "def greet(user): print(f'hello <extra_id_0>!')"
-                input_ids = tokenizer(text, return_tensors="pt").input_ids
+                #input_ids = tokenizer(text, return_tensors="pt",max_length=MAX_LENGTH,padding='max_length').input_ids
+                input_ids = tokenizer(text, return_tensors="pt",).input_ids
 
                 # simply generate a single sequence
                 #generated_ids = model.generate(input_ids, max_length=8)
-                generated_ids = model.generate(input_ids,)
+                generated_ids = model.generate(input_ids, max_length=MAX_LENGTH) 
                 
                 # decode
                 prediction = tokenizer.decode(generated_ids[0], skip_special_tokens=True)
@@ -172,8 +180,10 @@ class CodeT5_BaseModel(Model):
                 return prediction
             elif (engine == 'torchscript'):
                 inputs = tokenizer.encode_plus(text, return_tensors = 'pt')
-
+                #inputs = tokenizer(text, return_tensors="pt", max_length=MAX_LENGTH,padding='max_length')#padding='max_length'
+                print("check-inputs: ", inputs)
                 input_ids = inputs["input_ids"]
+                print("check-inputs: ", input_ids)
 
                 attention_mask = inputs["attention_mask"]
                 input_tuple = [input_ids,attention_mask,input_ids] # decoder_input_ids["input_ids"]
@@ -278,14 +288,19 @@ class Codet5p_220mModel(Model):
         @decorator_to_use
         def infer( text: str, model, tokenizer, engine) -> str:
             if (engine != 'torchscript'):
-                inputs = tokenizer.encode(text, return_tensors="pt").to('cpu')
+                
+                #inputs = tokenizer.encode(text, return_tensors="pt",max_length=MAX_LENGTH,padding='max_length').to('cpu')
+                inputs = tokenizer.encode(text, return_tensors="pt",).to('cpu')
+                
                 #outputs = model.generate(inputs, max_length=10,max_new_tokens = 30)
                 #outputs = model.generate(inputs, max_new_tokens = 30)
-                outputs = model.generate(inputs, )
+                outputs = model.generate(inputs, max_length=MAX_LENGTH)
                 
                 prediction = tokenizer.decode(outputs[0], skip_special_tokens=True)
                 return prediction
             elif(engine == 'torchscript'):
+                #inputs = tokenizer.encode_plus(text, return_tensors = 'pt')
+                #inputs = tokenizer(text, return_tensors="pt",max_length=MAX_LENGTH,padding='max_length',) # padding='max_length'
                 inputs = tokenizer.encode_plus(text, return_tensors = 'pt')
 
                 input_ids = inputs["input_ids"]
@@ -463,8 +478,10 @@ class GPTNeo_125m(Model):
                 return prediction
         
             elif(engine == 'torchscript'):
+                #inputs = tokenizer.encode_plus(text, return_tensors = 'pt')
+                #inputs = tokenizer(text, return_tensors="pt",max_length=MAX_LENGTH,padding='max_length')
                 inputs = tokenizer.encode_plus(text, return_tensors = 'pt')
-
+                
                 input_ids = inputs["input_ids"]
 
                 attention_mask = inputs["attention_mask"]
@@ -551,7 +568,7 @@ class CodeParrot_smallModel(Model):
         elif engine == 'ov':
             model_dir = 'models/ov/codeparrot-small'
             tokenizer = AutoTokenizer.from_pretrained('models/onnx/codeparrot-small') 
-            model = OVModelForCausalLM.from_pretrained(model_dir,)
+            model = OVModelForCausalLM.from_pretrained(model_dir, ov_config={"CACHE_DIR":""}) #use_cache=True # ov_config={"PERFORMANCE_HINT": "LATENCY", "CACHE_DIR":""}
             decorator_to_use = self.track_ov
         elif engine == 'torchscript':
             model_dir = 'models/torchscript/codeparrot-small.pt'
@@ -567,10 +584,12 @@ class CodeParrot_smallModel(Model):
         def infer( text: str, model, tokenizer, engine) -> str:
             if(engine != 'torchscript'):
                 #prediction = generator(text)
+                #tokenizer.add_special_tokens({'pad_token': '[PAD]'})
+                #inputs = tokenizer(text, return_tensors="pt",max_length=MAX_LENGTH,padding='max_length')
                 inputs = tokenizer(text, return_tensors="pt")
+
                 # generate
-                
-                tokens = model.generate(**inputs)
+                tokens = model.generate(**inputs, max_length=MAX_LENGTH)
                 print(tokens.shape)
                 print("tokens",tokens)
                 print(tokens[0])
@@ -580,8 +599,15 @@ class CodeParrot_smallModel(Model):
                 prediction = tokenizer.decode(tokens[0])
                 return prediction
             elif (engine == 'torchscript'):
-                inputs = tokenizer.encode_plus(text, return_tensors = 'pt')
+                #inputs = tokenizer.encode_plus(text, return_tensors = 'pt')
+                #inputs = tokenizer(text, return_tensors="pt",truncation=True, max_length=MAX_LENGTH)
+                #tokenizer.add_special_tokens({'pad_token': '[PAD]'})
+                #tokenizer.add_special_tokens({'pad_token': '[PAD]'})
+                #inputs = tokenizer(text, return_tensors="pt",max_length=MAX_LENGTH,padding='max_length' )
 
+                tokenizer.pad_token = tokenizer.eos_token
+                inputs = tokenizer.encode_plus(text,max_length = int(20), padding = 'max_length', return_tensors = 'pt',truncation='only_second')
+        
                 input_ids = inputs["input_ids"]
 
                 attention_mask = inputs["attention_mask"]
@@ -698,14 +724,21 @@ class Pythia_410mModel(Model):
         def infer( text: str, model, tokenizer, engine) -> str:
             if(engine != 'torchscript' ):
                 # tokenize
-                inputs = tokenizer(text, return_tensors="pt")
+                #tokenizer.pad_token = tokenizer.eos_token
+                #inputs = tokenizer(text, return_tensors="pt",max_length=MAX_LENGTH,padding='max_length')
+                inputs = tokenizer(text, return_tensors="pt",)
+                
                 # generate
-                tokens = model.generate(**inputs)
+                tokens = model.generate(**inputs, max_length=MAX_LENGTH)
                 # decode
                 prediction = tokenizer.decode(tokens[0])
                 return prediction 
             elif (engine == 'torchscript'):
                 inputs = tokenizer.encode_plus(text, return_tensors = 'pt')
+                #inputs = tokenizer(text, return_tensors="pt",truncation=True, max_length=MAX_LENGTH)
+                #inputs = tokenizer(text, return_tensors="pt",max_length=MAX_LENGTH,padding='max_length')
+                #tokenizer.pad_token = tokenizer.eos_token
+                #inputs = tokenizer.encode_plus(text,max_length = int(20), padding = 'max_length', return_tensors = 'pt',truncation='only_second')
 
                 input_ids = inputs["input_ids"]
 
