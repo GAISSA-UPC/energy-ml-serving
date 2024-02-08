@@ -1,5 +1,10 @@
-def hello_world():
-for i in range(10):
-while True:
 for item in range(5):
 if condition:
+if condition and other_condition:
+while not done:
+def calculate_average():
+return result
+array = [1, 2, 3]
+dictionary = {"key": "value"}
+name = "John"
+for index, value in enumerate(my_list):

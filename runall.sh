@@ -59,7 +59,8 @@ check_server() {
 
 print "Checking if the server is up..."
 while [ "${SECONDS}" -lt "${WAIT_TIME}" ]; do
-    check_server && break
+    print "Checking if the server is up..."
+    #check_server && break
     sleep 1
 done
 

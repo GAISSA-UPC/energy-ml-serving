@@ -8,15 +8,15 @@ import argparse
 import time
 import builtins
 
-TEST_SCRIPTS_FLOW = False # If true, it will not do inferences, default is False
+TEST_SCRIPTS_FLOW = False # Default is False, If true, it will not do inferences. 
 TESTING = False # default is False, if true: do not add time between reps and WARM_UP=false
 WARM_UP = False # default is True
 
 # time in seconds
 # wait time between each repetition
-COOLDOWN_REP = 10 
+COOLDOWN_REP = 5 # 5*60=300 seconds
 # for each line in dataset, wait time between each inference
-WAIT_BETWEEN_INFERENCE = 0 
+WAIT_BETWEEN_INFERENCE = 5 # 60 sec
 
 # Paths
 DATASET_PATH = "testing/inputs.txt"
@@ -24,6 +24,8 @@ DATASET_WARM_UP = "testing/inputs_warm_up.txt"
 RESULTS_DIR = "results/"
 
 MODELS = [ 'codet5-base', 'codeparrot-small', 'pythia-410m', 'codet5p-220']  #'gpt-neo-125m', 'codet5p-220'
+#MODELS = [ 'codet5-base','codet5p-220']  #'gpt-neo-125m', 'codet5p-220'
+#MODELS=['codeparrot-small', 'pythia-410m',]
 
 # FastAPI endpoints
 endpoints = {

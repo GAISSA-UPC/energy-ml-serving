@@ -22,3 +22,6 @@ with open("file.txt", "r") as file:
 if x > 5:
 while True:
 print("Hello, world!")
+def hello_world():
+for i in range(10):
+while True:

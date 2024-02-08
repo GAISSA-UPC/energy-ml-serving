@@ -56,7 +56,7 @@ def inference_fastapi(model, serving_infrastructure, dataset):
             # Check the response
             if data["status-code"] == 200:
                 print("Inference successful:")
-                print(data) 
+                print("data:",data) 
                 print(data['data']['prediction'])
             else:
                 print(
@@ -64,6 +64,7 @@ def inference_fastapi(model, serving_infrastructure, dataset):
                 )
         except Exception as e:
             print(f"Raised exception: {e}")
+            return
         
 
     print (f"CodeCarbon Results: {RESULTS_DIR}emissions_{model}.csv")

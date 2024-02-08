@@ -15,6 +15,7 @@ Analysis:
 
 """
 #import gc
+import random
 
 from inference_requests import  inference_fastapi
 from utils import *
@@ -86,11 +87,11 @@ def run_experiment(model, serving_infrastructure, dataset, reps):
         #print(f'gc: {gc.collect()}')
 
         print(f"---------------- Rep {i+1} out of {reps}: \n")
+        
+        make_inferences(model, serving_infrastructure, dataset)
         if COOLDOWN_REP > 0:
             print(f"Waiting {COOLDOWN_REP} seconds to cooldown")
             time.sleep(COOLDOWN_REP)
-        make_inferences(model, serving_infrastructure, dataset)
-    
     # Stop server, delete resources...
     # mainly for cloud services, where you have to delete resources
     print(f"------------------------------\n")
@@ -102,7 +103,11 @@ def make_inferences(model, serving_infrastructure, dataset):
 
     with open(dataset) as my_file:
         examples = my_file.read().splitlines()
-    print(f'Dataset: {examples}')
+    
+    # Randomize the order of examples
+    random.shuffle(examples)
+    print(f'Dataset (randomized): {examples}')
+
     
     if serving_infrastructure in ['torch','onnx','torchscript','ov']:
         print("-------------------------------------------------")

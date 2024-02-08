@@ -28,28 +28,30 @@ from codecarbon import track_emissions
 from enum import Enum
 
 # Required to run CNN model
-import numpy as np
-import random
-from torch.nn import functional as F
+#import numpy as np
+#import random
+#from torch.nn import functional as F
 import torch
 
-# [t5, codet5p_220m]
-from transformers import T5ForConditionalGeneration
+# [t5, codet5p_220m]   torch
+from transformers import  AutoModelForSeq2SeqLM # T5ForConditionalGeneration,
+# [pythia-70m] torch    
+from transformers import GPTNeoXForCausalLM
 # [codegen]
-from transformers import AutoModelForCausalLM, AutoTokenizer,AutoModelForSeq2SeqLM
-# [pythia-70m]
-from transformers import GPTNeoXForCausalLM, AutoTokenizer
+#from transformers import AutoModelForCausalLM,AutoModelForSeq2SeqLM
 
 # gptneo
-from transformers import pipeline
+#from transformers import pipeline
 
-# onnxruntime
-from optimum.onnxruntime import ORTModelForMaskedLM, ORTModelForSeq2SeqLM, ORTModelForCausalLM
-from optimum.intel import OVModelForSeq2SeqLM, OVModelForCausalLM
+from transformers import AutoTokenizer #torchscript, OV, ONNX, torch
+from optimum.onnxruntime import  ORTModelForSeq2SeqLM, ORTModelForCausalLM #ONNX
+from optimum.intel import OVModelForSeq2SeqLM, OVModelForCausalLM  # OV
+
+
 import os
 import builtins
 
-MAX_LENGTH = 12
+MAX_LENGTH = 10
 
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
@@ -65,12 +67,14 @@ script_name = os.path.basename(__file__)
 def print(*args, **kwargs):
     builtins.print(f"[{script_name}] ",*args, **kwargs)
 
+# not updated
 class ML_task(Enum):
     MLM = 1 # Masked Language Modeling
     TRANSLATION = 2
     CV = 3 # Computer Vision
     CODE = 4
 
+# not updated
 class models_names(Enum):
     Codet5_base = 1
     Codet5p_220m = 2
@@ -84,7 +88,7 @@ class models_names(Enum):
     # Pythia_70m = 5
     # Codet5p_220m = 6    
     
-
+    
 class Model:
     """
     Creates a default model
@@ -362,9 +366,8 @@ class Codet5p_220mModel(Model):
             return result
         return wrapper
     
-    
-
 # Cannot retrieve model in current machine
+# not updated
 class CodeGen_350mModel(Model):
     """_summary_ Creates a CodeGen model. Inherits from Model()
 
@@ -422,8 +425,7 @@ class CodeGen_350mModel(Model):
             return result
         return wrapper
     
-    
-#running
+# not updated
 class GPTNeo_125m(Model):
     """
     Creates a GPT-Neo model. Inherits from Model()

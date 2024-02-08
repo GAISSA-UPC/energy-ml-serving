@@ -15,7 +15,7 @@ digraph G {
         style=dotted;
         
         subgraph cluster_scripts {
-            label="Python";
+            label="Scripts";
             style=dashed;
             
             bash_script [label="Bash script"];
@@ -36,6 +36,7 @@ digraph G {
         runtime [label="Runtime"];
         model_registry [label="Model Registry"];
         dataset [label="Dataset"];
+        logs [label="Energy logs"];
     }
 
     
@@ -49,7 +50,7 @@ digraph G {
     
     web_framework -> runtime [label="inference",ltail=cluster_server];
     runtime -> web_framework [label="result",lhead=cluster_server];
-    
+    runtime -> logs [label="codecarbon tracking",lhead=cluster_server]; //line from conection
     
     dataset -> main_script [label="fetch inputs"];
     

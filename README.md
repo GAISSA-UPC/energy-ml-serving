@@ -32,7 +32,8 @@ Guide:
 # Replication package
 
 1. Edit files with experiment parameters (time,files,...), check CONSTANTS in scripts:
-  - utils.py
+  - testing/utils.py
+  - app/models_code.py: MAX_LENGTH tokens
 2. Run server
 3. Run experiments
 
