@@ -1,0 +1,164 @@
+{"task_id": "RandomTokens/0", "new_prompt": "    \"\"\" Check if in given list of numbers, are"}
+{"task_id": "RandomTokens/1", "new_prompt": "    ['()', '(())', '(()"}
+{"task_id": "RandomTokens/2", "new_prompt": "    >>> truncate_number(3.5)"}
+{"task_id": "RandomTokens/3", "new_prompt": "def below_zero(operations: List[int])"}
+{"task_id": "RandomTokens/4", "new_prompt": "    Mean Absolute Deviation is the average absolute difference between each"}
+{"task_id": "RandomTokens/5", "new_prompt": "    \"\"\" Insert a number 'delimeter' between every"}
+{"task_id": "RandomTokens/6", "new_prompt": "    [2, 3, 1, 3"}
+{"task_id": "RandomTokens/7", "new_prompt": "    \"\"\" Filter an input list of strings only for ones that contain"}
+{"task_id": "RandomTokens/8", "new_prompt": "    Empty sum should be equal to 0 and empty product should be equal"}
+{"task_id": "RandomTokens/9", "new_prompt": "def rolling_max(numbers: List[int]) ->"}
+{"task_id": "RandomTokens/10", "new_prompt": "def is_palindrome(string: str"}
+{"task_id": "RandomTokens/11", "new_prompt": "def string_xor(a: str, b"}
+{"task_id": "RandomTokens/12", "new_prompt": "    >>> longest(['a', 'b', 'c'])"}
+{"task_id": "RandomTokens/13", "new_prompt": "    \"\"\" Return a greatest common divisor of two"}
+{"task_id": "RandomTokens/14", "new_prompt": "    \"\"\" Return list of all prefixes from shortest to longest of the"}
+{"task_id": "RandomTokens/15", "new_prompt": "    \"\"\" Return a string containing space-del"}
+{"task_id": "RandomTokens/16", "new_prompt": "    \"\"\" Given a string, find out how"}
+{"task_id": "RandomTokens/17", "new_prompt": "    'o|' - half note, lasts two beats"}
+{"task_id": "RandomTokens/18", "new_prompt": "    >>> how_many_times('aaa"}
+{"task_id": "RandomTokens/19", "new_prompt": "    Return the string with numbers sorted from smallest to largest"}
+{"task_id": "RandomTokens/20", "new_prompt": "    (2.0, 2.0)"}
+{"task_id": "RandomTokens/21", "new_prompt": "def rescale_to_unit(numbers: List[float]) ->"}
+{"task_id": "RandomTokens/22", "new_prompt": "    >>> filter_integers(['a', 3.14,"}
+{"task_id": "RandomTokens/23", "new_prompt": "def strlen(string: str) -> int:"}
+{"task_id": "RandomTokens/24", "new_prompt": "    \"\"\" For a given number n, find the largest"}
+{"task_id": "RandomTokens/25", "new_prompt": "    \"\"\" Return list of prime factors of given integer"}
+{"task_id": "RandomTokens/26", "new_prompt": "    Keep order of elements left the same as in the"}
+{"task_id": "RandomTokens/27", "new_prompt": "def flip_case(string: str)"}
+{"task_id": "RandomTokens/28", "new_prompt": "    \"\"\" Concatenate list of strings into a"}
+{"task_id": "RandomTokens/29", "new_prompt": "def filter_by_prefix(strings: List[str],"}
+{"task_id": "RandomTokens/30", "new_prompt": "    >>> get_positive([-1, 2"}
+{"task_id": "RandomTokens/31", "new_prompt": "    >>> is_prime(13441)"}
+{"task_id": "RandomTokens/32", "new_prompt": "def find_zero(xs: list):"}
+{"task_id": "RandomTokens/33", "new_prompt": "    >>> sort_third([1, 2, 3])"}
+{"task_id": "RandomTokens/34", "new_prompt": "    \"\"\"Return sorted unique elements in a list"}
+{"task_id": "RandomTokens/35", "new_prompt": "def max_element(l: list):"}
+{"task_id": "RandomTokens/36", "new_prompt": "def fizz_buzz(n: int):"}
+{"task_id": "RandomTokens/37", "new_prompt": "    \"\"\"This function takes a list l and returns a list l'"}
+{"task_id": "RandomTokens/38", "new_prompt": "def encode_cyclic(s: str"}
+{"task_id": "RandomTokens/39", "new_prompt": "def prime_fib(n: int):"}
+{"task_id": "RandomTokens/40", "new_prompt": "    sum to zero, and False otherwise."}
+{"task_id": "RandomTokens/41", "new_prompt": "    n cars are driving left to right; "}
+{"task_id": "RandomTokens/42", "new_prompt": "    \"\"\"Return list with elements incremented by 1."}
+{"task_id": "RandomTokens/43", "new_prompt": "    >>> pairs_sum_to_zero([1, 3"}
+{"task_id": "RandomTokens/44", "new_prompt": "    >>> change_base(7, 2)"}
+{"task_id": "RandomTokens/45", "new_prompt": "def triangle_area(a, h):"}
+{"task_id": "RandomTokens/46", "new_prompt": "def fib4(n: int):"}
+{"task_id": "RandomTokens/47", "new_prompt": "    >>> median([-10, 4, 6, 1000,"}
+{"task_id": "RandomTokens/48", "new_prompt": "    >>> is_palindrome('aba"}
+{"task_id": "RandomTokens/49", "new_prompt": "    \"\"\"Return 2^n modulo p (be"}
+{"task_id": "RandomTokens/50", "new_prompt": "def decode_shift(s: str):"}
+{"task_id": "RandomTokens/51", "new_prompt": "    remove_vowels is a function that takes string"}
+{"task_id": "RandomTokens/52", "new_prompt": "def below_threshold(l: list, t: int"}
+{"task_id": "RandomTokens/53", "new_prompt": "def add(x: int, y: int):"}
+{"task_id": "RandomTokens/54", "new_prompt": "    >>> same_chars('eabcd', '"}
+{"task_id": "RandomTokens/55", "new_prompt": "    \"\"\"Return n-th Fibonacc"}
+{"task_id": "RandomTokens/56", "new_prompt": "    >>> correct_bracketing(\"<<><>"}
+{"task_id": "RandomTokens/57", "new_prompt": "    >>> monotonic([4, 1, 0, -10"}
+{"task_id": "RandomTokens/58", "new_prompt": "    >>> common([5, 3, 2"}
+{"task_id": "RandomTokens/59", "new_prompt": "    >>> largest_prime_factor(204"}
+{"task_id": "RandomTokens/60", "new_prompt": "    >>> sum_to_n(1)"}
+{"task_id": "RandomTokens/61", "new_prompt": "    \"\"\" brackets is a string of \"(\" and \")\""}
+{"task_id": "RandomTokens/62", "new_prompt": "    xs[0] + xs[1] *"}
+{"task_id": "RandomTokens/63", "new_prompt": "def fibfib(n: int):"}
+{"task_id": "RandomTokens/64", "new_prompt": "    >>> vowels_count(\"abcde\")"}
+{"task_id": "RandomTokens/65", "new_prompt": "    >>> circular_shift(12, 1"}
+{"task_id": "RandomTokens/66", "new_prompt": "        digitSum(\"helloE\") => 69"}
+{"task_id": "RandomTokens/67", "new_prompt": "    that are distributed in a basket of fruit this basket contains "}
+{"task_id": "RandomTokens/68", "new_prompt": "    The plucked node should be the node with the"}
+{"task_id": "RandomTokens/69", "new_prompt": "    You are given a non-empty list of positive integers."}
+{"task_id": "RandomTokens/70", "new_prompt": "    Given list of integers, return list in str"}
+{"task_id": "RandomTokens/71", "new_prompt": "    Three sides make a valid triangle when the"}
+{"task_id": "RandomTokens/72", "new_prompt": "    will_it_fly([3, 2,"}
+{"task_id": "RandomTokens/73", "new_prompt": "    smallest_change([1, 2,"}
+{"task_id": "RandomTokens/74", "new_prompt": "    total_match(['hi', 'admin'], ['"}
+{"task_id": "RandomTokens/75", "new_prompt": "    Knowing that (a) is less then 100."}
+{"task_id": "RandomTokens/76", "new_prompt": "    is_simple_power(1,"}
+{"task_id": "RandomTokens/77", "new_prompt": "    Note: you may assume the input is always valid."}
+{"task_id": "RandomTokens/78", "new_prompt": "    Note: you may assume the input is always correct or empty string"}
+{"task_id": "RandomTokens/79", "new_prompt": "    number. Each character in the string will be '0' or"}
+{"task_id": "RandomTokens/80", "new_prompt": "    is_happy(a)"}
+{"task_id": "RandomTokens/81", "new_prompt": "    grade_equation([4.0, 3, 1"}
+{"task_id": "RandomTokens/82", "new_prompt": "    prime_length('abcdcba')"}
+{"task_id": "RandomTokens/83", "new_prompt": "    Given a positive integer n, return the count of"}
+{"task_id": "RandomTokens/84", "new_prompt": "    \"\"\"Given a positive integer N, return the total sum of its"}
+{"task_id": "RandomTokens/85", "new_prompt": "    \"\"\"Given a non-empty list of integers"}
+{"task_id": "RandomTokens/86", "new_prompt": "    Write a function that takes a string and returns an ordered version"}
+{"task_id": "RandomTokens/87", "new_prompt": "    each row may contain a different number of columns"}
+{"task_id": "RandomTokens/88", "new_prompt": "    * sort_array([]) => []"}
+{"task_id": "RandomTokens/89", "new_prompt": "    encrypt('hi') returns 'lm'"}
+{"task_id": "RandomTokens/90", "new_prompt": "    next_smallest([1, 1])"}
+{"task_id": "RandomTokens/91", "new_prompt": "    of boredoms. A boredom is"}
+{"task_id": "RandomTokens/92", "new_prompt": "def any_int(x, y, z):"}
+{"task_id": "RandomTokens/93", "new_prompt": "    'tHKS KS C MG"}
+{"task_id": "RandomTokens/94", "new_prompt": "    You need to find the largest prime value and return the"}
+{"task_id": "RandomTokens/95", "new_prompt": "    check_dict_case({\"a"}
+{"task_id": "RandomTokens/96", "new_prompt": "    count_up_to(11) => ["}
+{"task_id": "RandomTokens/97", "new_prompt": "    multiply(14,-15) should return"}
+{"task_id": "RandomTokens/98", "new_prompt": "    count_upper('aBCdEf') returns 1"}
+{"task_id": "RandomTokens/99", "new_prompt": "    from two integers, round it away from zero."}
+{"task_id": "RandomTokens/100", "new_prompt": "    >>> make_a_pile("}
+{"task_id": "RandomTokens/101", "new_prompt": "    to split the string into words and return"}
+{"task_id": "RandomTokens/102", "new_prompt": "    there's no such number, then the"}
+{"task_id": "RandomTokens/103", "new_prompt": "    \"\"\"You are given two positive integers n and m"}
+{"task_id": "RandomTokens/104", "new_prompt": "    >>> unique_digits([152, 323, 1422"}
+{"task_id": "RandomTokens/105", "new_prompt": "    reverse the resulting array, and then replace each digit"}
+{"task_id": "RandomTokens/106", "new_prompt": "    f(5) == [1, 2, 6,"}
+{"task_id": "RandomTokens/107", "new_prompt": "    integer palindromes that fall within the range("}
+{"task_id": "RandomTokens/108", "new_prompt": "    e.g. -123 has signed digits -"}
+{"task_id": "RandomTokens/109", "new_prompt": "    numbers in the array will be randomly ordered"}
+{"task_id": "RandomTokens/110", "new_prompt": "    and determines whether it is possible to perform an exchange of"}
+{"task_id": "RandomTokens/111", "new_prompt": "    \"\"\"Given a string representing a space separated lowercase"}
+{"task_id": "RandomTokens/112", "new_prompt": "    You should return a tuple containing the result string"}
+{"task_id": "RandomTokens/113", "new_prompt": "    >>> odd_count(['3',"}
+{"task_id": "RandomTokens/114", "new_prompt": "    Given an array of integers nums, find the minimum sum of any"}
+{"task_id": "RandomTokens/115", "new_prompt": "def max_fill(grid, capacity):"}
+{"task_id": "RandomTokens/116", "new_prompt": "    number of ones in their binary representation in"}
+{"task_id": "RandomTokens/117", "new_prompt": "    select_words(\"Uncle sam\", 3)"}
+{"task_id": "RandomTokens/118", "new_prompt": "def get_closest_vowel(word"}
+{"task_id": "RandomTokens/119", "new_prompt": "    parentheses '(' or close parentheses ')' only."}
+{"task_id": "RandomTokens/120", "new_prompt": "        1. The length of the array will be in the range"}
+{"task_id": "RandomTokens/121", "new_prompt": "    solution([30, 13, 24, 321]) =="}
+{"task_id": "RandomTokens/122", "new_prompt": "def add_elements(arr, k):"}
+{"task_id": "RandomTokens/123", "new_prompt": "        2. returned list sorted in increasing order."}
+{"task_id": "RandomTokens/124", "new_prompt": "    valid_date('06/04/2020') =>"}
+{"task_id": "RandomTokens/125", "new_prompt": "    split_words(\"abcdef\") == 3"}
+{"task_id": "RandomTokens/126", "new_prompt": "    is_sorted([1, 3, 2"}
+{"task_id": "RandomTokens/127", "new_prompt": "    For each given interval, it is assumed that its start"}
+{"task_id": "RandomTokens/128", "new_prompt": "    of each number in the array, represented by 1, -"}
+{"task_id": "RandomTokens/129", "new_prompt": "    Return an ordered list of the values on the cells that the minimum"}
+{"task_id": "RandomTokens/130", "new_prompt": "    You are given a non-negative integer number n"}
+{"task_id": "RandomTokens/131", "new_prompt": "    Return 0 if all digits are even."}
+{"task_id": "RandomTokens/132", "new_prompt": "    is_nested('[[]][[') "}
+{"task_id": "RandomTokens/133", "new_prompt": "    You need to return the sum of squared numbers"}
+{"task_id": "RandomTokens/134", "new_prompt": "    of a given string is an alphabetical character"}
+{"task_id": "RandomTokens/135", "new_prompt": "    can_arrange([1,2,"}
+{"task_id": "RandomTokens/136", "new_prompt": "def largest_smallest_integers("}
+{"task_id": "RandomTokens/137", "new_prompt": "def compare_one(a, b):"}
+{"task_id": "RandomTokens/138", "new_prompt": "    is_equal_to_sum_even(8) =="}
+{"task_id": "RandomTokens/139", "new_prompt": "    The function will receive an integer as input and should return the"}
+{"task_id": "RandomTokens/140", "new_prompt": "    fix_spaces(\" Example 2\") == \"_Example_2\""}
+{"task_id": "RandomTokens/141", "new_prompt": "    \"\"\"Create a function which takes a string representing"}
+{"task_id": "RandomTokens/142", "new_prompt": "    For lst = [1,2,3] the"}
+{"task_id": "RandomTokens/143", "new_prompt": "    the sentence contains some words separated by a"}
+{"task_id": "RandomTokens/144", "new_prompt": "    otherwise. Both x and n, are"}
+{"task_id": "RandomTokens/145", "new_prompt": "    >>> order_by_points([]) == []"}
+{"task_id": "RandomTokens/146", "new_prompt": "    specialFilter([15, -73, 14, -15])"}
+{"task_id": "RandomTokens/147", "new_prompt": "def get_max_triples(n"}
+{"task_id": "RandomTokens/148", "new_prompt": "def bf(planet1, planet"}
+{"task_id": "RandomTokens/149", "new_prompt": "    If two words have the same length,"}
+{"task_id": "RandomTokens/150", "new_prompt": "    for x_or_y(7, 34, 12"}
+{"task_id": "RandomTokens/151", "new_prompt": "    double_the_difference([0]) =="}
+{"task_id": "RandomTokens/152", "new_prompt": "    event is finally known. The feel"}
+{"task_id": "RandomTokens/153", "new_prompt": "def Strongest_Extension(class_"}
+{"task_id": "RandomTokens/154", "new_prompt": "    cycpattern_check(\"abcd\",\"ab"}
+{"task_id": "RandomTokens/155", "new_prompt": "        even_odd_count(-12) ==> (1,"}
+{"task_id": "RandomTokens/156", "new_prompt": "def int_to_mini_rom"}
+{"task_id": "RandomTokens/157", "new_prompt": "    Given the lengths of the three sides of a triangle."}
+{"task_id": "RandomTokens/158", "new_prompt": "    characters, return the one which comes first in"}
+{"task_id": "RandomTokens/159", "new_prompt": "    but now you need to eat more carrots to complete"}
+{"task_id": "RandomTokens/160", "new_prompt": "    array = [2, 3, 4"}
+{"task_id": "RandomTokens/161", "new_prompt": "    If the string contains no letters, reverse the"}
+{"task_id": "RandomTokens/162", "new_prompt": "def string_to_md5(text"}
+{"task_id": "RandomTokens/163", "new_prompt": "    Given two positive integers a and b, return the even digits between"}

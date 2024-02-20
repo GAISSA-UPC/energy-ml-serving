@@ -37,6 +37,8 @@ import torch
 from transformers import  AutoModelForSeq2SeqLM # T5ForConditionalGeneration,
 # [pythia-70m] torch    
 from transformers import GPTNeoXForCausalLM
+# [codeparrot-small] torch
+from transformers import AutoModelForCausalLM
 # [codegen]
 #from transformers import AutoModelForCausalLM,AutoModelForSeq2SeqLM
 

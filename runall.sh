@@ -1,14 +1,14 @@
 #!/bin/bash
 
 # set true if need to install from scratch
-INSTALL=false
+INSTALL=true
 # set true to run experiments with all runtime engines
 ALL_RUNTIME_ENGINES=false
 SECONDS=0
 WAIT_TIME=120  # Wait time to server to be up
 WAIT_SERVER_IS_UP=5 # A time after server is up
 WAIT_BETWEEN_RUNTIME=20 # Wait time between running experiments with each runtime engine
-REPS=3 # Number of repetitions for each runtime engine experiment
+REPS=1 # Number of repetitions for each runtime engine experiment
 
 START_SERVER=false # set true if server needs to be started from this script
 SERVER_HOST="localhost"
@@ -30,8 +30,10 @@ if $INSTALL = true; then
     sudo apt-get upgrade -y
     sudo apt-get -y install uvicorn
 
-    python -m pip install --upgrade pip
-    python -m pip install -r requirements.txt
+    wget https://bootstrap.pypa.io/get-pip.py
+    python3 get-pip.py
+    python3 -m pip install --upgrade pip
+    python3 -m pip install -r requirements.txt
 fi
 
 
