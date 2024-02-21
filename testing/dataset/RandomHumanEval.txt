@@ -1,0 +1,164 @@
+    """ Check if in given list of numbers, are
+    ['()', '(())', '(()
+    >>> truncate_number(3.5)
+def below_zero(operations: List[int])
+    Mean Absolute Deviation is the average absolute difference between each
+    """ Insert a number 'delimeter' between every
+    [2, 3, 1, 3
+    """ Filter an input list of strings only for ones that contain
+    Empty sum should be equal to 0 and empty product should be equal
+def rolling_max(numbers: List[int]) ->
+def is_palindrome(string: str
+def string_xor(a: str, b
+    >>> longest(['a', 'b', 'c'])
+    """ Return a greatest common divisor of two
+    """ Return list of all prefixes from shortest to longest of the
+    """ Return a string containing space-del
+    """ Given a string, find out how
+    'o|' - half note, lasts two beats
+    >>> how_many_times('aaa
+    Return the string with numbers sorted from smallest to largest
+    (2.0, 2.0)
+def rescale_to_unit(numbers: List[float]) ->
+    >>> filter_integers(['a', 3.14,
+def strlen(string: str) -> int:
+    """ For a given number n, find the largest
+    """ Return list of prime factors of given integer
+    Keep order of elements left the same as in the
+def flip_case(string: str)
+    """ Concatenate list of strings into a
+def filter_by_prefix(strings: List[str],
+    >>> get_positive([-1, 2
+    >>> is_prime(13441)
+def find_zero(xs: list):
+    >>> sort_third([1, 2, 3])
+    """Return sorted unique elements in a list
+def max_element(l: list):
+def fizz_buzz(n: int):
+    """This function takes a list l and returns a list l'
+def encode_cyclic(s: str
+def prime_fib(n: int):
+    sum to zero, and False otherwise.
+    n cars are driving left to right; 
+    """Return list with elements incremented by 1.
+    >>> pairs_sum_to_zero([1, 3
+    >>> change_base(7, 2)
+def triangle_area(a, h):
+def fib4(n: int):
+    >>> median([-10, 4, 6, 1000,
+    >>> is_palindrome('aba
+    """Return 2^n modulo p (be
+def decode_shift(s: str):
+    remove_vowels is a function that takes string
+def below_threshold(l: list, t: int
+def add(x: int, y: int):
+    >>> same_chars('eabcd', '
+    """Return n-th Fibonacc
+    >>> correct_bracketing("<<><>
+    >>> monotonic([4, 1, 0, -10
+    >>> common([5, 3, 2
+    >>> largest_prime_factor(204
+    >>> sum_to_n(1)
+    """ brackets is a string of "(" and ")"
+    xs[0] + xs[1] *
+def fibfib(n: int):
+    >>> vowels_count("abcde")
+    >>> circular_shift(12, 1
+        digitSum("helloE") => 69
+    that are distributed in a basket of fruit this basket contains 
+    The plucked node should be the node with the
+    You are given a non-empty list of positive integers.
+    Given list of integers, return list in str
+    Three sides make a valid triangle when the
+    will_it_fly([3, 2,
+    smallest_change([1, 2,
+    total_match(['hi', 'admin'], ['
+    Knowing that (a) is less then 100.
+    is_simple_power(1,
+    Note: you may assume the input is always valid.
+    Note: you may assume the input is always correct or empty string
+    number. Each character in the string will be '0' or
+    is_happy(a)
+    grade_equation([4.0, 3, 1
+    prime_length('abcdcba')
+    Given a positive integer n, return the count of
+    """Given a positive integer N, return the total sum of its
+    """Given a non-empty list of integers
+    Write a function that takes a string and returns an ordered version
+    each row may contain a different number of columns
+    * sort_array([]) => []
+    encrypt('hi') returns 'lm'
+    next_smallest([1, 1])
+    of boredoms. A boredom is
+def any_int(x, y, z):
+    'tHKS KS C MG
+    You need to find the largest prime value and return the
+    check_dict_case({"a
+    count_up_to(11) => [
+    multiply(14,-15) should return
+    count_upper('aBCdEf') returns 1
+    from two integers, round it away from zero.
+    >>> make_a_pile(
+    to split the string into words and return
+    there's no such number, then the
+    """You are given two positive integers n and m
+    >>> unique_digits([152, 323, 1422
+    reverse the resulting array, and then replace each digit
+    f(5) == [1, 2, 6,
+    integer palindromes that fall within the range(
+    e.g. -123 has signed digits -
+    numbers in the array will be randomly ordered
+    and determines whether it is possible to perform an exchange of
+    """Given a string representing a space separated lowercase
+    You should return a tuple containing the result string
+    >>> odd_count(['3',
+    Given an array of integers nums, find the minimum sum of any
+def max_fill(grid, capacity):
+    number of ones in their binary representation in
+    select_words("Uncle sam", 3)
+def get_closest_vowel(word
+    parentheses '(' or close parentheses ')' only.
+        1. The length of the array will be in the range
+    solution([30, 13, 24, 321]) ==
+def add_elements(arr, k):
+        2. returned list sorted in increasing order.
+    valid_date('06/04/2020') =>
+    split_words("abcdef") == 3
+    is_sorted([1, 3, 2
+    For each given interval, it is assumed that its start
+    of each number in the array, represented by 1, -
+    Return an ordered list of the values on the cells that the minimum
+    You are given a non-negative integer number n
+    Return 0 if all digits are even.
+    is_nested('[[]][[') 
+    You need to return the sum of squared numbers
+    of a given string is an alphabetical character
+    can_arrange([1,2,
+def largest_smallest_integers(
+def compare_one(a, b):
+    is_equal_to_sum_even(8) ==
+    The function will receive an integer as input and should return the
+    fix_spaces(" Example 2") == "_Example_2"
+    """Create a function which takes a string representing
+    For lst = [1,2,3] the
+    the sentence contains some words separated by a
+    otherwise. Both x and n, are
+    >>> order_by_points([]) == []
+    specialFilter([15, -73, 14, -15])
+def get_max_triples(n
+def bf(planet1, planet
+    If two words have the same length,
+    for x_or_y(7, 34, 12
+    double_the_difference([0]) ==
+    event is finally known. The feel
+def Strongest_Extension(class_
+    cycpattern_check("abcd","ab
+        even_odd_count(-12) ==> (1,
+def int_to_mini_rom
+    Given the lengths of the three sides of a triangle.
+    characters, return the one which comes first in
+    but now you need to eat more carrots to complete
+    array = [2, 3, 4
+    If the string contains no letters, reverse the
+def string_to_md5(text
+    Given two positive integers a and b, return the even digits between
