@@ -30,6 +30,7 @@ Guide:
 3. [Deploy ML models in a cloud provider (General)](manuals/03_deploy_general.md). Guide to deploy ML models using an API in a cloud provider.
 
 # Replication package
+- runall.sh -> testing main.py
 
 1. Edit files with experiment parameters (time,files,...), check CONSTANTS in scripts:
   - testing/utils.py
