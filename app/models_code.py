@@ -24,6 +24,12 @@ Models:
 """
 
 # External
+
+import subprocess
+import time
+import os
+import builtins
+
 from codecarbon import track_emissions
 from enum import Enum
 
@@ -48,8 +54,6 @@ from optimum.onnxruntime import  ORTModelForSeq2SeqLM, ORTModelForCausalLM #ONNX
 from optimum.intel import OVModelForSeq2SeqLM, OVModelForCausalLM  # OV
 
 
-import os
-import builtins
 
 MAX_LENGTH = 10
 
@@ -140,7 +144,7 @@ class CodeT5_BaseModel(Model):
         if engine not in runtime_engines:
             tokenizer = AutoTokenizer.from_pretrained("Salesforce/codet5-base")
             #model = T5ForConditionalGeneration.from_pretrained("Salesforce/codet5-base")
-            model = AutoModelForSeq2SeqLM.from_pretrained("Salesforce/codet5-base")
+            model = AutoModelForSeq2SeqLM.from_pretrained("Salesforce/codet5-base", device_map="auto")
             decorator_to_use = self.track_no_runtime
         elif engine == 'onnx':
             model_dir = 'models/onnx/codet5-base'
@@ -169,6 +173,7 @@ class CodeT5_BaseModel(Model):
         #@track_emissions(project_name = "codet5-base", output_file = RESULTS_DIR + "emissions_codet5-base.csv")
         @decorator_to_use
         def infer(text: str, model, tokenizer, engine) -> str:
+            prediction = None
             if(engine != 'torchscript'):
                 #text = "def greet(user): print(f'hello <extra_id_0>!')"
                 #input_ids = tokenizer(text, return_tensors="pt",max_length=MAX_LENGTH,padding='max_length').input_ids
@@ -176,12 +181,13 @@ class CodeT5_BaseModel(Model):
 
                 # simply generate a single sequence
                 #generated_ids = model.generate(input_ids, max_length=8)
+                input_ids = input_ids.to('cuda')
+                model.to('cuda')
                 generated_ids = model.generate(input_ids, max_length=MAX_LENGTH) 
                 
                 # decode
                 prediction = tokenizer.decode(generated_ids[0], skip_special_tokens=True)
                 
-                return prediction
             elif (engine == 'torchscript'):
                 inputs = tokenizer.encode_plus(text, return_tensors = 'pt')
                 #inputs = tokenizer(text, return_tensors="pt", max_length=MAX_LENGTH,padding='max_length')#padding='max_length'
@@ -207,12 +213,23 @@ class CodeT5_BaseModel(Model):
                 prediction = tokenizer.decode(predicted_token_ids[0], skip_special_tokens=True,predict_with_generate=True)
                 print("Result:")
                 print(prediction)
-                return prediction
-        
 
+            return prediction
+        
+        gpu_metrics = "res.csv"
+        print(f"nvidia-smi process started: {gpu_metrics}")
+        gpu_id = os.getenv("GPU_DEVICE_ORDINAL", 0)
+        
+        command = f"nvidia-smi -i {gpu_id} --query-gpu=timestamp,gpu_name,utilization.gpu,utilization.memory,memory.total,memory.used,power.draw,power.max_limit,temperature.gpu --format=csv -l 1 -f {gpu_metrics}"
+        nvidiaProfiler = subprocess.Popen(command.split())
+        time.sleep(3)
         response = {
             "prediction" : infer(user_input, model, tokenizer, engine)
         }
+        time.sleep(3)
+        nvidiaProfiler.terminate()   
+        print(f"nvidia-smi process terminated: {gpu_metrics}")
+        
         return response
     
     @track_emissions(project_name = "codet5-base_none", output_file = RESULTS_DIR + "emissions_codet5-base.csv")
