@@ -7,13 +7,15 @@ ORTModelForCausalLM -> codegen, gpt-neo, pythia (gptneox), codeparrot
 OVModelForCausalLM
 """
 #from optimum.onnxruntime import ORTModelForMaskedLM, ORTModelForQuestionAnswering, ORTModelForCausalLM, ORTModelForSeq2SeqLM
-
+import os
 from transformers import AutoTokenizer
 from optimum.intel import OVModelForCausalLM, OVModelForSeq2SeqLM
 
 re = 'ov'
 model_checkpoints = ["bert-base-uncased", 't5-small', "Salesforce/codegen-350M-mono","EleutherAI/pythia-70m", "Salesforce/codet5p-220m"]
 models = [ 'codet5-base', 'codet5p-220', 'codegen-350M-mono', 'gpt-neo-125m', 'codeparrot-small', 'pythia-410m'] # bloom, pythia
+models = [ 'codet5-base', 'codet5p-220', 'codeparrot-small', 'pythia-410m'] # bloom, pythia
+#models = [ 'codet5-base', 'codet5p-220', ] # bloom, pythia
 
 # 
 #model_checkpoints = ["Salesforce/codet5-base", 'Salesforce/codet5p-220m', "Salesforce/codegen-350M-mono",
@@ -28,13 +30,17 @@ model_checkpoint = {'codet5-base':"Salesforce/codet5-base", 'codet5p-220':'Sales
 # select checkpoint
 
 for model in models:
+    save_directory = f"models/{re}/{model}/"
+    if os.path.exists(save_directory):
+        print(f"Model {model} is already exported...\n")
+        continue
     try:
         #name = models[0]
         checkpoint = model_checkpoint[model]
         #model = name
 
         # change to your directory
-        save_directory = f"models/{re}/{model}/"
+        
 
         print(f"Saving {model} ...\n")
         print(f"Checkpoint {checkpoint} ...\n")
@@ -69,10 +75,11 @@ for model in models:
 
         ov_model.save_pretrained(save_directory)
         print(f"\nModel '{model}' successfully saved in '{save_directory}'")
-        print(f"----------------------------------------------------------")
 
     except Exception as e:
         print(f"Error saving model: {e}")
         print(f"----------------------------------------------------------")
+    
+    print(f"----------------------------------------------------------")
 
     #tokenizer.save_pretrained(save_directory)

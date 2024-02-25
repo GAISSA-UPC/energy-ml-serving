@@ -21,6 +21,7 @@ Commands used
 
 python experiments/re_onnxruntime/converter_onnx.py;python experiments/re_onnxruntime/converter_openvino.py;
 """
+import os
 from optimum.onnxruntime import ORTModelForMaskedLM, ORTModelForQuestionAnswering, ORTModelForCausalLM, ORTModelForSeq2SeqLM
 from transformers import AutoTokenizer
 
@@ -32,15 +33,19 @@ model_checkpoints = ["bert-base-uncased", 't5-small', "Salesforce/codegen-350M-m
 
 # ORTModelForSeq2SeqLM, ORTModelForSeq2SeqLM, ORTModelForCausalLM, ORTModelForSeq2SeqLM, ORTModelForSeq2SeqLM, ORTModelForSeq2SeqLM
 
-#exporting 'codegen-350M-mono' is killed in this machine
-models = [ 'codet5-base', 'codet5p-220',  'gpt-neo-125m', 'codeparrot-small', 'pythia-410m'] # bloom, pythia
+#models = [ 'codet5-base', 'codet5p-220',  'gpt-neo-125m', 'codeparrot-small', 'pythia-410m'] # bloom, pythia
+models = [ 'codet5-base', 'codet5p-220',  'codeparrot-small', 'pythia-410m'] # bloom, pythia
 
 model_checkpoint = {'codet5-base':"Salesforce/codet5-base", 'codet5p-220':'Salesforce/codet5p-220m', 
                     'codegen-350M-mono':"Salesforce/codegen-350M-mono", 'gpt-neo-125m':"EleutherAI/gpt-neo-125M",
                     'codeparrot-small':'codeparrot/codeparrot-small', 'pythia-410m':"EleutherAI/pythia-410m"} # model:checkpoint
 
 # codegen not converted in GCP vm
-for model in models[-1:]:
+for model in models:
+    save_directory = f"models/{re}/{model}/"
+    if os.path.exists(save_directory):
+        print(f"Model {model} is already exported...\n")
+        continue
     try:
         # select checkpoint
         name = model
@@ -48,7 +53,6 @@ for model in models[-1:]:
         model = name
 
         # change to your directory
-        save_directory = f"models/{re}/{model}/"
 
         print(f"Saving {model} ...\n")
         print(f"Checkpoint {checkpoint} ...\n")

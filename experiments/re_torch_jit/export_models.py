@@ -1,5 +1,6 @@
 """This script export torchscript models
 """
+import os
 
 from transformers import BertModel, BertTokenizer, BertConfig
 import torch
@@ -12,8 +13,6 @@ from transformers import T5Tokenizer, RobertaTokenizer
 
 models = [ 'codet5-base', 'codet5p-220', 'codegen-350M-mono', 'gpt-neo-125m', 'codeparrot-small', 'pythia-410m'] # bloom, pythia
 models = [ 'codet5-base', 'codet5p-220', 'codeparrot-small', 'pythia-410m'] # bloom, pythia
-models = [ 'codeparrot-small', 'pythia-410m'] # bloom, pythia
-
 
 model_checkpoint = {'codet5-base':"Salesforce/codet5-base", 'codet5p-220':'Salesforce/codet5p-220m', 
                     'codegen-350M-mono':"Salesforce/codegen-350M-mono", 'gpt-neo-125m':"EleutherAI/gpt-neo-125M",
@@ -21,13 +20,14 @@ model_checkpoint = {'codet5-base':"Salesforce/codet5-base", 'codet5p-220':'Sales
 
 
 for model in models:
+    save_directory = f"models/torchscript/{model}.pt"
+    if os.path.exists(save_directory):
+        print(f"Model {model} is already exported...\n")
+        continue
     try:
         # select checkpoint
         model_name = model
         checkpoint = model_checkpoint[model_name]
-
-        # change to your directory
-        save_directory = f"models/torchscript2/{model_name}/"
 
         print(f"Saving {model_name} ...\n")
         print(f"Checkpoint {checkpoint} ...\n")
@@ -77,13 +77,15 @@ for model in models:
 
 
 
-        save_directory = f"models/torchscript2/{model_name}.pt"
+        save_directory = f"models/torchscript/{model_name}.pt"
 
         #traced model is a TorchScript module
         torch.jit.save(traced_model,save_directory)
         print(f"\nModel '{model}' successfully saved in '{save_directory}'")
-        print(f"----------------------------------------------------------")
 
     except Exception as e:
         print(f"Error saving model: {e}")
         print(f"----------------------------------------------------------")
+    
+    print(f"----------------------------------------------------------")
+    
