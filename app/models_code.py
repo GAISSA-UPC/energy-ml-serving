@@ -56,13 +56,17 @@ from optimum.onnxruntime import  ORTModelForSeq2SeqLM, ORTModelForCausalLM #ONNX
 from optimum.intel import OVModelForSeq2SeqLM, OVModelForCausalLM  # OV
 
 
-
 MAX_LENGTH = 10
 
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
 # Constants
 RESULTS_DIR = 'results/'
+
+GPU_RESULTS = 'gpu_results.csv'
+GPU_SMI_SLEEP = 2
+GPU_SMI_SEC = 0.5
+GPU_ID = 0
 
 models = [ 'codet5-base', 'codet5p-220', 'codegen-350-mono', 
           'gpt-neo-125m', 'codeparrot-small', 'pythia-410m'] # bloom, pythia
@@ -72,6 +76,15 @@ runtime_engines = ['onnx','ov','torchscript']
 script_name = os.path.basename(__file__)
 def print(*args, **kwargs):
     builtins.print(f"[{script_name}] ",*args, **kwargs)
+
+if torch.cuda.is_available():
+    device = "cuda:0" 
+    GPU_ID = os.getenv("GPU_DEVICE_ORDINAL", 0)
+else:
+    device = "cpu"
+
+print(f" - Using device: {device} -")    
+nvidia_smi_command = f"nvidia-smi -i {GPU_ID} --query-gpu=timestamp,gpu_name,utilization.gpu,utilization.memory,memory.total,memory.used,power.draw,power.max_limit,temperature.gpu --format=csv -l {GPU_SMI_SEC} -f {GPU_RESULTS}"
 
 # not updated
 class ML_task(Enum):
@@ -88,13 +101,7 @@ class models_names(Enum):
     GPT_Neo_125m = 4
     CodeParrot_small = 5
     Pythia_410m = 6
-    # BERT = 1
-    # T5 = 2
-    # CNN = 4
-    # Pythia_70m = 5
-    # Codet5p_220m = 6    
-    
-    
+
 class Model:
     """
     Creates a default model
@@ -146,7 +153,7 @@ class CodeT5_BaseModel(Model):
         if engine not in runtime_engines:
             tokenizer = AutoTokenizer.from_pretrained("Salesforce/codet5-base")
             #model = T5ForConditionalGeneration.from_pretrained("Salesforce/codet5-base")
-            model = AutoModelForSeq2SeqLM.from_pretrained("Salesforce/codet5-base", device_map="auto")
+            model = AutoModelForSeq2SeqLM.from_pretrained("Salesforce/codet5-base",)
             decorator_to_use = self.track_no_runtime
         elif engine == 'onnx':
             model_dir = 'models/onnx/codet5-base'
@@ -166,9 +173,7 @@ class CodeT5_BaseModel(Model):
             # Load the TorchScript model
             model = torch.jit.load(model_dir)
             #print(loaded_model.code)
-
             model.eval()  # Set the model to evaluation mode, turn off gradients computation
-
             decorator_to_use = self.track_torchscript
         
     
@@ -180,11 +185,10 @@ class CodeT5_BaseModel(Model):
                 #text = "def greet(user): print(f'hello <extra_id_0>!')"
                 #input_ids = tokenizer(text, return_tensors="pt",max_length=MAX_LENGTH,padding='max_length').input_ids
                 input_ids = tokenizer(text, return_tensors="pt",).input_ids
-
                 # simply generate a single sequence
                 #generated_ids = model.generate(input_ids, max_length=8)
-                input_ids = input_ids.to('cuda')
-                model.to('cuda')
+                input_ids = input_ids.to(device)
+                model.to(device)
                 generated_ids = model.generate(input_ids, max_length=MAX_LENGTH) 
                 
                 # decode
@@ -200,6 +204,8 @@ class CodeT5_BaseModel(Model):
                 attention_mask = inputs["attention_mask"]
                 input_tuple = [input_ids,attention_mask,input_ids] # decoder_input_ids["input_ids"]
 
+                input_ids = input_ids.to(device)
+                model.to(device)
                 # Generate predictions from the model
                 with torch.no_grad():
                     output = model(input_ids,attention_mask = attention_mask, decoder_input_ids = input_ids)  #t5
@@ -218,19 +224,20 @@ class CodeT5_BaseModel(Model):
 
             return prediction
         
-        gpu_metrics = "res.csv"
-        print(f"nvidia-smi process started: {gpu_metrics}")
-        gpu_id = os.getenv("GPU_DEVICE_ORDINAL", 0)
-        
-        command = f"nvidia-smi -i {gpu_id} --query-gpu=timestamp,gpu_name,utilization.gpu,utilization.memory,memory.total,memory.used,power.draw,power.max_limit,temperature.gpu --format=csv -l 1 -f {gpu_metrics}"
-        nvidiaProfiler = subprocess.Popen(command.split())
-        time.sleep(3)
-        response = {
-            "prediction" : infer(user_input, model, tokenizer, engine)
-        }
-        time.sleep(3)
-        nvidiaProfiler.terminate()   
-        print(f"nvidia-smi process terminated: {gpu_metrics}")
+        if device.startswith('cuda'):
+            print(f"nvidia-smi process started: {GPU_RESULTS}")
+            nvidiaProfiler = subprocess.Popen(nvidia_smi_command.split())
+            time.sleep(GPU_SMI_SLEEP)
+            response = {
+                "prediction" : infer(user_input, model, tokenizer, engine)
+            }
+            time.sleep(GPU_SMI_SLEEP)
+            nvidiaProfiler.terminate()   
+            print(f"nvidia-smi process terminated: {gpu_metrics}")
+        else:
+            response = {
+                "prediction" : infer(user_input, model, tokenizer, engine)
+            }
         
         return response
     
@@ -284,7 +291,7 @@ class Codet5p_220mModel(Model):
         if engine not in runtime_engines:
             tokenizer = AutoTokenizer.from_pretrained(checkpoint)
             # torch_dtype = 'auto' not implemented
-            model = AutoModelForSeq2SeqLM.from_pretrained(checkpoint, device_map = 'auto')
+            model = AutoModelForSeq2SeqLM.from_pretrained(checkpoint,)
             #model = T5ForConditionalGeneration.from_pretrained(checkpoint, device_map = 'auto')
             decorator_to_use = self.track_no_runtime
         elif engine == 'onnx':
@@ -310,17 +317,17 @@ class Codet5p_220mModel(Model):
         #@track_emissions(project_name = "codet5p-220m", output_file = RESULTS_DIR + "emissions_codet5p-220m.csv")
         @decorator_to_use
         def infer( text: str, model, tokenizer, engine) -> str:
+            prediction = None
             if (engine != 'torchscript'):
                 
                 #inputs = tokenizer.encode(text, return_tensors="pt",max_length=MAX_LENGTH,padding='max_length').to('cpu')
-                inputs = tokenizer.encode(text, return_tensors="pt",).to('cpu')
+                inputs = tokenizer.encode(text, return_tensors="pt",)#.to('cpu')
                 
                 #outputs = model.generate(inputs, max_length=10,max_new_tokens = 30)
                 #outputs = model.generate(inputs, max_new_tokens = 30)
                 outputs = model.generate(inputs, max_length=MAX_LENGTH)
                 
                 prediction = tokenizer.decode(outputs[0], skip_special_tokens=True)
-                return prediction
             elif(engine == 'torchscript'):
                 #inputs = tokenizer.encode_plus(text, return_tensors = 'pt')
                 #inputs = tokenizer(text, return_tensors="pt",max_length=MAX_LENGTH,padding='max_length',) # padding='max_length'
@@ -346,14 +353,23 @@ class Codet5p_220mModel(Model):
                 prediction = tokenizer.decode(predicted_token_ids[0], skip_special_tokens=True,predict_with_generate=True)
                 print("Result:")
                 print(prediction)
-                return prediction
-        
-
             
+            return prediction
         
-        response = {
-            "prediction" : infer(user_input, model, tokenizer, engine)
-        }
+        if device.startswith('cuda'):
+            print(f"nvidia-smi process started: {GPU_RESULTS}")
+            nvidiaProfiler = subprocess.Popen(nvidia_smi_command.split())
+            time.sleep(GPU_SMI_SLEEP)
+            response = {
+                "prediction" : infer(user_input, model, tokenizer, engine)
+            }
+            time.sleep(GPU_SMI_SLEEP)
+            nvidiaProfiler.terminate()   
+            print(f"nvidia-smi process terminated: {gpu_metrics}")
+        else:
+            response = {
+                "prediction" : infer(user_input, model, tokenizer, engine)
+            }
 
         return response
     
@@ -603,6 +619,7 @@ class CodeParrot_smallModel(Model):
         #@track_emissions(project_name = "codeparrot-small", output_file = RESULTS_DIR + "emissions_codeparrot-small.csv")
         @decorator_to_use
         def infer( text: str, model, tokenizer, engine) -> str:
+            prediction = None
             if(engine != 'torchscript'):
                 #prediction = generator(text)
                 #tokenizer.add_special_tokens({'pad_token': '[PAD]'})
@@ -618,7 +635,6 @@ class CodeParrot_smallModel(Model):
                 
                 # decode
                 prediction = tokenizer.decode(tokens[0])
-                return prediction
             elif (engine == 'torchscript'):
                 #inputs = tokenizer.encode_plus(text, return_tensors = 'pt')
                 #inputs = tokenizer(text, return_tensors="pt",truncation=True, max_length=MAX_LENGTH)
@@ -655,12 +671,24 @@ class CodeParrot_smallModel(Model):
                 prediction = tokenizer.decode(predicted_token_ids[0], skip_special_tokens=True,predict_with_generate=True)
                 print("Result:")
                 print(prediction)
-                return prediction
+            
+            return prediction
  
         
-        response = {
-            "prediction" : infer(user_input, model, tokenizer, engine)
-        }
+        if device.startswith('cuda'):
+            print(f"nvidia-smi process started: {GPU_RESULTS}")
+            nvidiaProfiler = subprocess.Popen(nvidia_smi_command.split())
+            time.sleep(GPU_SMI_SLEEP)
+            response = {
+                "prediction" : infer(user_input, model, tokenizer, engine)
+            }
+            time.sleep(GPU_SMI_SLEEP)
+            nvidiaProfiler.terminate()   
+            print(f"nvidia-smi process terminated: {gpu_metrics}")
+        else:
+            response = {
+                "prediction" : infer(user_input, model, tokenizer, engine)
+            }
         
         return response
 
@@ -743,6 +771,7 @@ class Pythia_410mModel(Model):
         #@track_emissions(project_name = "pythia-410m", output_file = RESULTS_DIR + "emissions_pythia-410m.csv")
         @decorator_to_use
         def infer( text: str, model, tokenizer, engine) -> str:
+            prediction = None
             if(engine != 'torchscript' ):
                 # tokenize
                 #tokenizer.pad_token = tokenizer.eos_token
@@ -753,7 +782,6 @@ class Pythia_410mModel(Model):
                 tokens = model.generate(**inputs, max_length=MAX_LENGTH)
                 # decode
                 prediction = tokenizer.decode(tokens[0])
-                return prediction 
             elif (engine == 'torchscript'):
                 inputs = tokenizer.encode_plus(text, return_tensors = 'pt')
                 #inputs = tokenizer(text, return_tensors="pt",truncation=True, max_length=MAX_LENGTH)
@@ -781,11 +809,23 @@ class Pythia_410mModel(Model):
                 prediction = tokenizer.decode(predicted_token_ids[0], skip_special_tokens=True,predict_with_generate=True)
                 print("Result:")
                 print(prediction)
-                return prediction
+            
+            return prediction
 
-        response = {
-            "prediction" : infer(user_input, model, tokenizer, engine)
-        }
+        if device.startswith('cuda'):
+            print(f"nvidia-smi process started: {GPU_RESULTS}")
+            nvidiaProfiler = subprocess.Popen(nvidia_smi_command.split())
+            time.sleep(GPU_SMI_SLEEP)
+            response = {
+                "prediction" : infer(user_input, model, tokenizer, engine)
+            }
+            time.sleep(GPU_SMI_SLEEP)
+            nvidiaProfiler.terminate()   
+            print(f"nvidia-smi process terminated: {gpu_metrics}")
+        else:
+            response = {
+                "prediction" : infer(user_input, model, tokenizer, engine)
+            }
         
         return response
 
