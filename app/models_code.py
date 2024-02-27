@@ -233,7 +233,7 @@ class CodeT5_BaseModel(Model):
             }
             time.sleep(GPU_SMI_SLEEP)
             nvidiaProfiler.terminate()   
-            print(f"nvidia-smi process terminated: {gpu_metrics}")
+            print(f"nvidia-smi process terminated: {GPU_RESULTS}")
         else:
             response = {
                 "prediction" : infer(user_input, model, tokenizer, engine)
@@ -365,7 +365,7 @@ class Codet5p_220mModel(Model):
             }
             time.sleep(GPU_SMI_SLEEP)
             nvidiaProfiler.terminate()   
-            print(f"nvidia-smi process terminated: {gpu_metrics}")
+            print(f"nvidia-smi process terminated: {GPU_RESULTS}")
         else:
             response = {
                 "prediction" : infer(user_input, model, tokenizer, engine)
@@ -684,7 +684,7 @@ class CodeParrot_smallModel(Model):
             }
             time.sleep(GPU_SMI_SLEEP)
             nvidiaProfiler.terminate()   
-            print(f"nvidia-smi process terminated: {gpu_metrics}")
+            print(f"nvidia-smi process terminated: {GPU_RESULTS}")
         else:
             response = {
                 "prediction" : infer(user_input, model, tokenizer, engine)
@@ -821,7 +821,7 @@ class Pythia_410mModel(Model):
             }
             time.sleep(GPU_SMI_SLEEP)
             nvidiaProfiler.terminate()   
-            print(f"nvidia-smi process terminated: {gpu_metrics}")
+            print(f"nvidia-smi process terminated: {GPU_RESULTS}")
         else:
             response = {
                 "prediction" : infer(user_input, model, tokenizer, engine)
