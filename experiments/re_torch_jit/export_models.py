@@ -11,6 +11,8 @@ from transformers import AutoModelForCausalLM, AutoModelForSeq2SeqLM
 from transformers import T5ForConditionalGeneration
 from transformers import T5Tokenizer, RobertaTokenizer
 
+MAX_LENGTH = 128
+
 models = [ 'codet5-base', 'codet5p-220', 'codegen-350M-mono', 'gpt-neo-125m', 'codeparrot-small', 'pythia-410m'] # bloom, pythia
 models = [ 'codet5-base', 'codet5p-220', 'codeparrot-small', 'pythia-410m'] # bloom, pythia
 
@@ -50,6 +52,14 @@ for model in models:
 
         #if condition:\n            return condition\n        else:\n            return None\n\n    def _get_condition(self
         dummy_input = "def hello_world():"
+        dummy_input = '''def rolling_min(numbers: List[int]) -> int:
+            """
+            Return the minimum number of numbers in the rolling window.
+
+            :param numbers: The numbers to return.
+            :return: The minimum number of numbers in the rolling window.
+            """
+            return min(numbers)'''
         #dummy_input = "if condition:\n            return condition\n        else:\n            return None\n\n    def _get_condition(self"
         #inputs = tokenizer.encode_plus(dummy_input,max_length = int(20),pad_to_max_length = True, add_special_tokens = True, return_tensors = 'pt')
         #inputs = tokenizer.encode_plus(dummy_input,max_length = int(20),padding = True, add_special_tokens = True, return_tensors = 'pt',truncation=True)
@@ -57,9 +67,9 @@ for model in models:
         if model_name in ['codeparrot-small', 'pythia-410m']:
             #tokenizer.add_special_tokens({'pad_token': '[PAD]'})
             tokenizer.pad_token = tokenizer.eos_token
-            inputs = tokenizer.encode_plus(dummy_input,max_length = int(20), padding = 'max_length', return_tensors = 'pt',truncation='only_second')
+            inputs = tokenizer.encode_plus(dummy_input,max_length = MAX_LENGTH, padding = 'max_length', return_tensors = 'pt',truncation='only_second')
         else:
-            inputs = tokenizer.encode_plus(dummy_input,max_length = int(20), padding = 'max_length', return_tensors = 'pt')
+            inputs = tokenizer.encode_plus(dummy_input,max_length = MAX_LENGTH, padding = 'max_length', return_tensors = 'pt')
         #inputs = tokenizer(dummy_input, return_tensors="pt", truncation=True, max_length=int(30))
         print("inputs:",inputs)
 

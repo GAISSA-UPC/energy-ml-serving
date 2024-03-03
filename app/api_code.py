@@ -69,18 +69,18 @@ def construct_response(f):
     return wrap
 
 
-@app.on_event("startup")
-def _load_models():
-    """Loads all pickled models found in `MODELS_DIR` and adds them to `models_list`"""
+# @app.on_event("startup")
+# def _load_models():
+#     """Loads all pickled models found in `MODELS_DIR` and adds them to `models_list`"""
 
-    model_paths = [
-        filename for filename in MODELS_DIR.iterdir() if filename.suffix == ".pkl"
-    ]
+#     model_paths = [
+#         filename for filename in MODELS_DIR.iterdir() if filename.suffix == ".pkl"
+#     ]
 
-    for path in model_paths:
-        with open(path, "rb") as file:
-            model_wrapper = pickle.load(file)
-            model_wrappers_list.append(model_wrapper)
+#     for path in model_paths:
+#         with open(path, "rb") as file:
+#             model_wrapper = pickle.load(file)
+#             model_wrappers_list.append(model_wrapper)
 
     
 
