@@ -1,0 +1,39 @@
+graph LR
+    style cluster_local fill:#fff,stroke:#ff6,stroke-dasharray: 5 5
+    style cluster_vm fill:#fff,stroke:#f66,stroke-dasharray: 2 2
+    style cluster_scripts fill:#fff,stroke:#66f,stroke-dasharray: 5 5
+    style cluster_server fill:#fff,stroke:#6f6,stroke-dasharray: 5 5
+
+    subgraph cluster_local ["Local"]
+        user_interface[/"User Interface"/]
+    end
+
+    subgraph cluster_vm ["VM"]
+        subgraph cluster_scripts ["Scripts"]
+            bash_script[/"Bash script"/]
+            main_script[/"Main.py"/]
+            inference_script[/"inference_requests.py"/]
+        end
+        
+        subgraph cluster_server ["Server"]
+            asgi_server[/"ASGI server"/]
+            web_framework[/"Web framework\nFastAPI"/]
+            protocol[/"Communication protocol\nREST"/]
+        end
+
+        runtime[/"Runtime"/]
+        model_registry[/"Model Registry"/]
+        dataset[/"Dataset"/]
+        logs[/"Energy logs"/]
+    end
+
+    user_interface -->|ssh| bash_script
+    bash_script -->|"(runtime,reps)"| main_script
+    main_script -->|"(runtime,model,inputs)"| inference_script
+    inference_script -->|request| asgi_server
+    asgi_server -->|response| inference_script
+    web_framework -->|inference| runtime
+    runtime -->|result| web_framework
+    runtime -->|codecarbon tracking| logs
+    dataset -->|fetch inputs| main_script
+    model_registry -->|fetch model| runtime

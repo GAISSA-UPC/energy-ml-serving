@@ -56,9 +56,9 @@ from optimum.onnxruntime import  ORTModelForSeq2SeqLM, ORTModelForCausalLM #ONNX
 from optimum.intel import OVModelForSeq2SeqLM, OVModelForCausalLM  # OV
 
 
-MAX_LENGTH = 10
+MAX_LENGTH = 128
 
-os.environ["TOKENIZERS_PARALLELISM"] = "false"
+#os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
 # Constants
 RESULTS_DIR = 'results/'
@@ -195,8 +195,8 @@ class CodeT5_BaseModel(Model):
                 prediction = tokenizer.decode(generated_ids[0], skip_special_tokens=True)
                 
             elif (engine == 'torchscript'):
-                inputs = tokenizer.encode_plus(text, return_tensors = 'pt')
-                #inputs = tokenizer(text, return_tensors="pt", max_length=MAX_LENGTH,padding='max_length')#padding='max_length'
+                #inputs = tokenizer.encode_plus(text, return_tensors = 'pt')
+                inputs = tokenizer(text, return_tensors="pt", max_length=MAX_LENGTH,padding='max_length')#padding='max_length'
                 print("check-inputs: ", inputs)
                 input_ids = inputs["input_ids"]
                 print("check-inputs: ", input_ids)
@@ -330,8 +330,8 @@ class Codet5p_220mModel(Model):
                 prediction = tokenizer.decode(outputs[0], skip_special_tokens=True)
             elif(engine == 'torchscript'):
                 #inputs = tokenizer.encode_plus(text, return_tensors = 'pt')
-                #inputs = tokenizer(text, return_tensors="pt",max_length=MAX_LENGTH,padding='max_length',) # padding='max_length'
-                inputs = tokenizer.encode_plus(text, return_tensors = 'pt')
+                inputs = tokenizer(text, return_tensors="pt",max_length=MAX_LENGTH,padding='max_length',) # padding='max_length'
+                #inputs = tokenizer.encode_plus(text, return_tensors = 'pt')
 
                 input_ids = inputs["input_ids"]
 
@@ -516,8 +516,8 @@ class GPTNeo_125m(Model):
         
             elif(engine == 'torchscript'):
                 #inputs = tokenizer.encode_plus(text, return_tensors = 'pt')
-                #inputs = tokenizer(text, return_tensors="pt",max_length=MAX_LENGTH,padding='max_length')
-                inputs = tokenizer.encode_plus(text, return_tensors = 'pt')
+                inputs = tokenizer(text, return_tensors="pt",max_length=MAX_LENGTH,padding='max_length')
+                #inputs = tokenizer.encode_plus(text, return_tensors = 'pt')
                 
                 input_ids = inputs["input_ids"]
 
@@ -643,7 +643,9 @@ class CodeParrot_smallModel(Model):
                 #inputs = tokenizer(text, return_tensors="pt",max_length=MAX_LENGTH,padding='max_length' )
 
                 tokenizer.pad_token = tokenizer.eos_token
-                inputs = tokenizer.encode_plus(text,max_length = int(20), padding = 'max_length', return_tensors = 'pt',truncation='only_second')
+                #inputs = tokenizer.encode_plus(text, return_tensors = 'pt')
+
+                inputs = tokenizer.encode_plus(text,max_length = MAX_LENGTH, padding = 'max_length', return_tensors = 'pt',)
         
                 input_ids = inputs["input_ids"]
 
@@ -783,11 +785,12 @@ class Pythia_410mModel(Model):
                 # decode
                 prediction = tokenizer.decode(tokens[0])
             elif (engine == 'torchscript'):
-                inputs = tokenizer.encode_plus(text, return_tensors = 'pt')
+                #inputs = tokenizer.encode_plus(text, return_tensors = 'pt')
                 #inputs = tokenizer(text, return_tensors="pt",truncation=True, max_length=MAX_LENGTH)
                 #inputs = tokenizer(text, return_tensors="pt",max_length=MAX_LENGTH,padding='max_length')
-                #tokenizer.pad_token = tokenizer.eos_token
-                #inputs = tokenizer.encode_plus(text,max_length = int(20), padding = 'max_length', return_tensors = 'pt',truncation='only_second')
+                
+                tokenizer.pad_token = tokenizer.eos_token # pythia tokenizer does not have pad token
+                inputs = tokenizer.encode_plus(text,max_length = MAX_LENGTH, padding = 'max_length', return_tensors = 'pt',)
 
                 input_ids = inputs["input_ids"]
 

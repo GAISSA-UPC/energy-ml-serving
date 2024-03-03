@@ -45,6 +45,23 @@ infrastructure = args.infrastructure
 models = args.models
 reps = args.reps
 
+def check_server(url, timeout=30, interval=5):
+    """
+    Check if the Uvicorn server is up by making a GET request to the specified URL.
+
+    :param url: The URL to check for server availability.
+    :param timeout: The request timeout in seconds.
+    :param interval: The interval between checks in seconds.
+    """
+    while True:
+        try:
+            response = requests.get(url, timeout=timeout)
+            if response.status_code == 200:
+                print("Server is up!")
+                break
+        except requests.exceptions.RequestException as e:
+            print(f"Server is not up yet: {e}")
+        time.sleep(interval)
 
 def warm_up(models, serving_infrastructure, dataset = DATASET_WARM_UP):
     """_summary_ Run once the inferences (using the inputs from dataset) using each model
@@ -136,6 +153,8 @@ def end():
 
 
 if __name__ == "__main__":
+
+    check_server(CHECK_URL)
 
     serving_infrastructures = ["torch","onnx", "ov", "torchscript"]
     serving_infrastructure = infrastructure
