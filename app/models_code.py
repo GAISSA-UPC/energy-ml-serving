@@ -505,10 +505,6 @@ class GPTNeo_125m(Model):
                 inputs = tokenizer(text, return_tensors="pt")
                 # generate
                 tokens = model.generate(**inputs)
-                print(tokens.shape)
-                print("tokens",tokens)
-                print(tokens[0])
-                print(tokens[0].shape)
                 
                 # decode
                 prediction = tokenizer.decode(tokens[0])
@@ -628,10 +624,6 @@ class CodeParrot_smallModel(Model):
 
                 # generate
                 tokens = model.generate(**inputs, max_length=MAX_LENGTH)
-                print(tokens.shape)
-                print("tokens",tokens)
-                print(tokens[0])
-                print(tokens[0].shape)
                 
                 # decode
                 prediction = tokenizer.decode(tokens[0])

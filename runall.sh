@@ -6,11 +6,11 @@ INSTALL=false
 ALL_RUNTIME_ENGINES=false
 SECONDS=0
 WAIT_BETWEEN_RUNTIME=10 # Wait time between running experiments with each runtime engine
-REPS=3 # Number of repetitions for each runtime engine experiment
+REPS=1 # Number of repetitions for each runtime engine experiment
 
 START_SERVER=true # set true if server needs to be started from this script
 
-SERVER_LOG='output_030324_02.log' #change
+SERVER_LOG="results/output_050324_04_$1.log" #change
 
 python3=/home/usuaris/fduran/Python-3.8.4/python
 python3=python3 # comment if rdlab
