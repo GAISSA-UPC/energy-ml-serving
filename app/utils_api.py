@@ -21,8 +21,6 @@ from transformers import AutoTokenizer #torchscript, OV, ONNX, torch
 from optimum.onnxruntime import  ORTModelForSeq2SeqLM, ORTModelForCausalLM #ONNX
 from optimum.intel import OVModelForSeq2SeqLM, OVModelForCausalLM  # OV
 
-l =0
-
 info_models = {
     "torch" : {
         "codet5-base":{"m_class":AutoModelForSeq2SeqLM,"model_dir":"Salesforce/codet5-base"},

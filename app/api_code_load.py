@@ -17,7 +17,7 @@ from app.schemas_code import PredictCodeT5_Base, PredictCodet5p_220m, PredictCod
 
 # Local modules
 #from app.models import LMBERTModel, Model, T5Model, CNNModel, CodeGenModel, Pythia_70mModel, Codet5p_220mModel
-from app.models_code_02 import  CodeT5_BaseModel, Codet5p_220mModel, CodeGen_350mModel, GPTNeo_125m, CodeParrot_smallModel, Pythia_410mModel
+from app.models_code_load import  CodeT5_BaseModel, Codet5p_220mModel, CodeGen_350mModel, GPTNeo_125m, CodeParrot_smallModel, Pythia_410mModel
 
 from fastapi.responses import FileResponse
 
