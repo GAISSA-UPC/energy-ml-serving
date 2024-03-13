@@ -14,10 +14,10 @@ Analysis:
     File for each model and ServingInfrastructure
 
 """
-#import gc
+import gc
 import random
 
-from inference_requests import  inference_fastapi
+from inference_requests import  inference_fastapi, load_model
 from utils import *
 
 script_name = os.path.basename(__file__)
@@ -45,15 +45,22 @@ infrastructure = args.infrastructure
 models = args.models
 reps = args.reps
 
-def check_server(url, timeout=30, interval=5):
+def check_server(url, timeout=30, interval=5, max_attempts_time=120):
     """
     Check if the Uvicorn server is up by making a GET request to the specified URL.
 
     :param url: The URL to check for server availability.
     :param timeout: The request timeout in seconds.
     :param interval: The interval between checks in seconds.
+    :param max_attempts_time: The maximum time to keep trying in seconds.
     """
+    start_time = time.time()
+    
     while True:
+        elapsed_time = time.time() - start_time
+        if elapsed_time > max_attempts_time:
+            raise Exception(f"Server did not respond after {max_attempts_time} seconds.")
+        
         try:
             response = requests.get(url, timeout=timeout)
             if response.status_code == 200:
@@ -109,6 +116,8 @@ def run_experiment(model, serving_infrastructure, dataset, reps):
         if COOLDOWN_REP > 0:
             print(f"Waiting {COOLDOWN_REP} seconds to cooldown")
             time.sleep(COOLDOWN_REP)
+        
+        gc.collect()
     # Stop server, delete resources...
     # mainly for cloud services, where you have to delete resources
     print(f"------------------------------\n")
@@ -122,9 +131,10 @@ def make_inferences(model, serving_infrastructure, dataset):
         examples = my_file.read().splitlines()
     
     # Randomize the order of examples
-    random.shuffle(examples)
-    print(f'Dataset (randomized): {examples}')
+    #random.shuffle(examples)
+    #print(f'Dataset (randomized): {examples}')
 
+    load_model(model,serving_infrastructure)
     
     if serving_infrastructure in ['torch','onnx','torchscript','ov']:
         print("-------------------------------------------------")
@@ -138,6 +148,7 @@ def make_inferences(model, serving_infrastructure, dataset):
     else:
         print("Error: Infrastructure is wrong")
 
+    del examples
 
 def end():
     print(f"_________________________________________________________________")
@@ -194,6 +205,7 @@ if __name__ == "__main__":
 
         run_experiment(model, serving_infrastructure, dataset, reps) if not TEST_SCRIPTS_FLOW else print("**TEST_SCRIPTS_FLOW**")
         model_counter+=1
+        gc.collect()
 
     #run final steps
     end()

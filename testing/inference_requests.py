@@ -1,4 +1,3 @@
-import json
 import requests
 
 #import boto3 # for aws
@@ -70,6 +69,37 @@ def inference_fastapi(model, serving_infrastructure, dataset):
     print (f"CodeCarbon Results: {RESULTS_DIR}emissions_{model}.csv")
 
 
+def load_model(model, serving_infrastructure):
+    """_summary_ Run inference using dataset
+
+    Args:
+        model (_type_): _description_
+        serving_infrastructure (_type_): _description_
+        dataset (_type_): _description_
+
+    Returns:
+        _type_: _description_
+    """
+    print(f"Loading model -> {serving_infrastructure}, model -> {model}, \n")
+
+    url = 'http://localhost:8000'
+
+    data = {
+        'model_name': model,
+        'engine': serving_infrastructure  # or 'ov', 'torchscript', or other valid engine
+    }
+
+    try:
+        print(f"Endpoint: {url}/load_model")
+        response = requests.post(f"{url}/load_model/{serving_infrastructure}/{model}" )
+        data = response.json()
+        print(data)
+    except Exception as e:
+        print(f"Raised exception when loading: {e}")
+        return
+
+
+# Below: future work might use other Serving Infrastructures like TorchServe...
 def inference_torchserve(model, serving_infrastructure, dataset):
     """_summary_ Run inference using dataset
 
