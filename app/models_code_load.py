@@ -55,7 +55,8 @@ GPU_SMI_SEC = 0.5
 GPU_ID = 0
 
 models = [ 'codet5-base', 'codet5p-220', 'codegen-350-mono', 
-          'gpt-neo-125m', 'codeparrot-small', 'pythia-410m'] # bloom, pythia
+          'gpt-neo-125m', 'codeparrot-small', 'pythia-410m',
+          'tinyllama'] # bloom, pythia
 
 runtime_engines = ['onnx','ov','torchscript']
 
@@ -90,6 +91,7 @@ class models_names(Enum):
     GPT_Neo_125m = 4
     CodeParrot_small = 5
     Pythia_410m = 6
+    Tinyllama = 7
 
 class Model:
     """
@@ -835,6 +837,133 @@ class Pythia_410mModel(Model):
         return wrapper
 
     @track_emissions(project_name = "pythia-410m_torchscript", output_file = RESULTS_DIR + "emissions_pythia-410m.csv")
+    def track_torchscript(self, func):
+        def wrapper(*args, **kwargs):
+            result = func(*args, **kwargs)
+            return result
+        return wrapper
+
+
+class TinyllamaModel(Model):
+    """_summary_ Creates a Tinyllama model. Inherits from Model()
+
+    Args:
+        Model (_type_): _description_
+    """
+
+    def __init__(self):
+        super().__init__(models_names.Tinyllama, ML_task.CODE)
+        
+    def predict(self, user_input: str, engine = None, model = None, tokenizer = None):
+        
+        print(f'Runtime engine: {engine}')
+
+        if engine not in runtime_engines:
+            decorator_to_use = self.track_no_runtime
+        elif engine == 'onnx':
+            model_dir = f'models/onnx/{model}'
+            #tokenizer = AutoTokenizer.from_pretrained(model_dir) 
+            #model = ORTModelForCausalLM.from_pretrained(model_dir, device_map = 'auto', torch_dtype = 'auto', use_cache=True)
+            #model = ORTModelForCausalLM.from_pretrained(model_dir,)
+            decorator_to_use = self.track_onnx
+        elif engine == 'ov':
+            model_dir = f'models/ov/{model}'
+            #tokenizer = AutoTokenizer.from_pretrained('models/onnx/pythia-410m') 
+            #model = OVModelForCausalLM.from_pretrained(model_dir,)
+            decorator_to_use = self.track_ov
+        elif engine == 'torchscript':
+            model_dir = f'models/torchscript/{model}.pt'
+            #tokenizer = AutoTokenizer.from_pretrained('models/onnx/pythia-410m') 
+            # Load the TorchScript model
+            #model = torch.jit.load(model_dir)
+            #print(loaded_model.code)
+            #model.eval()  # Set the model to evaluation mode, turn off gradients computation
+            decorator_to_use = self.track_torchscript
+
+        #@track_emissions(project_name = "pythia-410m", output_file = RESULTS_DIR + "emissions_pythia-410m.csv")
+        @decorator_to_use
+        def infer( text: str, model, tokenizer, engine) -> str:
+            prediction = None
+            if(engine != 'torchscript' ):
+                # tokenize
+                #tokenizer.pad_token = tokenizer.eos_token
+                #inputs = tokenizer(text, return_tensors="pt",max_length=MAX_LENGTH,padding='max_length')
+                inputs = tokenizer(text, return_tensors="pt",)
+                
+                # generate
+                tokens = model.generate(**inputs, max_length=MAX_LENGTH)
+                # decode
+                prediction = tokenizer.decode(tokens[0])
+            elif (engine == 'torchscript'):
+                #inputs = tokenizer.encode_plus(text, return_tensors = 'pt')
+                #inputs = tokenizer(text, return_tensors="pt",truncation=True, max_length=MAX_LENGTH)
+                #inputs = tokenizer(text, return_tensors="pt",max_length=MAX_LENGTH,padding='max_length')
+                
+                tokenizer.pad_token = tokenizer.eos_token # tinyllama tokenizer does not have pad token
+                inputs = tokenizer.encode_plus(text,max_length = MAX_LENGTH, padding = 'max_length', return_tensors = 'pt',)
+
+                input_ids = inputs["input_ids"]
+
+                attention_mask = inputs["attention_mask"]
+                input_tuple = [input_ids,attention_mask,input_ids] # decoder_input_ids["input_ids"]
+
+                # Generate predictions from the model
+                with torch.no_grad():
+                    output = model(input_ids,)  # Adjust max_length as needed
+                
+                # Convert the output tensor to token IDs
+                predicted_token_ids = torch.argmax(output[0], dim=-1)
+
+                # Convert the tensor to a list of lists
+                predicted_token_ids = predicted_token_ids.tolist()
+
+                #print("predicted tokens:",predicted_token_ids)
+                # Decode and print the output
+                prediction = tokenizer.decode(predicted_token_ids[0], skip_special_tokens=True,predict_with_generate=True)
+                print("Result:")
+                print(prediction)
+            
+            return prediction
+
+        if device.startswith('cuda'):
+            print(f"nvidia-smi process started: {GPU_RESULTS}")
+            nvidiaProfiler = subprocess.Popen(nvidia_smi_command.split())
+            time.sleep(GPU_SMI_SLEEP)
+            response = {
+                "prediction" : infer(user_input, model, tokenizer, engine)
+            }
+            time.sleep(GPU_SMI_SLEEP)
+            nvidiaProfiler.terminate()   
+            print(f"nvidia-smi process terminated: {GPU_RESULTS}")
+        else:
+            response = {
+                "prediction" : infer(user_input, model, tokenizer, engine)
+            }
+        
+        return response
+
+    @track_emissions(project_name = "tinyllama_none", output_file = RESULTS_DIR + "emissions_tinyllama.csv")
+    def track_no_runtime(self,func):
+        def wrapper(*args, **kwargs):
+            result = func(*args, **kwargs)
+            return result
+        return wrapper
+        
+    @track_emissions(project_name = "tinyllama_onnx", output_file = RESULTS_DIR + "emissions_tinyllama.csv")
+    def track_onnx(self, func):
+        def wrapper(*args, **kwargs):
+            result = func(*args, **kwargs)
+            return result
+        return wrapper
+    
+    @track_emissions(project_name = "tinyllama_ov", output_file = RESULTS_DIR + "emissions_tinyllama.csv")
+    def track_ov(self, func):
+        def wrapper(*args, **kwargs):
+            result = func(*args, **kwargs)
+            return result
+        return wrapper
+
+    @track_emissions(project_name = "tinyllama_torchscript", output_file = RESULTS_DIR + "emissions_tinyllama.csv")
     def track_torchscript(self, func):
         def wrapper(*args, **kwargs):
             result = func(*args, **kwargs)
