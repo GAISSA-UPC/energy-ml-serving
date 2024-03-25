@@ -1,29 +1,37 @@
+"""
+Script to test the exported models
+
+Modify before testing:
+- runtime engine
+- model
+"""
+
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
 from optimum.onnxruntime import ORTModelForCausalLM 
-#from optimum.intel import OVModelForCausalLM
+from optimum.intel import OVModelForCausalLM
 
 from transformers import AutoTokenizer, pipeline
 
-runtime_engine = 'onnx'
+MAX_LENGTH=128
+runtime_engine = 'ov'
 
 print(f"Testing for {runtime_engine}")
 model_dir = None
 if runtime_engine == 'onnx':
-    model_dir = 'models/onnx_2/codegen-350M-mono/'
+    model_dir = 'models/onnx_2/pythia-410m'
     #model_dir = 'models/onnx/onnx_codegen_3'
 elif runtime_engine == 'ov':
-    model_dir = 'models/ov/ov_codegen'
+    model_dir = 'models/ov/pythia-410m'
 
 
 def predict( user_input: str):
         
 
     # model = AutoModelForCausalLM.from_pretrained(onnx_dir, device_map = 'auto', torch_dtype = 'auto')
-    print(f'model_dir: {model_dir}')
-    tokenizer = AutoTokenizer.from_pretrained(model_dir)
-
     
+    tokenizer = AutoTokenizer.from_pretrained("models/onnx/pythia-410m")
+
     model = None
     if runtime_engine == 'onnx':
         #model = ORTModelForCausalLM.from_pretrained(model_dir, use_cache=False)
@@ -47,7 +55,7 @@ def infer( text: str, model, tokenizer) -> str:
     # tokenize
     inputs = tokenizer(text, return_tensors="pt")
     # generate
-    tokens = model.generate(**inputs)
+    tokens = model.generate(**inputs, max_length=MAX_LENGTH,no_repeat_ngram_size=2,)
     print(tokens.shape)
     print("tokens",tokens)
     print(tokens[0])
@@ -58,4 +66,4 @@ def infer( text: str, model, tokenizer) -> str:
     return prediction
 
 
-print(predict("def hello_world():"))
+print(predict("def hello_worl"))

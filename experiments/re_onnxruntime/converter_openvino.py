@@ -7,11 +7,13 @@ import os
 from transformers import AutoTokenizer
 from optimum.intel import OVModelForCausalLM, OVModelForSeq2SeqLM
 
+MAX_LENGTH = 128
+
 re = 'ov'
 model_checkpoints = ["bert-base-uncased", 't5-small', "Salesforce/codegen-350M-mono","EleutherAI/pythia-70m", "Salesforce/codet5p-220m"]
 models = [ 'codet5-base', 'codet5p-220', 'codegen-350M-mono', 'gpt-neo-125m', 'codeparrot-small', 'pythia-410m'] # bloom, pythia
 models = [ 'codet5-base', 'codet5p-220', 'codeparrot-small', 'pythia-410m'] # bloom, pythia
-models = [ 'tinyllama', ] 
+#models = [ 'tinyllama', ] 
 # 
 #model_checkpoints = ["Salesforce/codet5-base", 'Salesforce/codet5p-220m', "Salesforce/codegen-350M-mono",
 #                     "EleutherAI/gpt-neo-125M",'codeparrot/codeparrot-small']
@@ -65,7 +67,7 @@ for model in models:
         inputs = tokenizer(text, return_tensors="pt")
 
         # generate
-        tokens = ov_model.generate(**inputs)
+        tokens = ov_model.generate(**inputs, max_length=MAX_LENGTH,no_repeat_ngram_size=2,)
         print(tokens)
         # Save the onnx model and tokenizer
 

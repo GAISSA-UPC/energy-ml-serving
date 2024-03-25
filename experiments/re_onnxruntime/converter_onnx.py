@@ -17,6 +17,7 @@ from optimum.onnxruntime import ORTModelForMaskedLM, ORTModelForQuestionAnswerin
 from transformers import AutoTokenizer, AutoConfig
 
 #from optimum.intel import OVModelForCausalLM
+MAX_LENGTH = 128
 
 re = 'onnx'
 
@@ -24,7 +25,8 @@ re = 'onnx'
 
 #models = [ 'codet5-base', 'codet5p-220',  'gpt-neo-125m', 'codeparrot-small', 'pythia-410m'] # bloom, pythia
 models = [ 'codet5-base', 'codet5p-220',  'codeparrot-small', 'pythia-410m'] # bloom, pythia
-models = [ 'tinyllama', ] 
+#models = [ 'tinyllama', ] 
+models = ['pythia-410m']
 
 model_checkpoint = {'codet5-base':"Salesforce/codet5-base", 'codet5p-220':'Salesforce/codet5p-220m', 
                     'codegen-350M-mono':"Salesforce/codegen-350M-mono", 'gpt-neo-125m':"EleutherAI/gpt-neo-125M",
@@ -77,7 +79,7 @@ for model in models:
 
 
         # generate
-        tokens = ort_model.generate(**inputs)
+        tokens = ort_model.generate(**inputs, max_length=MAX_LENGTH,no_repeat_ngram_size=2,)
         print(tokens)
         # Save the onnx model and tokenizer
         ort_model.save_pretrained(save_directory)
