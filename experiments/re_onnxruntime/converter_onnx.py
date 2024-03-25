@@ -11,6 +11,9 @@ Commands that can be used instead
 #optimum-cli export onnx --task text-generation-with-past --model "EleutherAI/pythia-410m" models/onnx_2/pythia-410m # killed
 
 python experiments/re_onnxruntime/converter_onnx.py;python experiments/re_onnxruntime/converter_openvino.py;
+
+Temp files saved in, remove it:
+C:\\Users\\[user]\\AppData\\Local\\Temp\\tmpoiu9iwxj\\*
 """
 import os
 from optimum.onnxruntime import ORTModelForMaskedLM, ORTModelForQuestionAnswering, ORTModelForCausalLM, ORTModelForSeq2SeqLM

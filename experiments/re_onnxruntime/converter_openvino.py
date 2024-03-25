@@ -1,6 +1,8 @@
 """ 
 Script to save models with ONNX and OpenVINO formats
 
+Temp files saved in, remove it:
+C:\\Users\\[user]\\AppData\\Local\\Temp\\tmpoiu9iwxj\\*
 """
 #from optimum.onnxruntime import ORTModelForMaskedLM, ORTModelForQuestionAnswering, ORTModelForCausalLM, ORTModelForSeq2SeqLM
 import os
