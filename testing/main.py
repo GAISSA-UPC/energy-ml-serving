@@ -1,17 +1,5 @@
 """
-
-
-run_experiments()
-
-analysis()
-
-Experiment:
-    ServingInfrastructure
-    Model
-    Dataset to make inferences
-
-Analysis:
-    File for each model and ServingInfrastructure
+Experiments script
 
 """
 import gc
