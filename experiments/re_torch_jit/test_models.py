@@ -1,10 +1,12 @@
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
+MAX_LENGTH=128
+
 # 'codegen-350M-mono',
 models = [ 'codet5-base', 'codet5p-220',  'gpt-neo-125m', 'codeparrot-small', 'pythia-410m'] # bloom, pythia
-models = [ 'codet5-base', 'codet5p-220', 'codeparrot-small', 'pythia-410m'] # bloom, pythia
-models = [ 'tinyllama', ] 
+models = [ 'codet5-base', 'codet5p-220',   'pythia-410m', 'codeparrot-small',] # bloom, pythia
+#models = [ 'tinyllama', ]
 
 model_checkpoint = {'codet5-base':"Salesforce/codet5-base",
                     'codet5p-220':'Salesforce/codet5p-220m',
@@ -14,20 +16,8 @@ model_checkpoint = {'codet5-base':"Salesforce/codet5-base",
                     'pythia-410m':"EleutherAI/pythia-410m",
                     'tinyllama':'TinyLlama/TinyLlama-1.1B-intermediate-step-1195k-token-2.5T'}
 
-def infer(text: str, model, tokenizer) -> str:
-    #text = "def greet(user): print(f'hello <extra_id_0>!')"
-    input_ids = tokenizer(text, return_tensors="pt",max_length=50,padding='max_length').input_ids
 
-    # simply generate a single sequence
-    #generated_ids = model.generate(input_ids, max_length=8)
-    generated_ids = model.generate(input_ids,)
-    
-    # decode
-    prediction = tokenizer.decode(generated_ids[0], skip_special_tokens=True)
-    
-    return prediction
-
-if 2<3:
+if True:
     for model in models:
         # select checkpoint
         model_name = model
@@ -45,22 +35,31 @@ if 2<3:
         tokenizer = AutoTokenizer.from_pretrained(checkpoint)
 
 
-        input_text = "def hello_world():"
+        #input_text = "def hello_world():"
         input_text = "if condition:\n            return condition\n        else:\n            return None\n\n    def _get_condition(self"
-        input_text = "Python sum function"
-        tokenizer.add_special_tokens({'pad_token': '[PAD]'})
-
+        #input_text = "def rolling_max(numbers: List[int]) ->"
+        
+        tokenizer.pad_token = tokenizer.eos_token
         #dummy_input = "def hello_world():"
         #inputs = tokenizer.encode_plus(dummy_input,max_length = int(20),pad_to_max_length = True, add_special_tokens = True, return_tensors = 'pt')
         #inputs = tokenizer.encode_plus(input_text,max_length = int(128),padding = True, add_special_tokens = True, return_tensors = 'pt',truncation=True)
-        inputs = tokenizer.encode_plus(input_text, return_tensors = 'pt',max_length=20,padding='max_length')
         #input_ids = tokenizer(input_text, return_tensors="pt",max_length=20,padding='max_length').input_ids
+        #inputs = tokenizer.encode_plus(input_text, return_tensors = 'pt',max_length=MAX_LENGTH,padding='max_length')
+        inputs = tokenizer(input_text, return_tensors="pt", max_length=MAX_LENGTH,padding='max_length')#padding='max_length'
+
         print("input_ids: ",inputs)
         input_ids = inputs["input_ids"]
     
-        attention_mask = inputs["attention_mask"]
+        #attention_mask = inputs["attention_mask"]
+        attention_mask =  torch.ones((1, 128), dtype=torch.int)
+        #none_int_tensor = input_ids[:, -1:]
+        
         input_tuple = [input_ids,attention_mask,input_ids] # decoder_input_ids["input_ids"]
 
+        # GPU
+        #input_ids = input_ids.to(device)
+        #model.to(device)
+        
         #input_ids = tokenizer.encode(input_text, return_tensors="pt")
         # print("--------------Encoded inputs---------")
         # print(input_ids)
@@ -73,14 +72,9 @@ if 2<3:
         with torch.no_grad():
             
             if model_name in [ 'codet5-base', 'codet5p-220']:
-                print(attention_mask)
                 output = loaded_model(input_ids,attention_mask = attention_mask, decoder_input_ids = input_ids)  #t5
             else:
                 output = loaded_model(input_ids,)  # Adjust max_length as needed
-
-
-        print(output[0])
-        print(output[0].shape)
 
         # Convert the output tensor to token IDs
         predicted_token_ids = torch.argmax(output[0], dim=-1)
@@ -94,28 +88,3 @@ if 2<3:
         output_text = tokenizer.decode(predicted_token_ids[0], skip_special_tokens=True,predict_with_generate=True)
         print("Result:")
         print(output_text)
-
-# for model in models[1:2]:
-#     # select checkpoint
-#     model_name = model
-#     checkpoint = model_checkpoint[model_name]
-
-#     print(f"------------------------ Loading model 2: {checkpoint} name {model_name}------------------------")
-
-#     # Load the TorchScript model
-#     loaded_model = torch.jit.load(f"models/torchscript/{model_name}.pt")
-#     #print(loaded_model.code)
-
-#     loaded_model.eval()  # Set the model to evaluation mode, turn off gradients computation
-
-#     # Load the tokenizer corresponding to the model
-#     tokenizer = AutoTokenizer.from_pretrained(checkpoint)
-
-
-#     input_text = "def hello_world():"
-
-#     prediction = None
-#     #with torch.no_grad():
-#     prediction = infer(input_text,loaded_model,tokenizer)
-#     print(prediction)
-    

@@ -33,8 +33,8 @@ model_checkpoint = {'codet5-base':"Salesforce/codet5-base", 'codet5p-220':'Sales
 # TinyLlama/TinyLlama-1.1B-Chat-v0.1
 
 #models = [ 'codet5-base', 'codet5p-220', 'codegen-350-mono', 'gpt-neo-125m', 'codeparrot-small', 'pythia-410m'] # bloom, pythia
-#models = [ 'codet5-base', 'codet5p-220', 'codeparrot-small', 'pythia-410m'] # bloom, pythia
-models = ['tinyllama']
+models = [ 'codet5-base', 'codet5p-220', 'codeparrot-small', 'pythia-410m'] # bloom, pythia
+#models = ['tinyllama']
 #model_name = models[5]
 
 #checkpoint = model_checkpoint[model_name]
@@ -63,8 +63,6 @@ def my_pipeline(model, input_text):
         #torch_model = AutoModel.from_pretrained(checkpoint)
         config = AutoConfig.from_pretrained(checkpoint)
         torch_model = AutoModelForCausalLM.from_pretrained(checkpoint,config = config)
-        
-
     else:
         config = AutoConfig.from_pretrained(checkpoint)
         torch_model = AutoModelForCausalLM.from_pretrained(checkpoint, config = config)
@@ -137,7 +135,6 @@ for model in models:
         elif model in ['tinyllama']:
             #torch_model = AutoModel.from_pretrained(checkpoint)
             torch_model = AutoModelForCausalLM.from_pretrained(checkpoint)
-
         else:
             torch_model = AutoModelForCausalLM.from_pretrained(checkpoint, torch_dtype=torch.bfloat16)
             #ORTModelForCausalLM.from_pretrained(checkpoint, export=True, use_cache = True) # codegen, gpt-neo, pythia (gptneox), codeparrot

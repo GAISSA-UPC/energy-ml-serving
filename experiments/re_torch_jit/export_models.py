@@ -15,7 +15,9 @@ MAX_LENGTH = 128
 
 models = [ 'codet5-base', 'codet5p-220', 'codegen-350M-mono', 'gpt-neo-125m', 'codeparrot-small', 'pythia-410m'] # bloom, pythia
 models = [ 'codet5-base', 'codet5p-220', 'codeparrot-small', 'pythia-410m'] # bloom, pythia
-models = [ 'tinyllama', ] 
+models = [ 'codet5-base', 'codet5p-220', ] # bloom, pythia
+
+#models = [ 'tinyllama', ] 
 
 model_checkpoint = {'codet5-base':"Salesforce/codet5-base", 'codet5p-220':'Salesforce/codet5p-220m', 
                     'codegen-350M-mono':"Salesforce/codegen-350M-mono", 'gpt-neo-125m':"EleutherAI/gpt-neo-125M",
@@ -53,7 +55,6 @@ for model in models:
         #tokenizer.add_special_tokens({'pad_token': '[PAD]'})
 
         #if condition:\n            return condition\n        else:\n            return None\n\n    def _get_condition(self
-        dummy_input = "def hello_world():"
         dummy_input = '''def rolling_min(numbers: List[int]) -> int:
             """
             Return the minimum number of numbers in the rolling window.
@@ -62,6 +63,7 @@ for model in models:
             :return: The minimum number of numbers in the rolling window.
             """
             return min(numbers)'''
+        dummy_input = "def rolling_max(numbers: List[int]) ->"
         #dummy_input = "if condition:\n            return condition\n        else:\n            return None\n\n    def _get_condition(self"
         #inputs = tokenizer.encode_plus(dummy_input,max_length = int(20),pad_to_max_length = True, add_special_tokens = True, return_tensors = 'pt')
         #inputs = tokenizer.encode_plus(dummy_input,max_length = int(20),padding = True, add_special_tokens = True, return_tensors = 'pt',truncation=True)
@@ -77,6 +79,13 @@ for model in models:
 
         input_ids = inputs["input_ids"]
         attention_mask = inputs["attention_mask"]
+        # none_int_tensor = torch.full((128,), -1, dtype=torch.int)
+        # none_int_tensor = input_ids[:, -1:]
+        # none_int_tensor = torch.ones((1, 128), dtype=torch.int64)
+        # sos_token_id = tokenizer.bos_token_id  # or `tokenizer.cls_token_id` if `bos_token_id` is not set
+        # print("sos_token_id: ", sos_token_id)
+        # decoder_input_ids = torch.tensor([[sos_token_id]])  # Shape: [1, 1]
+        # print("decoder_input_ids: ",decoder_input_ids)
         input_tuple = (input_ids,attention_mask, input_ids) # decoder_input_ids["input_ids"]
 
         # If your model has multiple inputs they must passed in order that is defined by your mode
