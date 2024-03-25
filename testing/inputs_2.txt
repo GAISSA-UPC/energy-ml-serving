@@ -1,27 +1,5 @@
-if condition and other_condition:
-while not done:
-def calculate_average():
-return result
-array = [1, 2, 3]
-dictionary = {"key": "value"}
-name = "John"
-for index, value in enumerate(my_list):
-if x == 0:
-while count < 10:
-import pandas as pd
-def factorial(n):
-result = multiply(a, b)
-for key, value in my_dict.items():
-if condition or other_condition:
-data.append(new_item)
-import numpy as np
-x = x + 1
-data = []
-result = add(a, b)
-with open("file.txt", "r") as file:
-if x > 5:
-while True:
-print("Hello, world!")
-def hello_world():
-for i in range(10):
-while True:
+def rolling_max(numbers: List[int]) ->
+def is_palindrome(string: str
+def string_xor(a: str, b
+    >>> longest(['a', 'b', 'c'])
+    """ Return a greatest common divisor of two

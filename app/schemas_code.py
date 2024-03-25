@@ -83,6 +83,16 @@ class PredictPythia_410m(BaseModel):
         }
 
 
+class PredictTinyllama(BaseModel):
+    input_text: str
+
+    class Config:
+        schema_extra = {
+            "example": {
+                "input_text": "def hello_world():",
+            }
+        }
+
 
 class IrisType(Enum):
     setosa = 0

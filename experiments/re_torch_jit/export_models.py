@@ -15,10 +15,12 @@ MAX_LENGTH = 128
 
 models = [ 'codet5-base', 'codet5p-220', 'codegen-350M-mono', 'gpt-neo-125m', 'codeparrot-small', 'pythia-410m'] # bloom, pythia
 models = [ 'codet5-base', 'codet5p-220', 'codeparrot-small', 'pythia-410m'] # bloom, pythia
+models = [ 'tinyllama', ] 
 
 model_checkpoint = {'codet5-base':"Salesforce/codet5-base", 'codet5p-220':'Salesforce/codet5p-220m', 
                     'codegen-350M-mono':"Salesforce/codegen-350M-mono", 'gpt-neo-125m':"EleutherAI/gpt-neo-125M",
-                    'codeparrot-small':'codeparrot/codeparrot-small', 'pythia-410m':"EleutherAI/pythia-410m"} # model:checkpoint
+                    'codeparrot-small':'codeparrot/codeparrot-small', 'pythia-410m':"EleutherAI/pythia-410m",
+                    'tinyllama':'TinyLlama/TinyLlama-1.1B-intermediate-step-1195k-token-2.5T'} # model:checkpoint
 
 
 for model in models:
@@ -44,7 +46,7 @@ for model in models:
             
             tokenizer = AutoTokenizer.from_pretrained(checkpoint, torchscript=True)
         else:
-            model = AutoModelForCausalLM.from_pretrained(checkpoint, torchscript =True)
+            model = AutoModelForCausalLM.from_pretrained(checkpoint, torchscript =True, attn_implementation="eager")
             tokenizer = AutoTokenizer.from_pretrained(checkpoint, torchscript=True)
 
 
@@ -64,7 +66,7 @@ for model in models:
         #inputs = tokenizer.encode_plus(dummy_input,max_length = int(20),pad_to_max_length = True, add_special_tokens = True, return_tensors = 'pt')
         #inputs = tokenizer.encode_plus(dummy_input,max_length = int(20),padding = True, add_special_tokens = True, return_tensors = 'pt',truncation=True)
         #inputs = tokenizer.encode_plus(dummy_input, return_tensors = 'pt', max_length = int(20),padding = True)
-        if model_name in ['codeparrot-small', 'pythia-410m']:
+        if model_name in ['codeparrot-small', 'pythia-410m','tinyllama']:
             #tokenizer.add_special_tokens({'pad_token': '[PAD]'})
             tokenizer.pad_token = tokenizer.eos_token
             inputs = tokenizer.encode_plus(dummy_input,max_length = MAX_LENGTH, padding = 'max_length', return_tensors = 'pt',truncation='only_second')

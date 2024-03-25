@@ -12,12 +12,13 @@ from typing import Dict, List
 from fastapi import FastAPI, Request, HTTPException
 
 from app.schemas_code import PredictCodeT5_Base, PredictCodet5p_220m, PredictCodeGen_350m, PredictGPTNeo_125m, PredictCodeParrot_small, PredictPythia_410m, PredictPayload
-
+from app.schemas_code import PredictTinyllama
 #from transformers import pipeline
 
 # Local modules
 #from app.models import LMBERTModel, Model, T5Model, CNNModel, CodeGenModel, Pythia_70mModel, Codet5p_220mModel
 from app.models_code_load import  CodeT5_BaseModel, Codet5p_220mModel, CodeGen_350mModel, GPTNeo_125m, CodeParrot_smallModel, Pythia_410mModel
+from app.models_code_load import TinyllamaModel
 
 from fastapi.responses import FileResponse
 
@@ -102,6 +103,7 @@ def _index(request: Request):
 
 @app.post("/load_model/{engine}/{model_name}")
 async def load_model(model_name: str,engine:str):
+    print("-------loading----------")
     global loaded_model, loaded_tokenizer
     try:
         # Load the model and tokenizer
@@ -109,13 +111,11 @@ async def load_model(model_name: str,engine:str):
         if engine not in ['onnx','ov','torchscript']:
             selected_class = info_models[engine][model_name]["m_class"]
             model_dir = info_models[engine][model_name]["model_dir"]
-            tokenizer_dir = info_models[engine][model_name]["model_dir"]
+            tokenizer_dir = info_models[engine][model_name]["tokenizer_dir"]
 
             print(f"class: {selected_class} - model_dir {model_dir}")
             loaded_tokenizer = AutoTokenizer.from_pretrained(tokenizer_dir)
             loaded_model = selected_class.from_pretrained(model_dir)
-            #loaded_tokenizer = AutoTokenizer.from_pretrained(model_dir)
-            #loaded_model = AutoModelForSeq2SeqLM.from_pretrained("Salesforce/codet5-base",)
 
         elif engine == 'onnx':
             selected_class = info_models[engine][model_name]["m_class"]
@@ -128,6 +128,8 @@ async def load_model(model_name: str,engine:str):
             if model_name =='codeparrot-small':
                 loaded_model = selected_class.from_pretrained(model_dir,)
             elif model_name == 'pythia-410m':
+                loaded_model = selected_class.from_pretrained(model_dir,)
+            elif model_name == 'tinyllama':
                 loaded_model = selected_class.from_pretrained(model_dir,)
             else:
                 loaded_model = selected_class.from_pretrained(model_dir,    return_dict = True, use_cache = False)
@@ -146,6 +148,8 @@ async def load_model(model_name: str,engine:str):
             if model_name =='codeparrot-small':
                 loaded_model = selected_class.from_pretrained(model_dir, ov_config={"CACHE_DIR":""})
             elif model_name == 'pythia-410m':
+                loaded_model = selected_class.from_pretrained(model_dir,)
+            elif model_name == 'tinyllama':
                 loaded_model = selected_class.from_pretrained(model_dir,)
             else:
                 loaded_model = selected_class.from_pretrained(model_dir,return_dict = True, use_cache = False)
@@ -341,41 +345,40 @@ def _predict_pythia_410m(request: Request, payload: PredictPythia_410m, engine: 
         }
     return response
 
-
-# This model can not be converted with this machine into onnx format
-# @app.post("/huggingface_models/codegen-350-mono/{engine}", tags=["Hugging Face Models"])
-# @construct_response
-# def _predict_codegen_350_mono(request: Request, payload: PredictCodeGen_350m, engine: str = None):
-#     """CodeGen model."""
+@app.post("/huggingface_models/tinyllama/{engine}", tags=["Hugging Face Models"])
+@construct_response
+def _predict_tinyllama(request: Request, payload: PredictTinyllama, engine: str = None):
+    """Codet5p_220m model."""
     
-#     input_text = payload.input_text 
-#     print("Input text")
-#     print(input_text)
-#     #model_wrapper = next((m for m in model_wrappers_list if m["type"] == type), None)
+    input_text = payload.input_text 
+    print("Input text")
+    print(input_text)
+    #model_wrapper = next((m for m in model_wrappers_list if m["type"] == type), None)
 
-#     model = CodeGen_350mModel()
-#     print(f"Model: {model.name}")
+    model = TinyllamaModel()
+    print(f"Model: {model.name}")
 
-#     if input_text:
-#         prediction = model.predict(input_text, engine)
+    if input_text:
+        prediction = model.predict(input_text, engine, loaded_model, loaded_tokenizer)
         
-#         response = {
-#             "message": HTTPStatus.OK.phrase,
-#             "status-code": HTTPStatus.OK,
-#             "data": {
-#                 #"model-type": model_wrapper["type"],
-#                 "model-type": model.name,
-#                 "input_text": input_text,
-#                 "prediction": prediction,
-#                 #"predicted_type": predicted_type,
-#             },
-#         }
-#     else:
-#         response = {
-#             "message": "Model not found",
-#             "status-code": HTTPStatus.BAD_REQUEST,
-#         }
-#     return response
+        response = {
+            "message": HTTPStatus.OK.phrase,
+            "status-code": HTTPStatus.OK,
+            "data": {
+                #"model-type": model_wrapper["type"],
+                "model-type": model.name,
+                "input_text": input_text,
+                "prediction": prediction,
+                #"predicted_type": predicted_type,
+            },
+        }
+    else:
+        response = {
+            "message": "Model not found",
+            "status-code": HTTPStatus.BAD_REQUEST,
+        }
+    return response
+
 
 header = "timestamp,project_name,experiment_id,run_id,duration,emissions,emissions_rate,cpu_power,gpu_power,ram_power,cpu_energy,gpu_energy,ram_energy,energy_consumed,country_name,country_iso_code,region,cloud_provider,cloud_region,os,python_version,cpu_count,cpu_model,gpu_count,gpu_model,longitude,latitude,ram_total_size,tracking_mode,on_cloud"
 example = "2022-11-26T10:32:27,codecarbon,cc2e23fa-52a8-4ea3-a4dc-f039451bcdc4,0.871192216873169,4.1067831054495705e-07,0.0004713980480897,7.5,0.0,1.436851501464844,1.8141875664393104e-06,0,3.472772259025685e-07,2.161464792341879e-06,Spain,ESP,catalonia,,,Linux-5.15.0-53-generic-x86_64-with-glibc2.35,3.10.6,4,AMD Ryzen 5 3500U with Radeon Vega Mobile Gfx,,,2.2586,41.9272,3.83160400390625,machine,N"

@@ -1,10 +1,6 @@
 """ 
 Script to save models with ONNX and OpenVINO formats
 
-ORTModelForSeq2SeqLM -> t5 models
-ORTModelForCausalLM -> codegen, gpt-neo, pythia (gptneox), codeparrot
-
-OVModelForCausalLM
 """
 #from optimum.onnxruntime import ORTModelForMaskedLM, ORTModelForQuestionAnswering, ORTModelForCausalLM, ORTModelForSeq2SeqLM
 import os
@@ -15,15 +11,15 @@ re = 'ov'
 model_checkpoints = ["bert-base-uncased", 't5-small', "Salesforce/codegen-350M-mono","EleutherAI/pythia-70m", "Salesforce/codet5p-220m"]
 models = [ 'codet5-base', 'codet5p-220', 'codegen-350M-mono', 'gpt-neo-125m', 'codeparrot-small', 'pythia-410m'] # bloom, pythia
 models = [ 'codet5-base', 'codet5p-220', 'codeparrot-small', 'pythia-410m'] # bloom, pythia
-#models = [ 'codet5-base', 'codet5p-220', ] # bloom, pythia
-
+models = [ 'tinyllama', ] 
 # 
 #model_checkpoints = ["Salesforce/codet5-base", 'Salesforce/codet5p-220m', "Salesforce/codegen-350M-mono",
 #                     "EleutherAI/gpt-neo-125M",'codeparrot/codeparrot-small']
 
 model_checkpoint = {'codet5-base':"Salesforce/codet5-base", 'codet5p-220':'Salesforce/codet5p-220m', 
                     'codegen-350M-mono':"Salesforce/codegen-350M-mono", 'gpt-neo-125m':"EleutherAI/gpt-neo-125M",
-                    'codeparrot-small':'codeparrot/codeparrot-small', 'pythia-410m':"EleutherAI/pythia-410m"} # model:checkpoint
+                    'codeparrot-small':'codeparrot/codeparrot-small', 'pythia-410m':"EleutherAI/pythia-410m",
+                    'tinyllama':'TinyLlama/TinyLlama-1.1B-intermediate-step-1195k-token-2.5T'} # model:checkpoint
 
 # codegen not converted in GCP vm
 
@@ -69,8 +65,8 @@ for model in models:
         inputs = tokenizer(text, return_tensors="pt")
 
         # generate
-        #tokens = ov_model.generate(**inputs)
-        #print(tokens)
+        tokens = ov_model.generate(**inputs)
+        print(tokens)
         # Save the onnx model and tokenizer
 
         ov_model.save_pretrained(save_directory)

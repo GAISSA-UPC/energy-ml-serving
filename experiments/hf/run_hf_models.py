@@ -10,15 +10,15 @@ codeparrot-small 110M
 
 models downloaded  ... tokenizer.json
 '''
-
+import torch
 models = ['codet5-large', 'codet5p-770', 'codegen-350-mono', 'gpt-neo-125m', 'gpt-neo-1.3B', 'codeparrot-small',
           'pythia-410m'
           ]
 models = [ 'codet5-base', 'codet5p-220', 'codegen-350-mono', 
           'gpt-neo-125m', 'codeparrot-small', 'pythia-410m'] # bloom, pythia
+models = ['tinyllama']
 
-
-base_model = models[1]
+base_model = 'tinyllama'
 
 for model in models:
     base_model = model
@@ -150,3 +150,12 @@ for model in models:
         inputs = tokenizer("def hello_world", return_tensors="pt")
         tokens = model.generate(**inputs)
         print(tokenizer.decode(tokens[0]))
+    elif base_model == 'tinyllama': 
+        
+        from transformers import pipeline
+        pipe = pipeline("text-generation", model="TinyLlama/TinyLlama-1.1B-Chat-v1.0", torch_dtype=torch.bfloat16, device_map="auto")
+
+        #pipe = pipeline("text-generation", model="codeparrot/codeparrot-small")
+        outputs = pipe("Write a sum function")
+
+        print(outputs)
