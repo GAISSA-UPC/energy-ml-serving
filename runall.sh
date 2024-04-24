@@ -16,7 +16,12 @@ SECONDS=0
 WAIT_BETWEEN_RUNTIME=10 # Wait time between running experiments with each runtime engine
 REPS=1 # Number of repetitions for each runtime engine experiment
 
-SERVER_LOG="results/output_120324_01_$1.log" #change
+day=$(date +%d)
+month=$(date +%m)
+year=$(date +%Y)
+
+SERVER_LOG="results/output_$day$month$year_01_$1.log" #change
+
 python3=/home/usuaris/fduran/Python-3.8.4/python
 python3=python3 # comment if rdlab
 
