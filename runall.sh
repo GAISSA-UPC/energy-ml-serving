@@ -15,14 +15,15 @@ START_SERVER=true
 SECONDS=0
 WAIT_BETWEEN_RUNTIME=60 # Wait time between running experiments with each runtime engine
 REPS=1 # Number of repetitions for each runtime engine experiment
+IDLE_TIME=5 #300 to measure idle resource consumption
 
 day=$(date +%d)
 month=$(date +%m)
 year=$(date +%Y)
 
 SERVER_LOG="results/output_$day$month$year_01_$1.log" #change
-python3=/home/usuaris/fduran/Python-3.8.4/python
-python3=python3 # comment if rdlab
+#python3=/home/usuaris/fduran/Python-3.8.4/python # rdlab local python
+#python3=python3 # comment if rdlab
 python3=python # personal setup
 
 # Function to echo with a prefix
@@ -84,7 +85,7 @@ timestamps=()
 if [ $ALL_RUNTIME_ENGINES = true ]; then
     print "sleeping 3min"
     date
-    sleep 300
+    sleep $IDLE_TIME
     date
     print "USING ALL RUNTIME ENGINES"
     

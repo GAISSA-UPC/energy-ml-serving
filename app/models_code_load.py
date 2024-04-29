@@ -49,9 +49,9 @@ MAX_LENGTH = 128
 # Constants
 RESULTS_DIR = 'results/'
 
-GPU_RESULTS = 'gpu_results.csv'
-GPU_SMI_SLEEP = 2
-GPU_SMI_SEC = 0.5
+GPU_RESULTS = 'results/gpu_results.csv'
+GPU_SMI_SLEEP = 1
+GPU_SMI_SEC = 0.1
 GPU_ID = 0
 
 models = [ 'codet5-base', 'codet5p-220', 'codegen-350-mono', 
