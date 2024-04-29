@@ -2,7 +2,7 @@ import requests
 
 #import boto3 # for aws
 #from codecarbon import track_emissions
-
+import json
 from utils import *
 
 script_name = os.path.basename(__file__)
@@ -30,7 +30,11 @@ def inference_fastapi(model, serving_infrastructure, dataset):
         # Make the POST request using the SageMaker runtime client
 
         print(f"Endpoint: {url}{endpoints[model]}/{engine}")
-        response = requests.post(f"{url}{endpoints[model]}/{engine}"  , json=payload)
+        # Define the headers (usually "Content-Type: application/json")
+        #headers = {"Content-Type": "application/json"}
+        # problem: data: [inference_requests.py]  Raised exception: 'charmap' codec can't encode character '\u239b' in position 583: character maps to <undefined>
+        headers = {"Content-Type": "application/json; charset=utf-8"} # 
+        response = requests.post(f"{url}{endpoints[model]}/{engine}"  , json=payload, headers=headers)
         
         return response
 
@@ -47,8 +51,6 @@ def inference_fastapi(model, serving_infrastructure, dataset):
         # Convert the payload to JSON
         #payload_json = json.dumps(payload)
 
-        # Define the headers (usually "Content-Type: application/json")
-        headers = {"Content-Type": "application/json"}
         try:
             response = infer(serving_infrastructure)
             data = response.json()
@@ -61,10 +63,12 @@ def inference_fastapi(model, serving_infrastructure, dataset):
                 print(
                     f"Request failed with status code {data['status-code']}: {data}"
                 )
+        except json.JSONDecodeError as je:
+            print(f"\nError parsing JSON: {je}")
+            continue
         except Exception as e:
-            print(f"Raised exception: {e}")
-            return
-        
+            print(f"\nRaised exception: {e}")
+            continue
 
     print (f"CodeCarbon Results: {RESULTS_DIR}emissions_{model}.csv")
 
