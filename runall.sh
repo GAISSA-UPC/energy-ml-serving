@@ -4,6 +4,7 @@
 # nohup ./runall.sh > results/runall.out 2>&1 &
 # nohup ./runall.sh ov > results/runall.out 2>&1 &
 # nohup ./runall.sh ov > results/runall.out 2>&1 &
+# windows: ./runall.sh > results/runall.out 2>&1
 
 # set true if need to install from scratch
 INSTALL=false
@@ -13,7 +14,7 @@ ALL_RUNTIME_ENGINES=true
 START_SERVER=true
 
 SECONDS=0
-WAIT_BETWEEN_RUNTIME=10 # Wait time between running experiments with each runtime engine
+WAIT_BETWEEN_RUNTIME=60 # Wait time between running experiments with each runtime engine
 REPS=1 # Number of repetitions for each runtime engine experiment
 
 day=$(date +%d)
@@ -24,6 +25,7 @@ SERVER_LOG="results/output_$day$month$year_01_$1.log" #change
 
 python3=/home/usuaris/fduran/Python-3.8.4/python
 python3=python3 # comment if rdlab
+python3=python # personal setup
 
 # Function to echo with a prefix
 print() {
@@ -31,13 +33,13 @@ print() {
     echo "$prefix $1"
 }
 
-PYTHON3_VER=$($python3 --version 2>&1 | awk '{print $2}')
-PYTHON_VER=$(python --version 2>&1 | awk '{print $2}')
-
-print "python3 version: "
-print "$PYTHON3_VER"
-print "python version: "
-print "$PYTHON_VER"
+# Verify your python version
+# PYTHON3_VER=$($python3 --version 2>&1 | awk '{print $2}')
+# PYTHON_VER=$(python --version 2>&1 | awk '{print $2}')
+# print "python3 version: "
+# print "$PYTHON3_VER"
+# print "python version: "
+# print "$PYTHON_VER"
 
 if $INSTALL = true; then
     print "Installing..."
@@ -71,25 +73,39 @@ fi
 
 #nvidia-smi -i 1 --query-gpu=timestamp,gpu_name,utilization.gpu,utilization.memory,memory.total,memory.used,power.draw,power.max_limit,temperature.gpu --format=csv -l 1 -f output_gpu
 
+# python testing/main.py -i onnx -r 1 -m 'codet5-base' | tee -a results/out_$runtime.log;
+timestamps=()
+
 if [ $ALL_RUNTIME_ENGINES = true ]; then
+    print "sleeping 3min"
+    date
+    sleep 300
+    date
     print "USING ALL RUNTIME ENGINES"
     
     print "---------------------------------------------------------------"
     print "| Running experiments, RUNTIME ENGINE -> "TORCH" |"
     print "---------------------------------------------------------------"
     start_time=$(date +%s.%N)
-    #$python3 testing/main.py -i torch -r $REPS | tee -a results/out_torch.log;
+    date
+    timestamps+=($(date))
     runtime="torch"
     $python3 testing/main.py -i $runtime -r $REPS -m 'codet5-base' | tee -a results/out_$runtime.log;
+    timestamps+=($(date))
     $python3 testing/main.py -i $runtime -r $REPS -m 'codet5p-220' | tee -a results/out_$runtime.log;
+    timestamps+=($(date))
     $python3 testing/main.py -i $runtime -r $REPS -m 'codeparrot-small' | tee -a results/out_$runtime.log;
+    timestamps+=($(date))
     $python3 testing/main.py -i $runtime -r $REPS -m 'pythia-410m' | tee -a results/out_$runtime.log;
+    timestamps+=($(date))
 
     # Calculate the elapsed time
     end_time=$(date +%s.%N)
-    elapsed_time=$(echo "$end_time - $start_time" | bc)
+    #elapsed_time=$(echo "$end_time - $start_time" | bc)
+    elapsed_time=$(print "$end_time - $start_time" )
+    echo "Timestamps: ${timestamps[@]}"
     # Display the elapsed time
-    echo "Time taken: $elapsed_time seconds"
+    print "Time taken: $elapsed_time seconds"
     
     print "WAIT_BETWEEN_RUNTIME..."
     while [ "${SECONDS}" -lt "${WAIT_BETWEEN_RUNTIME}" ]; do
@@ -100,15 +116,23 @@ if [ $ALL_RUNTIME_ENGINES = true ]; then
     print "| Running experiments, RUNTIME ENGINE -> "ONNX" |"
     print "---------------------------------------------------------------"
     start_time=$(date +%s.%N)
+    date
     #$python3 testing/main.py -i onnx -r $REPS | tee -a results/out_onnx.log;
+    timestamps+=($(date))
     runtime="onnx"
     $python3 testing/main.py -i $runtime -r $REPS -m 'codet5-base' | tee -a results/out_$runtime.log;
+    timestamps+=($(date))
     $python3 testing/main.py -i $runtime -r $REPS -m 'codet5p-220' | tee -a results/out_$runtime.log;
+    timestamps+=($(date))
     $python3 testing/main.py -i $runtime -r $REPS -m 'codeparrot-small' | tee -a results/out_$runtime.log;
+    timestamps+=($(date))
     $python3 testing/main.py -i $runtime -r $REPS -m 'pythia-410m' | tee -a results/out_$runtime.log;
+    timestamps+=($(date))
     # Calculate the elapsed time
     end_time=$(date +%s.%N)
-    elapsed_time=$(echo "$end_time - $start_time" | bc)
+    #elapsed_time=$(echo "$end_time - $start_time" | bc)
+    elapsed_time=$(print "$end_time - $start_time" )
+    echo "Timestamps: ${timestamps[@]}"
     # Display the elapsed time
     echo "Time taken: $elapsed_time seconds"
 
@@ -121,15 +145,23 @@ if [ $ALL_RUNTIME_ENGINES = true ]; then
     print "| Running experiments, RUNTIME ENGINE -> "OV" |"
     print "---------------------------------------------------------------"
     start_time=$(date +%s.%N)
+    date
     #$python3 testing/main.py -i ov -r $REPS | tee -a results/out_ov.log;
+    timestamps+=($(date))
     runtime="ov"
     $python3 testing/main.py -i $runtime -r $REPS -m 'codet5-base' | tee -a results/out_$runtime.log;
+    timestamps+=($(date))
     $python3 testing/main.py -i $runtime -r $REPS -m 'codet5p-220' | tee -a results/out_$runtime.log;
+    timestamps+=($(date))
     $python3 testing/main.py -i $runtime -r $REPS -m 'codeparrot-small' | tee -a results/out_$runtime.log;
+    timestamps+=($(date))
     $python3 testing/main.py -i $runtime -r $REPS -m 'pythia-410m' | tee -a results/out_$runtime.log;
+    timestamps+=($(date))
     # Calculate the elapsed time
     end_time=$(date +%s.%N)
-    elapsed_time=$(echo "$end_time - $start_time" | bc)
+    #elapsed_time=$(echo "$end_time - $start_time" | bc)
+    elapsed_time=$(echo "$end_time - $start_time" )
+    echo "Timestamps: ${timestamps[@]}"
     # Display the elapsed time
     echo "Time taken: $elapsed_time seconds"
 
@@ -142,16 +174,24 @@ if [ $ALL_RUNTIME_ENGINES = true ]; then
     print "| Running experiments, RUNTIME ENGINE -> "TORCHSCRIPT" |"
     print "---------------------------------------------------------------"
     start_time=$(date +%s.%N)
+    date
     #$python3 testing/main.py -i torchscript -r $REPS | tee -a results/out_torchscript.log;
+    timestamps+=($(date))
     runtime="torchscript"
     $python3 testing/main.py -i $runtime -r $REPS -m 'codet5-base' | tee -a results/out_$runtime.log;
+    timestamps+=($(date))
     $python3 testing/main.py -i $runtime -r $REPS -m 'codet5p-220' | tee -a results/out_$runtime.log;
+    timestamps+=($(date))
     $python3 testing/main.py -i $runtime -r $REPS -m 'codeparrot-small' | tee -a results/out_$runtime.log;
+    timestamps+=($(date))
     $python3 testing/main.py -i $runtime -r $REPS -m 'pythia-410m' | tee -a results/out_$runtime.log;
+    timestamps+=($(date))
 
-    # Calculate the elapsed time
+    # # Calculate the elapsed time
     end_time=$(date +%s.%N)
-    elapsed_time=$(echo "$end_time - $start_time" | bc)
+    #elapsed_time=$(echo "$end_time - $start_time" | bc)
+    elapsed_time=$(echo "$end_time - $start_time" )
+    echo "Timestamps: ${timestamps[@]}"
     # Display the elapsed time
     echo "Time taken: $elapsed_time seconds"
 
@@ -172,7 +212,7 @@ else
     end_time=$(date +%s.%N)
     elapsed_time=$(echo "$end_time - $start_time" | bc)
     # Display the elapsed time
-    echo "Time taken: $elapsed_time seconds"
+    print "Time taken: $elapsed_time seconds"
 fi
 
 print "---------------------------------------------------------------"
@@ -180,6 +220,14 @@ print "runall.sh finished!!!"
 print "Finishing server..."
 lsof -t -i tcp:8000 | xargs kill -9
 print "---------------------------------------------------------------"
+print $timestamps
+print $timestamps[@]
+# for t in ${timestamps[@]}; do
+#   print "$t, "
+# done
+print "Timestamps: ${timestamps[@]}"
+echo "Timestamps: ${timestamps[@]}"
+
 print "Settings:"
 print "ALL_RUNTIME_ENGINES=$ALL_RUNTIME_ENGINES"
 print "RUNTIME_ENGINE=$1"

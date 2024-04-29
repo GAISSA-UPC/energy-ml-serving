@@ -115,7 +115,7 @@ def run_experiment(model, serving_infrastructure, dataset, reps):
 def make_inferences(model, serving_infrastructure, dataset):
     print(f"Running POST requests infrastructure -> {serving_infrastructure}, model -> {model}, dataset -> {dataset}\n")
 
-    with open(dataset) as my_file:
+    with open(dataset, encoding="utf-8") as my_file:
         examples = my_file.read().splitlines()
     
     # Randomize the order of examples
@@ -162,6 +162,7 @@ if __name__ == "__main__":
     print(f'models in args: {models}')
 
     if models is None :
+        print(f"MODELS not passed, using models from main.py: {MODELS}")
         models_list = MODELS
         
     else:
