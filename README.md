@@ -30,14 +30,23 @@ Guide:
 3. [Deploy ML models in a cloud provider (General)](manuals/03_deploy_general.md). Guide to deploy ML models using an API in a cloud provider.
 
 # Replication package
-- runall.sh -> testing main.py
 
 1. Edit files with experiment parameters (time,files,...), check CONSTANTS in scripts:
-  - testing/utils.py
-  - app/models_code.py: MAX_LENGTH tokens
-2. Run server
-3. Run experiments
-
+  - ```testing/utils.py```
+    - input dataset
+  - ```app/models_code.py```
+    - MAX_LENGTH tokens
+  - ```runall.sh```
+2. Run server and experiments: runall.sh
+   1. # linux
+      ```bash
+      nohup ./runall.sh > results/runall.out 2>&1 &
+      ```
+   2. # windows
+      ```bash
+      ./runall.sh > results/runall.out 2>&1
+      ```
+3. check ```results/*```
 
 
 # ML Serving
@@ -95,4 +104,4 @@ See manuals/references
 
 -------------------
 
-Machine information for runtime engine experiments:
+Experiment setup:
