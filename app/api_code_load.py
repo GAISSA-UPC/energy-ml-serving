@@ -47,6 +47,7 @@ app = FastAPI(
 
 loaded_model = None
 loaded_tokenizer = None
+exec_provider='CUDAExecutionProvider'
 
 def construct_response(f):
     """Construct a JSON response for an endpoint's results."""
@@ -114,8 +115,8 @@ async def load_model(model_name: str,engine:str):
             tokenizer_dir = info_models[engine][model_name]["tokenizer_dir"]
 
             print(f"class: {selected_class} - model_dir {model_dir}")
-            loaded_tokenizer = AutoTokenizer.from_pretrained(tokenizer_dir)
-            loaded_model = selected_class.from_pretrained(model_dir)
+            loaded_tokenizer = AutoTokenizer.from_pretrained(tokenizer_dir).to(device)
+            loaded_model = selected_class.from_pretrained(model_dir,).to(device) #  provider= exec_provider not use when using directly torch
 
         elif engine == 'onnx':
             selected_class = info_models[engine][model_name]["m_class"]
@@ -123,16 +124,16 @@ async def load_model(model_name: str,engine:str):
             tokenizer_dir = info_models['onnx'][model_name]["tokenizer_dir"] # using same than onnx
 
             print(f"class: {selected_class} - model_dir {model_dir}")
-            loaded_tokenizer = AutoTokenizer.from_pretrained(tokenizer_dir)
+            loaded_tokenizer = AutoTokenizer.from_pretrained(tokenizer_dir).to(device)
             #model = ORTModelForSeq2SeqLM.from_pretrained(model_dir,    return_dict = True, use_cache = True)            
             if model_name =='codeparrot-small':
-                loaded_model = selected_class.from_pretrained(model_dir,)
+                loaded_model = selected_class.from_pretrained(model_dir, provider=exec_provider)
             elif model_name == 'pythia-410m':
-                loaded_model = selected_class.from_pretrained(model_dir,)
+                loaded_model = selected_class.from_pretrained(model_dir, provider=exec_provider)
             elif model_name == 'tinyllama':
-                loaded_model = selected_class.from_pretrained(model_dir,)
+                loaded_model = selected_class.from_pretrained(model_dir, provider=exec_provider)
             else:
-                loaded_model = selected_class.from_pretrained(model_dir,    return_dict = True, use_cache = False)
+                loaded_model = selected_class.from_pretrained(model_dir,    return_dict = True, use_cache = False, provider=exec_provider, use_io_binding=False)
                 
         elif engine == 'ov':
             # model_dir = 'models/ov/codet5-base'
@@ -146,13 +147,13 @@ async def load_model(model_name: str,engine:str):
             loaded_tokenizer = AutoTokenizer.from_pretrained(tokenizer_dir) 
             
             if model_name =='codeparrot-small':
-                loaded_model = selected_class.from_pretrained(model_dir, ov_config={"CACHE_DIR":""})
+                loaded_model = selected_class.from_pretrained(model_dir, ov_config={"CACHE_DIR":""}, provider=exec_provider)
             elif model_name == 'pythia-410m':
-                loaded_model = selected_class.from_pretrained(model_dir,)
+                loaded_model = selected_class.from_pretrained(model_dir, provider=exec_provider)
             elif model_name == 'tinyllama':
-                loaded_model = selected_class.from_pretrained(model_dir,)
+                loaded_model = selected_class.from_pretrained(model_dir, provider=exec_provider)
             else:
-                loaded_model = selected_class.from_pretrained(model_dir,return_dict = True, use_cache = False)
+                loaded_model = selected_class.from_pretrained(model_dir,return_dict = True, use_cache = False, use_io_binding=False, provider=exec_provider)
         elif engine == 'torchscript':
             #selected_class = info_models[engine][model_name]["m_class"]
             model_dir = info_models[engine][model_name]["model_dir"]

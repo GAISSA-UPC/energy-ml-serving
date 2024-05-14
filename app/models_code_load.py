@@ -613,6 +613,9 @@ class CodeParrot_smallModel(Model):
                 #inputs = tokenizer(text, return_tensors="pt",max_length=MAX_LENGTH,padding='max_length')
                 inputs = tokenizer(text, return_tensors="pt")
 
+                inputs = inputs.to(device)
+                model.to(device)
+
                 # generate
                 tokens = model.generate(**inputs, max_length=MAX_LENGTH)
                 
@@ -635,6 +638,9 @@ class CodeParrot_smallModel(Model):
                 attention_mask = inputs["attention_mask"]
                 input_tuple = [input_ids,attention_mask,input_ids] # decoder_input_ids["input_ids"]
 
+                input_ids = input_ids.to(device)
+                model.to(device)
+                
                 # Generate predictions from the model
                 with torch.no_grad():
                     output = model(input_ids,)  # Adjust max_length as needed
