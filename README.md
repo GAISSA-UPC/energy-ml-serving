@@ -31,13 +31,19 @@ Guide:
 
 # Replication package
 
-1. Edit files with experiment parameters (time,files,...), check CONSTANTS in scripts:
-  - ```testing/utils.py```
-    - input dataset
-  - ```app/models_code.py```
-    - MAX_LENGTH tokens
-  - ```runall.sh```
-2. Run server and experiments: runall.sh
+1. Start environment
+   1. if energibridge, follow instructions: https://github.com/tdurieux/EnergiBridge
+2. Edit files with experiment parameters (time,files,...), check CONSTANTS in scripts:
+   1. server settings
+      - ```app/models_code_load.py```: Model classes
+        - MAX_LENGTH tokens
+   2. experiment settings
+      - ```testing/utils.py```: experiment settings, python script
+        - input dataset
+      - ```runall.sh```: experiment settings, bash script
+        - run server
+        - run experiments for each runtime engine
+3. Run server and experiments: runall.sh
    1. # linux
       ```bash
       nohup ./runall.sh > results/runall.out 2>&1 &
@@ -46,7 +52,7 @@ Guide:
       ```bash
       ./runall.sh > results/runall.out 2>&1
       ```
-3. check ```results/*```
+4. check ```results/*```
 
 
 # ML Serving

@@ -72,7 +72,7 @@ def warm_up(models, serving_infrastructure, dataset = DATASET_WARM_UP):
     print(f"------------------------------\n")
 
     for model in models:
-        make_inferences(model, serving_infrastructure, dataset) if not TEST_SCRIPTS_FLOW else print("**TEST_SCRIPTS_FLOW**")
+        make_inferences(model, serving_infrastructure, dataset) if not TEST_SCRIPTS_FLOW else print("** WARNING: TEST_SCRIPTS_FLOW**")
     
     print(f"Waiting {COOLDOWN_REP} seconds to cooldown")
     time.sleep(COOLDOWN_REP)
@@ -192,7 +192,7 @@ if __name__ == "__main__":
         #print(f'gc: {gc.collect()}')
         print(f"---------------- Model {model_counter+1} out of {len(models_list)}: \n")
 
-        run_experiment(model, serving_infrastructure, dataset, reps) if not TEST_SCRIPTS_FLOW else print("**TEST_SCRIPTS_FLOW**")
+        run_experiment(model, serving_infrastructure, dataset, reps) if not TEST_SCRIPTS_FLOW else print("** WARNING: TEST_SCRIPTS_FLOW**")
         model_counter+=1
         gc.collect()
 
