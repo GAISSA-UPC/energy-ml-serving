@@ -21,6 +21,8 @@ from transformers import AutoTokenizer #torchscript, OV, ONNX, torch
 from optimum.onnxruntime import  ORTModelForSeq2SeqLM, ORTModelForCausalLM #ONNX
 from optimum.intel import OVModelForSeq2SeqLM, OVModelForCausalLM  # OV
 
+device='cuda' #cpu
+
 info_models = {
     "torch" : {
         "codet5-base":{"m_class":AutoModelForSeq2SeqLM,"model_dir":"models/torch/codet5-base","tokenizer_dir":'models/onnx/codet5-base'},

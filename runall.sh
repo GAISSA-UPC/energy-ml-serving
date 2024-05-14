@@ -24,6 +24,8 @@ SERVER_LOG="results/server_$day$month$year_01_$1.log" #change
 #python3=/home/usuaris/fduran/Python-3.8.4/python # rdlab local python
 #python3=python3 # comment if rdlab
 python3=python # personal setup
+TOKENIZERS_PARALLELISM=true
+OMP_NUM_THREADS=8
 
 energibridge="/d/GAISSA/EnergiBridge-main/target/release/energibridge.exe"
 
