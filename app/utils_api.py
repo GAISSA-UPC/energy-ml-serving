@@ -8,7 +8,7 @@ import torch
 # [t5, codet5p_220m]   torch
 from transformers import  AutoModelForSeq2SeqLM # T5ForConditionalGeneration,
 # [pythia-70m] torch    
-from transformers import GPTNeoXForCausalLM
+#from transformers import GPTNeoXForCausalLM
 # [codeparrot-small] torch
 from transformers import AutoModelForCausalLM
 # [codegen]

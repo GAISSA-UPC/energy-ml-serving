@@ -13,18 +13,22 @@ ALL_RUNTIME_ENGINES=true
 START_SERVER=true
 
 SECONDS=0
-WAIT_BETWEEN_RUNTIME=60 # Wait time between running experiments with each runtime engine
+WAIT_BETWEEN_RUNTIME=5 # Wait time between running experiments with each runtime engine
 REPS=1 # Number of repetitions for each runtime engine experiment
-IDLE_TIME=5 #300 to measure idle resource consumption
+IDLE_TIME=10 #300 to measure idle resource consumption
 
 day=$(date +%d)
 month=$(date +%m)
 year=$(date +%Y)
-
-SERVER_LOG="results/output_$day$month$year_01_$1.log" #change
+SERVER_LOG="results/server_$day$month$year_01_$1.log" #change
 #python3=/home/usuaris/fduran/Python-3.8.4/python # rdlab local python
 #python3=python3 # comment if rdlab
 python3=python # personal setup
+
+energibridge="/d/GAISSA/EnergiBridge-main/target/release/energibridge.exe"
+
+runtime_engines=('torch' 'onnx' 'ov' 'torchscript')
+models=('codet5-base' 'codet5p-220' 'codeparrot-small' 'pythia-410m')
 
 # Function to echo with a prefix
 print() {
@@ -83,35 +87,51 @@ fi
 timestamps=()
 
 if [ $ALL_RUNTIME_ENGINES = true ]; then
-    print "sleeping 3min"
+    print "sleeping $IDLE_TIME seconds"
     date
     sleep $IDLE_TIME
     date
-    print "USING ALL RUNTIME ENGINES"
-    
+    print "USING ALL RUNTIME ENGINES"    
     print "---------------------------------------------------------------"
     print "| Running experiments, RUNTIME ENGINE -> "TORCH" |"
     print "---------------------------------------------------------------"
     start_time=$(date +%s.%N)
     date
+    
     timestamps+=($(date))
-    runtime="torch"
-    $python3 testing/main.py -i $runtime -r $REPS -m 'codet5-base' | tee -a results/out_$runtime.log;
+    runtime=${runtime_engines[0]}
+    model=${models[0]}
+    #$python3 testing/main.py -i $runtime -r $REPS -m $model | tee -a results/out_$runtime.log;
+    my_command="$python3 testing/main.py -i $runtime -r $REPS -m $model"
+    $energibridge --output results/energy_$runtime-$model.csv --command-output results/out_$runtime-$model.log --interval 200 $my_command
+    
     timestamps+=($(date))
-    $python3 testing/main.py -i $runtime -r $REPS -m 'codet5p-220' | tee -a results/out_$runtime.log;
+    #$python3 testing/main.py -i $runtime -r $REPS -m 'codet5p-220' | tee -a results/out_$runtime.log;
+    model=${models[1]}
+    my_command="$python3 testing/main.py -i $runtime -r $REPS -m $model"
+    $energibridge --output results/energy_$runtime-$model.csv --command-output results/out_$runtime-$model.log --interval 200 $my_command
+
     timestamps+=($(date))
-    $python3 testing/main.py -i $runtime -r $REPS -m 'codeparrot-small' | tee -a results/out_$runtime.log;
+    #$python3 testing/main.py -i $runtime -r $REPS -m 'codeparrot-small' | tee -a results/out_$runtime.log;
+    model=${models[2]}
+    my_command="$python3 testing/main.py -i $runtime -r $REPS -m $model"
+    $energibridge --output results/energy_$runtime-$model.csv --command-output results/out_$runtime-$model.log --interval 200 $my_command
+
     timestamps+=($(date))
-    $python3 testing/main.py -i $runtime -r $REPS -m 'pythia-410m' | tee -a results/out_$runtime.log;
+    #$python3 testing/main.py -i $runtime -r $REPS -m 'pythia-410m' | tee -a results/out_$runtime.log;
+    model=${models[3]}
+    my_command="$python3 testing/main.py -i $runtime -r $REPS -m $model"
+    $energibridge --output results/energy_$runtime-$model.csv --command-output results/out_$runtime-$model.log --interval 200 $my_command
+
     timestamps+=($(date))
 
     # Calculate the elapsed time
     end_time=$(date +%s.%N)
     #elapsed_time=$(echo "$end_time - $start_time" | bc)
     elapsed_time=$(print "$end_time - $start_time" )
-    echo "Timestamps: ${timestamps[@]}"
+    print "Timestamps: ${timestamps[@]}"
     # Display the elapsed time
-    print "Time taken: $elapsed_time seconds"
+    print "Time taken for $runtime: $elapsed_time seconds"
     
     print "WAIT_BETWEEN_RUNTIME..."
     while [ "${SECONDS}" -lt "${WAIT_BETWEEN_RUNTIME}" ]; do
@@ -125,14 +145,30 @@ if [ $ALL_RUNTIME_ENGINES = true ]; then
     date
     #$python3 testing/main.py -i onnx -r $REPS | tee -a results/out_onnx.log;
     timestamps+=($(date))
-    runtime="onnx"
-    $python3 testing/main.py -i $runtime -r $REPS -m 'codet5-base' | tee -a results/out_$runtime.log;
+    runtime=${runtime_engines[1]}
+    #$python3 testing/main.py -i $runtime -r $REPS -m 'codet5-base' | tee -a results/out_$runtime.log;
+    model=${models[0]}
+    my_command="$python3 testing/main.py -i $runtime -r $REPS -m $model"
+    $energibridge --output results/energy_$runtime-$model.csv --command-output results/out_$runtime-$model.log --interval 200 $my_command
+
     timestamps+=($(date))
-    $python3 testing/main.py -i $runtime -r $REPS -m 'codet5p-220' | tee -a results/out_$runtime.log;
+    #$python3 testing/main.py -i $runtime -r $REPS -m 'codet5p-220' | tee -a results/out_$runtime.log;
+    model=${models[1]}
+    my_command="$python3 testing/main.py -i $runtime -r $REPS -m $model"
+    $energibridge --output results/energy_$runtime-$model.csv --command-output results/out_$runtime-$model.log --interval 200 $my_command
+
     timestamps+=($(date))
-    $python3 testing/main.py -i $runtime -r $REPS -m 'codeparrot-small' | tee -a results/out_$runtime.log;
+    #$python3 testing/main.py -i $runtime -r $REPS -m 'codeparrot-small' | tee -a results/out_$runtime.log;
+    model=${models[2]}
+    my_command="$python3 testing/main.py -i $runtime -r $REPS -m $model"
+    $energibridge --output results/energy_$runtime-$model.csv --command-output results/out_$runtime-$model.log --interval 200 $my_command
+
     timestamps+=($(date))
-    $python3 testing/main.py -i $runtime -r $REPS -m 'pythia-410m' | tee -a results/out_$runtime.log;
+    #$python3 testing/main.py -i $runtime -r $REPS -m 'pythia-410m' | tee -a results/out_$runtime.log;
+    model=${models[3]}
+    my_command="$python3 testing/main.py -i $runtime -r $REPS -m $model"
+    $energibridge --output results/energy_$runtime-$model.csv --command-output results/out_$runtime-$model.log --interval 200 $my_command
+
     timestamps+=($(date))
     # Calculate the elapsed time
     end_time=$(date +%s.%N)
@@ -141,7 +177,7 @@ if [ $ALL_RUNTIME_ENGINES = true ]; then
     echo "Timestamps: ${timestamps[@]}"
 
     # Display the elapsed time
-    echo "Time taken: $elapsed_time seconds"
+    echo "Time taken for $runtime: $elapsed_time seconds"
 
     print "WAIT_BETWEEN_RUNTIME..."
     while [ "${SECONDS}" -lt "${WAIT_BETWEEN_RUNTIME}" ]; do
@@ -155,14 +191,30 @@ if [ $ALL_RUNTIME_ENGINES = true ]; then
     date
     #$python3 testing/main.py -i ov -r $REPS | tee -a results/out_ov.log;
     timestamps+=($(date))
-    runtime="ov"
-    $python3 testing/main.py -i $runtime -r $REPS -m 'codet5-base' | tee -a results/out_$runtime.log;
+    runtime=${runtime_engines[2]}
+    #$python3 testing/main.py -i $runtime -r $REPS -m 'codet5-base' | tee -a results/out_$runtime.log;
+    model=${models[0]}
+    my_command="$python3 testing/main.py -i $runtime -r $REPS -m $model"
+    $energibridge --output results/energy_$runtime-$model.csv --command-output results/out_$runtime-$model.log --interval 200 $my_command
+
     timestamps+=($(date))
-    $python3 testing/main.py -i $runtime -r $REPS -m 'codet5p-220' | tee -a results/out_$runtime.log;
+    #$python3 testing/main.py -i $runtime -r $REPS -m 'codet5p-220' | tee -a results/out_$runtime.log;
+    model=${models[1]}
+    my_command="$python3 testing/main.py -i $runtime -r $REPS -m $model"
+    $energibridge --output results/energy_$runtime-$model.csv --command-output results/out_$runtime-$model.log --interval 200 $my_command
+
     timestamps+=($(date))
-    $python3 testing/main.py -i $runtime -r $REPS -m 'codeparrot-small' | tee -a results/out_$runtime.log;
+    #$python3 testing/main.py -i $runtime -r $REPS -m 'codeparrot-small' | tee -a results/out_$runtime.log;
+    model=${models[2]}
+    my_command="$python3 testing/main.py -i $runtime -r $REPS -m $model"
+    $energibridge --output results/energy_$runtime-$model.csv --command-output results/out_$runtime-$model.log --interval 200 $my_command
+
     timestamps+=($(date))
-    $python3 testing/main.py -i $runtime -r $REPS -m 'pythia-410m' | tee -a results/out_$runtime.log;
+    #$python3 testing/main.py -i $runtime -r $REPS -m 'pythia-410m' | tee -a results/out_$runtime.log;
+    model=${models[3]}
+    my_command="$python3 testing/main.py -i $runtime -r $REPS -m $model"
+    $energibridge --output results/energy_$runtime-$model.csv --command-output results/out_$runtime-$model.log --interval 200 $my_command
+
     timestamps+=($(date))
     # Calculate the elapsed time
     end_time=$(date +%s.%N)
@@ -170,7 +222,7 @@ if [ $ALL_RUNTIME_ENGINES = true ]; then
     elapsed_time=$(echo "$end_time - $start_time" )
     echo "Timestamps: ${timestamps[@]}"
     # Display the elapsed time
-    echo "Time taken: $elapsed_time seconds"
+    echo "Time taken for $runtime: $elapsed_time seconds"
 
     print "WAIT_BETWEEN_RUNTIME..."
     while [ "${SECONDS}" -lt "${WAIT_BETWEEN_RUNTIME}" ]; do
@@ -185,14 +237,30 @@ if [ $ALL_RUNTIME_ENGINES = true ]; then
     date
     #$python3 testing/main.py -i torchscript -r $REPS | tee -a results/out_torchscript.log;
     timestamps+=($(date))
-    runtime="torchscript"
-    $python3 testing/main.py -i $runtime -r $REPS -m 'codet5-base' | tee -a results/out_$runtime.log;
+    runtime=${runtime_engines[3]}
+    #$python3 testing/main.py -i $runtime -r $REPS -m 'codet5-base' | tee -a results/out_$runtime.log;
+    model=${models[0]}
+    my_command="$python3 testing/main.py -i $runtime -r $REPS -m $model"
+    $energibridge --output results/energy_$runtime-$model.csv --command-output results/out_$runtime-$model.log --interval 200 $my_command
+
     timestamps+=($(date))
-    $python3 testing/main.py -i $runtime -r $REPS -m 'codet5p-220' | tee -a results/out_$runtime.log;
+    #$python3 testing/main.py -i $runtime -r $REPS -m 'codet5p-220' | tee -a results/out_$runtime.log;
+    model=${models[1]}
+    my_command="$python3 testing/main.py -i $runtime -r $REPS -m $model"
+    $energibridge --output results/energy_$runtime-$model.csv --command-output results/out_$runtime-$model.log --interval 200 $my_command
+
     timestamps+=($(date))
-    $python3 testing/main.py -i $runtime -r $REPS -m 'codeparrot-small' | tee -a results/out_$runtime.log;
+    #$python3 testing/main.py -i $runtime -r $REPS -m 'codeparrot-small' | tee -a results/out_$runtime.log;
+    model=${models[2]}
+    my_command="$python3 testing/main.py -i $runtime -r $REPS -m $model"
+    $energibridge --output results/energy_$runtime-$model.csv --command-output results/out_$runtime-$model.log --interval 200 $my_command
+
     timestamps+=($(date))
-    $python3 testing/main.py -i $runtime -r $REPS -m 'pythia-410m' | tee -a results/out_$runtime.log;
+    #$python3 testing/main.py -i $runtime -r $REPS -m 'pythia-410m' | tee -a results/out_$runtime.log;
+    model=${models[3]}
+    my_command="$python3 testing/main.py -i $runtime -r $REPS -m $model"
+    $energibridge --output results/energy_$runtime-$model.csv --command-output results/out_$runtime-$model.log --interval 200 $my_command
+
     timestamps+=($(date))
 
     # # Calculate the elapsed time
@@ -201,7 +269,7 @@ if [ $ALL_RUNTIME_ENGINES = true ]; then
     elapsed_time=$(echo "$end_time - $start_time" )
     echo "Timestamps: ${timestamps[@]}"
     # Display the elapsed time
-    echo "Time taken: $elapsed_time seconds"
+    echo "Time taken for $runtime: $elapsed_time seconds"
 
 else
     print "USING JUST $1 AS RUNTIME ENGINE"
@@ -218,7 +286,8 @@ else
 
     # Calculate the elapsed time
     end_time=$(date +%s.%N)
-    elapsed_time=$(echo "$end_time - $start_time" | bc)
+    # elapsed_time=$(echo "$end_time - $start_time" | bc)
+    elapsed_time=$(echo "$end_time - $start_time" )
     # Display the elapsed time
     print "Time taken: $elapsed_time seconds"
     print "Time taken: $elapsed_time seconds"
@@ -229,11 +298,6 @@ print "runall.sh finished!!!"
 print "Finishing server..."
 lsof -t -i tcp:8000 | xargs kill -9
 print "---------------------------------------------------------------"
-print $timestamps
-print $timestamps[@]
-# for t in ${timestamps[@]}; do
-#   print "$t, "
-# done
 print "Timestamps: ${timestamps[@]}"
 echo "Timestamps: ${timestamps[@]}"
 
@@ -241,6 +305,8 @@ print "Settings:"
 print "ALL_RUNTIME_ENGINES=$ALL_RUNTIME_ENGINES"
 print "RUNTIME_ENGINE=$1"
 print "REPS=$REPS"
+print "WAIT_BETWEEN_RUNTIME=$WAIT_BETWEEN_RUNTIME"
+print "IDLE_TIME=$IDLE_TIME"
 print "results dir information: (wc -l results/*):"
 wc -l results/*
 
