@@ -124,7 +124,7 @@ async def load_model(model_name: str,engine:str):
             tokenizer_dir = info_models['onnx'][model_name]["tokenizer_dir"] # using same than onnx
 
             print(f"class: {selected_class} - model_dir {model_dir}")
-            loaded_tokenizer = AutoTokenizer.from_pretrained(tokenizer_dir).to('cuda')
+            loaded_tokenizer = AutoTokenizer.from_pretrained(tokenizer_dir).to(device)
             #model = ORTModelForSeq2SeqLM.from_pretrained(model_dir,    return_dict = True, use_cache = True)            
             if model_name =='codeparrot-small':
                 loaded_model = selected_class.from_pretrained(model_dir, provider=exec_provider)
