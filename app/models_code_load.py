@@ -30,6 +30,13 @@ import time
 import os
 import builtins
 
+
+import threading
+import requests
+import json
+import csv
+from datetime import datetime
+
 from codecarbon import track_emissions
 from enum import Enum
 
@@ -52,29 +59,71 @@ RESULTS_DIR = 'results/'
 GPU_RESULTS = 'results/gpu_results.csv'
 GPU_SMI_SLEEP = 1
 GPU_SMI_SEC = 0.1
+GPU_SMI_MS = 100
 GPU_ID = 0
 
 models = [ 'codet5-base', 'codet5p-220', 'codegen-350-mono', 
           'gpt-neo-125m', 'codeparrot-small', 'pythia-410m',
-          'tinyllama'] # bloom, pythia
+          'tinyllama', 'slm','pythia1-4b', 'phi2'] # bloom, pythia
 
-runtime_engines = ['onnx','ov','torchscript']
+runtime_engines = ['onnx','ov','torchscript'] # torch not considered in this script as 'runtime_engine'
 
-
-
+wattmeter = False # global variable, default: False
+response = None
 
 script_name = os.path.basename(__file__)
 def print(*args, **kwargs):
     builtins.print(f"[{script_name}] ",*args, **kwargs)
 
-if torch.cuda.is_available():
-    device = "cuda:0" 
-    GPU_ID = os.getenv("GPU_DEVICE_ORDINAL", 0)
-else:
-    device = "cpu"
 
 print(f" - Using device: {device} -")    
-nvidia_smi_command = f"nvidia-smi -i {GPU_ID} --query-gpu=timestamp,gpu_name,utilization.gpu,utilization.memory,memory.total,memory.used,power.draw,power.max_limit,temperature.gpu --format=csv -l {GPU_SMI_SEC} -f {GPU_RESULTS}"
+nvidia_smi_command = f"nvidia-smi -i {GPU_ID} --query-gpu=timestamp,gpu_name,utilization.gpu,utilization.memory,memory.total,memory.used,power.draw,power.max_limit,temperature.gpu --format=csv -lms {GPU_SMI_MS} -f {GPU_RESULTS}"
+
+def get_wattmeter_data(task):
+    filename = RESULTS_DIR + f'wattmeter_{task}.csv'
+    error_log = RESULTS_DIR + f'wattmeter_error_log_{task}.txt'
+    fieldnames = ['Wattmetter Timestamp', 'True timestamp', 'ID', 'Name', 'State', 'Action', 'Delay',
+                  'Current', 'PowerFactor', 'Phase', 'Energy', 'ReverseEnergy', 'EnergyNR', 'ReverseEnergyNR', 'Load']
+    url = "http://147.83.72.195/netio.json"
+    
+    while wattmeter:
+        with open(filename, mode='a', newline='') as file:
+            try:
+                response = requests.get(url)
+                print(f"response:{response}")
+                # Parse JSON data
+                data = json.loads(response.text)
+
+                timestamp = data['Agent']['Time']
+                print(timestamp)
+
+                # Extract data for output ID 1
+                output_1_data = None
+                for output in data['Outputs']:
+                    if output['ID'] == 1:
+                        output_1_data = output
+                        break
+
+                if output_1_data:
+                    writer = csv.DictWriter(file, fieldnames=fieldnames)
+
+                    if file.tell() == 0:
+                        writer.writeheader()
+
+                    output_1_data['Wattmetter Timestamp'] = timestamp
+                    output_1_data['True timestamp'] = datetime.fromtimestamp(
+                        time.time())
+                    writer.writerow(output_1_data)
+                else:
+                    error_message = f"{datetime.now()} - Output ID 1 data not found in the JSON.\n"
+                    with open(error_log, 'a') as error_file:
+                        error_file.write(error_message)
+            except Exception as e:
+                error_message = f"{datetime.now()} - {e}\n"
+                with open(error_log, 'a') as error_file:
+                    error_file.write(error_message)
+            finally: # lets you execute code, regardless of the result of the try-except block
+                time.sleep(0.5)  # Pause execution for 0.5 seconds before next call
 
 # not updated
 class ML_task(Enum):
@@ -84,21 +133,22 @@ class ML_task(Enum):
     CODE = 4
 
 # not updated
-class models_names(Enum):
-    Codet5_base = 1
-    Codet5p_220m = 2
-    CodeGen_350m_mono = 3
-    GPT_Neo_125m = 4
-    CodeParrot_small = 5
-    Pythia_410m = 6
-    Tinyllama = 7
+# class models_names(Enum):
+#     Codet5_base = 1
+#     Codet5p_220m = 2
+#     CodeGen_350m_mono = 3
+#     GPT_Neo_125m = 4
+#     CodeParrot_small = 5
+#     Pythia_410m = 6
+#     Tinyllama = 7
+#     SLM = 8
 
 class Model:
     """
     Creates a default model
     """
-    def __init__(self, model_name : models_names = None, ml_task : ML_task = None):
-        self.name = model_name.name
+    def __init__(self, model_name : str = None, ml_task : ML_task = None):
+        self.name = model_name
         # Masked Language Modeling - MLM
         self.ml_task = ml_task.name
     
@@ -130,13 +180,13 @@ class Model:
         response = None
         return response
         
-# running
+# not updated, last: may
 class CodeT5_BaseModel(Model):
     """
     Creates a T5 model. Inherits from Model()
     """
     def __init__(self):
-        super().__init__(models_names.Codet5_base, ML_task.CODE)
+        super().__init__('codet5-base', ML_task.CODE)
         
     def predict(self, user_input: str, engine = None,model=None, tokenizer=None):
         
@@ -260,7 +310,7 @@ class CodeT5_BaseModel(Model):
             return result
         return wrapper
 
-#running
+# not updated, last: may
 class Codet5p_220mModel(Model):
     """_summary_ Creates a Codet5p_220m model. Inherits from Model()
 
@@ -269,7 +319,7 @@ class Codet5p_220mModel(Model):
     """
 
     def __init__(self):
-        super().__init__(models_names.Codet5p_220m, ML_task.CODE)
+        super().__init__('codet5p-220m', ML_task.CODE)
         
     def predict(self, user_input: str, engine = None,model = None, tokenizer = None):
         
@@ -316,6 +366,10 @@ class Codet5p_220mModel(Model):
                 
                 #outputs = model.generate(inputs, max_length=10,max_new_tokens = 30)
                 #outputs = model.generate(inputs, max_new_tokens = 30)
+
+                inputs = inputs.to(device)
+                model.to(device)
+
                 outputs = model.generate(inputs, max_length=MAX_LENGTH)
                 
                 prediction = tokenizer.decode(outputs[0], skip_special_tokens=True)
@@ -328,6 +382,10 @@ class Codet5p_220mModel(Model):
 
                 attention_mask = inputs["attention_mask"]
                 input_tuple = [input_ids,attention_mask,input_ids] # decoder_input_ids["input_ids"]
+
+                input_ids = input_ids.to(device)
+                attention_mask = attention_mask.to(device)
+                #model.to(device)
 
                 # Generate predictions from the model
                 with torch.no_grad():
@@ -572,7 +630,7 @@ class CodeParrot_smallModel(Model):
     """
 
     def __init__(self):
-        super().__init__(models_names.CodeParrot_small, ML_task.CODE)
+        super().__init__('codeparrot-small', ML_task.CODE)
         
     def predict(self, user_input: str, engine = None, model = None, tokenizer = None):
         #model = "codeparrot/codeparrot-small"
@@ -604,7 +662,7 @@ class CodeParrot_smallModel(Model):
             decorator_to_use = self.track_torchscript
         
         #@track_emissions(project_name = "codeparrot-small", output_file = RESULTS_DIR + "emissions_codeparrot-small.csv")
-        @decorator_to_use
+        #@decorator_to_use
         def infer( text: str, model, tokenizer, engine) -> str:
             prediction = None
             if(engine != 'torchscript'):
@@ -638,8 +696,9 @@ class CodeParrot_smallModel(Model):
                 attention_mask = inputs["attention_mask"]
                 input_tuple = [input_ids,attention_mask,input_ids] # decoder_input_ids["input_ids"]
 
-                input_ids = input_ids.to(device)
-                model.to(device)
+                if device.startswith('cuda'): 
+                    input_ids = input_ids.to(device)
+                    model.to(device)
                 
                 # Generate predictions from the model
                 with torch.no_grad():
@@ -665,21 +724,47 @@ class CodeParrot_smallModel(Model):
             
             return prediction
  
-        
-        if device.startswith('cuda'):
-            print(f"nvidia-smi process started: {GPU_RESULTS}")
-            nvidiaProfiler = subprocess.Popen(nvidia_smi_command.split())
-            time.sleep(GPU_SMI_SLEEP)
-            response = {
-                "prediction" : infer(user_input, model, tokenizer, engine)
-            }
-            time.sleep(GPU_SMI_SLEEP)
-            nvidiaProfiler.terminate()   
-            print(f"nvidia-smi process terminated: {GPU_RESULTS}")
-        else:
-            response = {
-                "prediction" : infer(user_input, model, tokenizer, engine)
-            }
+        def wattmeter_task():
+            global wattmeter
+            global response
+
+            if device.startswith('cuda'):
+                #gpu_metrics = RESULTS_DIR + f"gpu-power_{self.name}_{engine}.csv"
+                #nvidia_smi_command = f"nvidia-smi -i {GPU_ID} --query-gpu=timestamp,gpu_name,utilization.gpu,utilization.memory,memory.total,memory.used,power.draw,power.max_limit,temperature.gpu --format=csv -lms {GPU_SMI_MS} -f {gpu_metrics}"
+
+                #nvidia_smi_command = f"nvidia-smi -i {GPU_ID} --query-gpu=timestamp,gpu_name,utilization.gpu,utilization.memory,memory.total,memory.used,power.draw,power.max_limit,temperature.gpu --format=csv -lms {GPU_SMI_MS} >> {gpu_metrics}"
+                #print(f"nvidia-smi process started: {gpu_metrics}")
+                #nvidiaProfiler = subprocess.Popen(nvidia_smi_command,shell=True)
+                #nvidiaProfiler = subprocess.Popen(nvidia_smi_command.split())
+                #time.sleep(GPU_SMI_SLEEP)
+                
+                response = {
+                    "prediction" : infer(user_input, model, tokenizer, engine)
+                }
+                #time.sleep(GPU_SMI_SLEEP)
+                #nvidiaProfiler.terminate()
+                #nvidiaProfiler.wait()
+                #print(f"nvidia-smi process terminated: {gpu_metrics}")
+            else:
+                
+                response = {
+                    "prediction" : infer(user_input, model, tokenizer, engine)
+                }
+            
+            wattmeter = False
+
+
+        # start wattmeter
+        task_thread = threading.Thread(target=wattmeter_task)
+        task_thread.start()
+
+        global wattmeter
+        wattmeter = True
+        get_wattmeter_data(f'{self.name}_{engine}')
+
+        # Wait for the wattmeter task thread to complete
+        task_thread.join()
+        print("wattmeter_task has completed.")
         
         return response
 
@@ -720,7 +805,7 @@ class Pythia_410mModel(Model):
     """
 
     def __init__(self):
-        super().__init__(models_names.Pythia_410m, ML_task.CODE)
+        super().__init__('pythia-410m', ML_task.CODE)
         
     def predict(self, user_input: str, engine = None, model = None, tokenizer = None):
         
@@ -760,7 +845,7 @@ class Pythia_410mModel(Model):
             decorator_to_use = self.track_torchscript
 
         #@track_emissions(project_name = "pythia-410m", output_file = RESULTS_DIR + "emissions_pythia-410m.csv")
-        @decorator_to_use
+        #@decorator_to_use # commented because codecarbon is not used
         def infer( text: str, model, tokenizer, engine) -> str:
             prediction = None
             if(engine != 'torchscript' ):
@@ -768,7 +853,8 @@ class Pythia_410mModel(Model):
                 #tokenizer.pad_token = tokenizer.eos_token
                 #inputs = tokenizer(text, return_tensors="pt",max_length=MAX_LENGTH,padding='max_length')
                 inputs = tokenizer(text, return_tensors="pt",)
-                
+                inputs = inputs.to(device)
+                model.to(device)
                 # generate
                 tokens = model.generate(**inputs, max_length=MAX_LENGTH)
                 # decode
@@ -786,6 +872,9 @@ class Pythia_410mModel(Model):
                 attention_mask = inputs["attention_mask"]
                 input_tuple = [input_ids,attention_mask,input_ids] # decoder_input_ids["input_ids"]
 
+                if device.startswith('cuda'):
+                    input_ids = input_ids.to(device)
+                    model.to(device)
                 # Generate predictions from the model
                 with torch.no_grad():
                     output = model(input_ids,)  # Adjust max_length as needed
@@ -804,20 +893,43 @@ class Pythia_410mModel(Model):
             
             return prediction
 
-        if device.startswith('cuda'):
-            print(f"nvidia-smi process started: {GPU_RESULTS}")
-            nvidiaProfiler = subprocess.Popen(nvidia_smi_command.split())
-            time.sleep(GPU_SMI_SLEEP)
-            response = {
-                "prediction" : infer(user_input, model, tokenizer, engine)
-            }
-            time.sleep(GPU_SMI_SLEEP)
-            nvidiaProfiler.terminate()   
-            print(f"nvidia-smi process terminated: {GPU_RESULTS}")
-        else:
-            response = {
-                "prediction" : infer(user_input, model, tokenizer, engine)
-            }
+
+        def wattmeter_task():
+            global wattmeter
+            global response
+
+            if device.startswith('cuda'):
+                # gpu_metrics = RESULTS_DIR + f"gpu-power_{self.name}_{engine}.csv"
+                # nvidia_smi_command = f"nvidia-smi -i {GPU_ID} --query-gpu=timestamp,gpu_name,utilization.gpu,utilization.memory,memory.total,memory.used,power.draw,power.max_limit,temperature.gpu --format=csv -lms {GPU_SMI_MS} -f {gpu_metrics}"
+                # print(f"nvidia-smi process started: {gpu_metrics}")
+                
+                # nvidiaProfiler = subprocess.Popen(nvidia_smi_command.split())
+                # time.sleep(GPU_SMI_SLEEP)
+                response = {
+                    "prediction" : infer(user_input, model, tokenizer, engine)
+                }
+                # time.sleep(GPU_SMI_SLEEP)
+                # nvidiaProfiler.terminate()   
+                # print(f"nvidia-smi process terminated: {gpu_metrics}")
+            else:
+                response = {
+                    "prediction" : infer(user_input, model, tokenizer, engine)
+                }
+
+            wattmeter = False
+
+
+        # start wattmeter
+        task_thread = threading.Thread(target=wattmeter_task)
+        task_thread.start()
+
+        global wattmeter
+        wattmeter = True
+        get_wattmeter_data(f'{self.name}_{engine}')
+
+        # Wait for the wattmeter task thread to complete
+        task_thread.join()
+        print("wattmeter_task has completed.")
         
         return response
 
@@ -850,15 +962,15 @@ class Pythia_410mModel(Model):
         return wrapper
 
 
-class TinyllamaModel(Model):
-    """_summary_ Creates a Tinyllama model. Inherits from Model()
+class SLMModel(Model):
+    """_summary_ Creates a SLM model. Inherits from Model()
 
     Args:
         Model (_type_): _description_
     """
 
     def __init__(self):
-        super().__init__(models_names.Tinyllama, ML_task.CODE)
+        super().__init__('SLM', ML_task.CODE)
         
     def predict(self, user_input: str, engine = None, model = None, tokenizer = None):
         
@@ -887,7 +999,7 @@ class TinyllamaModel(Model):
             decorator_to_use = self.track_torchscript
 
         #@track_emissions(project_name = "pythia-410m", output_file = RESULTS_DIR + "emissions_pythia-410m.csv")
-        @decorator_to_use
+        #@decorator_to_use
         def infer( text: str, model, tokenizer, engine) -> str:
             prediction = None
             if(engine != 'torchscript' ):
@@ -895,6 +1007,8 @@ class TinyllamaModel(Model):
                 #tokenizer.pad_token = tokenizer.eos_token
                 #inputs = tokenizer(text, return_tensors="pt",max_length=MAX_LENGTH,padding='max_length')
                 inputs = tokenizer(text, return_tensors="pt",)
+                inputs = inputs.to(device)
+                model.to(device)
                 
                 # generate
                 tokens = model.generate(**inputs, max_length=MAX_LENGTH)
@@ -913,6 +1027,9 @@ class TinyllamaModel(Model):
                 attention_mask = inputs["attention_mask"]
                 input_tuple = [input_ids,attention_mask,input_ids] # decoder_input_ids["input_ids"]
 
+                if device.startswith('cuda'):
+                    input_ids = input_ids.to(device)
+                    model.to(device)
                 # Generate predictions from the model
                 with torch.no_grad():
                     output = model(input_ids,)  # Adjust max_length as needed
@@ -931,45 +1048,66 @@ class TinyllamaModel(Model):
             
             return prediction
 
-        if device.startswith('cuda'):
-            print(f"nvidia-smi process started: {GPU_RESULTS}")
-            nvidiaProfiler = subprocess.Popen(nvidia_smi_command.split())
-            time.sleep(GPU_SMI_SLEEP)
-            response = {
-                "prediction" : infer(user_input, model, tokenizer, engine)
-            }
-            time.sleep(GPU_SMI_SLEEP)
-            nvidiaProfiler.terminate()   
-            print(f"nvidia-smi process terminated: {GPU_RESULTS}")
-        else:
-            response = {
-                "prediction" : infer(user_input, model, tokenizer, engine)
-            }
+        def wattmeter_task():
+            global wattmeter
+            global response
+        
+            if device.startswith('cuda'):
+                #gpu_metrics = RESULTS_DIR+ f"gpu-power_{self.name}_{engine}.csv"
+                #nvidia_smi_command = f"nvidia-smi -i {GPU_ID} --query-gpu=timestamp,gpu_name,utilization.gpu,utilization.memory,memory.total,memory.used,power.draw,power.max_limit,temperature.gpu --format=csv -lms {GPU_SMI_MS} -f {gpu_metrics}"
+                #print(f"nvidia-smi process started: {gpu_metrics}")
+                #nvidiaProfiler = subprocess.Popen(nvidia_smi_command.split())
+                #time.sleep(GPU_SMI_SLEEP)
+                response = {
+                    "prediction" : infer(user_input, model, tokenizer, engine)
+                }
+                #time.sleep(GPU_SMI_SLEEP)
+                #nvidiaProfiler.terminate()   
+                #print(f"nvidia-smi process terminated: {gpu_metrics}")
+            else:
+                response = {
+                    "prediction" : infer(user_input, model, tokenizer, engine)
+                }
+            
+            wattmeter = False
+
+
+        # start wattmeter
+        task_thread = threading.Thread(target=wattmeter_task)
+        task_thread.start()
+
+        global wattmeter
+        wattmeter = True
+        get_wattmeter_data(f'{self.name}_{engine}')
+
+        # Wait for the wattmeter task thread to complete
+        task_thread.join()
+        print("wattmeter_task has completed.")
         
         return response
 
-    @track_emissions(project_name = "tinyllama_none", output_file = RESULTS_DIR + "emissions_tinyllama.csv")
+    @track_emissions(project_name = "slm_none", output_file = RESULTS_DIR + "emissions_slm.csv")
     def track_no_runtime(self,func):
         def wrapper(*args, **kwargs):
             result = func(*args, **kwargs)
             return result
         return wrapper
         
-    @track_emissions(project_name = "tinyllama_onnx", output_file = RESULTS_DIR + "emissions_tinyllama.csv")
+    @track_emissions(project_name = "slm_onnx", output_file = RESULTS_DIR + "emissions_slm.csv")
     def track_onnx(self, func):
         def wrapper(*args, **kwargs):
             result = func(*args, **kwargs)
             return result
         return wrapper
     
-    @track_emissions(project_name = "tinyllama_ov", output_file = RESULTS_DIR + "emissions_tinyllama.csv")
+    @track_emissions(project_name = "slm_ov", output_file = RESULTS_DIR + "emissions_slm.csv")
     def track_ov(self, func):
         def wrapper(*args, **kwargs):
             result = func(*args, **kwargs)
             return result
         return wrapper
 
-    @track_emissions(project_name = "tinyllama_torchscript", output_file = RESULTS_DIR + "emissions_tinyllama.csv")
+    @track_emissions(project_name = "slm_torchscript", output_file = RESULTS_DIR + "emissions_slm.csv")
     def track_torchscript(self, func):
         def wrapper(*args, **kwargs):
             result = func(*args, **kwargs)

@@ -93,6 +93,15 @@ class PredictTinyllama(BaseModel):
             }
         }
 
+class PredictSLM(BaseModel):
+    input_text: str
+
+    class Config:
+        schema_extra = {
+            "example": {
+                "input_text": "def hello_world():",
+            }
+        }
 
 class IrisType(Enum):
     setosa = 0
