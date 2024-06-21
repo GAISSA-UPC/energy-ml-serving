@@ -15,7 +15,7 @@ re = 'ov'
 model_checkpoints = ["bert-base-uncased", 't5-small', "Salesforce/codegen-350M-mono","EleutherAI/pythia-70m", "Salesforce/codet5p-220m"]
 models = [ 'codet5-base', 'codet5p-220', 'codegen-350M-mono', 'gpt-neo-125m', 'codeparrot-small', 'pythia-410m'] # bloom, pythia
 models = [ 'codet5-base', 'codet5p-220', 'codeparrot-small', 'pythia-410m'] # bloom, pythia
-#models = [ 'tinyllama', ] 
+models = ['pythia-410m'] 
 # 
 #model_checkpoints = ["Salesforce/codet5-base", 'Salesforce/codet5p-220m', "Salesforce/codegen-350M-mono",
 #                     "EleutherAI/gpt-neo-125M",'codeparrot/codeparrot-small']
@@ -23,7 +23,10 @@ models = [ 'codet5-base', 'codet5p-220', 'codeparrot-small', 'pythia-410m'] # bl
 model_checkpoint = {'codet5-base':"Salesforce/codet5-base", 'codet5p-220':'Salesforce/codet5p-220m', 
                     'codegen-350M-mono':"Salesforce/codegen-350M-mono", 'gpt-neo-125m':"EleutherAI/gpt-neo-125M",
                     'codeparrot-small':'codeparrot/codeparrot-small', 'pythia-410m':"EleutherAI/pythia-410m",
-                    'tinyllama':'TinyLlama/TinyLlama-1.1B-intermediate-step-1195k-token-2.5T'} # model:checkpoint
+                    'tinyllama':'TinyLlama/TinyLlama-1.1B-intermediate-step-1431k-3T',
+                    'pythia1-4b':'EleutherAI/pythia-1.4b',
+                    'phi2':'microsoft/phi-2',
+                    'olmo':'allenai/OLMo-1B-hf'} # model:checkpoint
 
 # codegen not converted in GCP vm
 
@@ -46,7 +49,9 @@ for model in models:
         print(f"Checkpoint {checkpoint} ...\n")
 
         if model in [ 'codet5-base','codet5p-220']:
-            ov_model = OVModelForSeq2SeqLM.from_pretrained(checkpoint, export=True, use_cache = True) # t5, 
+            ov_model = OVModelForSeq2SeqLM.from_pretrained(checkpoint, export=True, use_cache = True) # t5,
+        elif model in ['pythia-410m','pythia1-4b','tinyllama', 'phi2','olmo']:
+            ov_model = OVModelForCausalLM.from_pretrained(checkpoint, export=True, use_cache = False)
         else:
             ov_model = OVModelForCausalLM.from_pretrained(checkpoint, export=True, use_cache = True) # codegen, gpt-neo, pythia (gptneox), codeparrot
 

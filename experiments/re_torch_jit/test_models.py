@@ -6,7 +6,9 @@ MAX_LENGTH=128
 # 'codegen-350M-mono',
 models = [ 'codet5-base', 'codet5p-220',  'gpt-neo-125m', 'codeparrot-small', 'pythia-410m'] # bloom, pythia
 models = [ 'codet5-base', 'codet5p-220',   'pythia-410m', 'codeparrot-small',] # bloom, pythia
-#models = [ 'tinyllama', ]
+models = [ 'codeparrot-small', ]
+
+device = 'cpu'
 
 model_checkpoint = {'codet5-base':"Salesforce/codet5-base",
                     'codet5p-220':'Salesforce/codet5p-220m',
@@ -26,7 +28,7 @@ if True:
         print(f"------------------------ Loading model: {checkpoint} ------------------------")
 
         # Load the TorchScript model
-        loaded_model = torch.jit.load(f"models/torchscript/{model_name}.pt")
+        loaded_model = torch.jit.load(f"models2/torchscript/{model_name}2.pt")
         #print(loaded_model.code)
 
         loaded_model.eval()  # Set the model to evaluation mode, turn off gradients computation
@@ -37,7 +39,7 @@ if True:
 
         #input_text = "def hello_world():"
         input_text = "if condition:\n            return condition\n        else:\n            return None\n\n    def _get_condition(self"
-        #input_text = "def rolling_max(numbers: List[int]) ->"
+        input_text = "def rolling_max(numbers: List[int]) ->"
         
         tokenizer.pad_token = tokenizer.eos_token
         #dummy_input = "def hello_world():"
@@ -67,6 +69,9 @@ if True:
         # print(input_ids[0])
         # print(len(input_ids[0]))
 
+        if device.startswith('cuda'):
+            input_ids = input_ids.to(device)
+            loaded_model.to(device)
 
         # Generate predictions from the model
         with torch.no_grad():

@@ -2,19 +2,24 @@
 Experiments script
 
 """
+import os
+import argparse
+import time
+import builtins
+import requests
 import gc
 import random
 
 from inference_requests import  inference_fastapi, load_model
-from utils import *
+import utils
 
 script_name = os.path.basename(__file__)
 def print(*args, **kwargs):
     builtins.print(f"[{script_name}] ",*args, **kwargs)
 
-if TESTING:
-    COOLDOWN_REP = 0
-    WARM_UP = False
+if utils.TESTING:
+    utils.COOLDOWN_REP = 0
+    utils.WARM_UP = False
     print(f"** WARNING: TESTING mode ** ")
 
 parser = argparse.ArgumentParser(description='Make inferences.')
@@ -58,7 +63,7 @@ def check_server(url, timeout=30, interval=5, max_attempts_time=120):
             print(f"Server is not up yet: {e}")
         time.sleep(interval)
 
-def warm_up(models, serving_infrastructure, dataset = DATASET_WARM_UP):
+def warm_up(models, serving_infrastructure, dataset = utils.DATASET_WARM_UP):
     """_summary_ Run once the inferences (using the inputs from dataset) using each model
 
     Args:
@@ -72,10 +77,10 @@ def warm_up(models, serving_infrastructure, dataset = DATASET_WARM_UP):
     print(f"------------------------------\n")
 
     for model in models:
-        make_inferences(model, serving_infrastructure, dataset) if not TEST_SCRIPTS_FLOW else print("** WARNING: TEST_SCRIPTS_FLOW**")
+        make_inferences(model, serving_infrastructure, dataset) if not utils.TEST_SCRIPTS_FLOW else print("** WARNING: TEST_SCRIPTS_FLOW**")
     
-    print(f"Waiting {COOLDOWN_REP} seconds to cooldown")
-    time.sleep(COOLDOWN_REP)
+    print(f"Waiting {utils.COOLDOWN_REP} seconds to cooldown")
+    time.sleep(utils.COOLDOWN_REP)
     print(f"warm_up(): End")
 
 def run_experiment(model, serving_infrastructure, dataset, reps):
@@ -101,9 +106,9 @@ def run_experiment(model, serving_infrastructure, dataset, reps):
         print(f"---------------- Rep {i+1} out of {reps}: \n")
         
         make_inferences(model, serving_infrastructure, dataset)
-        if COOLDOWN_REP > 0:
-            print(f"Waiting {COOLDOWN_REP} seconds to cooldown")
-            time.sleep(COOLDOWN_REP)
+        if utils.COOLDOWN_REP > 0:
+            print(f"Waiting {utils.COOLDOWN_REP} seconds to cooldown")
+            time.sleep(utils.COOLDOWN_REP)
         
         gc.collect()
     # Stop server, delete resources...
@@ -143,8 +148,8 @@ def end():
     print(f"                    finished inferencing")
     print(f"_________________________________________________________________")
 
-    if WARM_UP:
-        dataset = DATASET_PATH
+    if utils.WARM_UP:
+        dataset = utils.DATASET_PATH
         with open(dataset) as my_file:
             examples = my_file.read().splitlines()
 
@@ -153,7 +158,7 @@ def end():
 
 if __name__ == "__main__":
 
-    check_server(CHECK_URL)
+    check_server(utils.CHECK_URL)
 
     serving_infrastructures = ["torch","onnx", "ov", "torchscript"]
     serving_infrastructure = infrastructure
@@ -162,8 +167,9 @@ if __name__ == "__main__":
     print(f'models in args: {models}')
 
     if models is None :
-        print(f"MODELS not passed, using models from main.py: {MODELS}")
-        models_list = MODELS
+        models_list = utils.MODELS
+        print(f"MODELS not passed, using models from main.py: {models_list}")
+        
         
     else:
         if "," in models:
@@ -172,16 +178,16 @@ if __name__ == "__main__":
             models_list = [models,]
         for model in models_list:
             print(model)
-            assert model in endpoints.keys()
+            assert model in utils.endpoints.keys()
 
-    dataset = DATASET_PATH
+    dataset = utils.DATASET_PATH
     print(f"++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
 
     print(f"INFRASTRUCTURE -> {serving_infrastructure}\n")
     print(f"MODELS -> {models_list}\n")
 
     
-    warm_up(models_list, serving_infrastructure,) if WARM_UP else print("** no warm_up() **")
+    warm_up(models_list, serving_infrastructure,) if utils.WARM_UP else print("** no warm_up() **")
 
     # Be sure the serving infrastructure is set up
     print(f"++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
@@ -192,7 +198,7 @@ if __name__ == "__main__":
         #print(f'gc: {gc.collect()}')
         print(f"---------------- Model {model_counter+1} out of {len(models_list)}: \n")
 
-        run_experiment(model, serving_infrastructure, dataset, reps) if not TEST_SCRIPTS_FLOW else print("** WARNING: TEST_SCRIPTS_FLOW**")
+        run_experiment(model, serving_infrastructure, dataset, reps) if not utils.TEST_SCRIPTS_FLOW else print("** WARNING: TEST_SCRIPTS_FLOW**")
         model_counter+=1
         gc.collect()
 

@@ -12,13 +12,13 @@ from typing import Dict, List
 from fastapi import FastAPI, Request, HTTPException
 
 from app.schemas_code import PredictCodeT5_Base, PredictCodet5p_220m, PredictCodeGen_350m, PredictGPTNeo_125m, PredictCodeParrot_small, PredictPythia_410m, PredictPayload
-from app.schemas_code import PredictTinyllama
+from app.schemas_code import PredictTinyllama, PredictSLM
 #from transformers import pipeline
 
 # Local modules
 #from app.models import LMBERTModel, Model, T5Model, CNNModel, CodeGenModel, Pythia_70mModel, Codet5p_220mModel
 from app.models_code_load import  CodeT5_BaseModel, Codet5p_220mModel, CodeGen_350mModel, GPTNeo_125m, CodeParrot_smallModel, Pythia_410mModel
-from app.models_code_load import TinyllamaModel
+from app.models_code_load import SLMModel
 
 from fastapi.responses import FileResponse
 
@@ -47,7 +47,6 @@ app = FastAPI(
 
 loaded_model = None
 loaded_tokenizer = None
-exec_provider='CUDAExecutionProvider'
 
 def construct_response(f):
     """Construct a JSON response for an endpoint's results."""
@@ -105,6 +104,9 @@ def _index(request: Request):
 @app.post("/load_model/{engine}/{model_name}")
 async def load_model(model_name: str,engine:str):
     print("-------loading----------")
+    start_time = datetime.now()
+    #print("Loading started at:", start_time)
+
     global loaded_model, loaded_tokenizer
     try:
         # Load the model and tokenizer
@@ -115,8 +117,8 @@ async def load_model(model_name: str,engine:str):
             tokenizer_dir = info_models[engine][model_name]["tokenizer_dir"]
 
             print(f"class: {selected_class} - model_dir {model_dir}")
-            loaded_tokenizer = AutoTokenizer.from_pretrained(tokenizer_dir).to(device)
-            loaded_model = selected_class.from_pretrained(model_dir,).to(device) #  provider= exec_provider not use when using directly torch
+            loaded_tokenizer = AutoTokenizer.from_pretrained(tokenizer_dir) #.to(device)
+            loaded_model = selected_class.from_pretrained(model_dir,) #.to(device) #  provider= exec_provider not use when using directly torch
 
         elif engine == 'onnx':
             selected_class = info_models[engine][model_name]["m_class"]
@@ -124,13 +126,14 @@ async def load_model(model_name: str,engine:str):
             tokenizer_dir = info_models['onnx'][model_name]["tokenizer_dir"] # using same than onnx
 
             print(f"class: {selected_class} - model_dir {model_dir}")
-            loaded_tokenizer = AutoTokenizer.from_pretrained(tokenizer_dir).to(device)
-            #model = ORTModelForSeq2SeqLM.from_pretrained(model_dir,    return_dict = True, use_cache = True)            
-            if model_name =='codeparrot-small':
-                loaded_model = selected_class.from_pretrained(model_dir, provider=exec_provider)
-            elif model_name == 'pythia-410m':
-                loaded_model = selected_class.from_pretrained(model_dir, provider=exec_provider)
-            elif model_name == 'tinyllama':
+            if device.startswith('cuda'):
+                loaded_tokenizer = AutoTokenizer.from_pretrained(tokenizer_dir) #.to(device)
+            else:
+                loaded_tokenizer = AutoTokenizer.from_pretrained(tokenizer_dir) #.to(device)
+            #model = ORTModelForSeq2SeqLM.from_pretrained(model_dir,    return_dict = True, use_cache = True)
+            # different configurations: try other if problems            
+            if model_name in ['codeparrot-small','pythia-410m','tinyllama','pythia1-4b',
+                              'phi2','slm']:
                 loaded_model = selected_class.from_pretrained(model_dir, provider=exec_provider)
             else:
                 loaded_model = selected_class.from_pretrained(model_dir,    return_dict = True, use_cache = False, provider=exec_provider, use_io_binding=False)
@@ -143,15 +146,16 @@ async def load_model(model_name: str,engine:str):
             model_dir = info_models[engine][model_name]["model_dir"]
             tokenizer_dir = info_models['onnx'][model_name]["tokenizer_dir"] # using same than onnx
 
-            print(f"class: {selected_class} - model_dir {model_dir}")
+            print(f"class: {selected_class} - model_dir {model_dir} - model_name {model_name}")
             loaded_tokenizer = AutoTokenizer.from_pretrained(tokenizer_dir) 
             
+            # different configurations: try other if problems
             if model_name =='codeparrot-small':
                 loaded_model = selected_class.from_pretrained(model_dir, ov_config={"CACHE_DIR":""}, provider=exec_provider)
-            elif model_name == 'pythia-410m':
+            elif model_name == ['tinyllama',]:
                 loaded_model = selected_class.from_pretrained(model_dir, provider=exec_provider)
-            elif model_name == 'tinyllama':
-                loaded_model = selected_class.from_pretrained(model_dir, provider=exec_provider)
+            elif model_name == ['slm','pythia1-4b','phi2','pythia-410m']:
+                loaded_model = selected_class.from_pretrained(model_dir, provider=exec_provider,use_cache=True)
             else:
                 loaded_model = selected_class.from_pretrained(model_dir,return_dict = True, use_cache = False, use_io_binding=False, provider=exec_provider)
         elif engine == 'torchscript':
@@ -162,10 +166,24 @@ async def load_model(model_name: str,engine:str):
             # Load the TorchScript model
             loaded_model = torch.jit.load(model_dir)
             #print(loaded_model.code)
+            if exec_provider == 'CUDAExecutionProvider': loaded_model = loaded_model.to(device)
             loaded_model.eval()  # Set the model to evaluation mode, turn off gradients computation
             #decorator_to_use = self.track_torchscript
+        
+        print(f"model_dir: {model_dir}")
+        #print(f"tokenizer: {loaded_tokenizer}")
+        print(f"EP and R using: {device}:{exec_provider}")
+        end_time = datetime.now()
+        #print("Loading finished at:", end_time)
+        with open('results/load_times.csv', mode='a', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerow([start_time, end_time, engine, model_name])
+        
         return {"message": f"Model {model_name} loaded successfully"}
+        
     except Exception as e:
+        print(f"Error : {e}")
+        print(f"----------------------------------------------------------")
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -320,7 +338,6 @@ def _predict_pythia_410m(request: Request, payload: PredictPythia_410m, engine: 
     input_text = payload.input_text 
     print("Input text")
     print(input_text)
-    #model_wrapper = next((m for m in model_wrappers_list if m["type"] == type), None)
 
     model = Pythia_410mModel()
     print(f"Model: {model.name}")
@@ -346,17 +363,18 @@ def _predict_pythia_410m(request: Request, payload: PredictPythia_410m, engine: 
         }
     return response
 
-@app.post("/huggingface_models/tinyllama/{engine}", tags=["Hugging Face Models"])
+
+
+@app.post("/huggingface_models/slm/{engine}", tags=["Hugging Face Models"])
 @construct_response
-def _predict_tinyllama(request: Request, payload: PredictTinyllama, engine: str = None):
-    """Codet5p_220m model."""
+def _predict_slm(request: Request, payload: PredictSLM, engine: str = None):
+    """SLM model."""
     
     input_text = payload.input_text 
     print("Input text")
     print(input_text)
-    #model_wrapper = next((m for m in model_wrappers_list if m["type"] == type), None)
-
-    model = TinyllamaModel()
+    
+    model = SLMModel()
     print(f"Model: {model.name}")
 
     if input_text:
@@ -366,11 +384,108 @@ def _predict_tinyllama(request: Request, payload: PredictTinyllama, engine: str 
             "message": HTTPStatus.OK.phrase,
             "status-code": HTTPStatus.OK,
             "data": {
-                #"model-type": model_wrapper["type"],
                 "model-type": model.name,
                 "input_text": input_text,
                 "prediction": prediction,
-                #"predicted_type": predicted_type,
+            },
+        }
+    else:
+        response = {
+            "message": "Model not found",
+            "status-code": HTTPStatus.BAD_REQUEST,
+        }
+    return response
+
+
+@app.post("/huggingface_models/pythia1-4b/{engine}", tags=["Hugging Face Models"])
+@construct_response
+def _predict_pythia1_4b(request: Request, payload: PredictSLM, engine: str = None):
+    """SLM model."""
+    
+    input_text = payload.input_text 
+    print("Input text")
+    print(input_text)
+    
+    model = SLMModel()
+    model.name='pythia1-4b'
+    print(f"Model: {model.name}")
+
+    if input_text:
+        prediction = model.predict(input_text, engine, loaded_model, loaded_tokenizer)
+        
+        response = {
+            "message": HTTPStatus.OK.phrase,
+            "status-code": HTTPStatus.OK,
+            "data": {
+                "model-type": model.name,
+                "input_text": input_text,
+                "prediction": prediction,
+            },
+        }
+    else:
+        response = {
+            "message": "Model not found",
+            "status-code": HTTPStatus.BAD_REQUEST,
+        }
+    return response
+
+
+@app.post("/huggingface_models/phi2/{engine}", tags=["Hugging Face Models"])
+@construct_response
+def _predict_phi2(request: Request, payload: PredictSLM, engine: str = None):
+    """SLM model."""
+    
+    input_text = payload.input_text 
+    print("Input text")
+    print(input_text)
+    
+    model = SLMModel()
+    model.name='phi2'
+    print(f"Model: {model.name}")
+
+    if input_text:
+        prediction = model.predict(input_text, engine, loaded_model, loaded_tokenizer)
+        
+        response = {
+            "message": HTTPStatus.OK.phrase,
+            "status-code": HTTPStatus.OK,
+            "data": {
+                "model-type": model.name,
+                "input_text": input_text,
+                "prediction": prediction,
+            },
+        }
+    else:
+        response = {
+            "message": "Model not found",
+            "status-code": HTTPStatus.BAD_REQUEST,
+        }
+    return response
+
+
+@app.post("/huggingface_models/tinyllama/{engine}", tags=["Hugging Face Models"])
+@construct_response
+def _predict_tinyllama(request: Request, payload: PredictSLM, engine: str = None):
+    """SLM model."""
+    
+    input_text = payload.input_text 
+    print("Input text")
+    print(input_text)
+    
+    model = SLMModel()
+    model.name='tinyllama'
+    print(f"Model: {model.name}")
+
+    if input_text:
+        prediction = model.predict(input_text, engine, loaded_model, loaded_tokenizer)
+        
+        response = {
+            "message": HTTPStatus.OK.phrase,
+            "status-code": HTTPStatus.OK,
+            "data": {
+                "model-type": model.name,
+                "input_text": input_text,
+                "prediction": prediction,
             },
         }
     else:

@@ -22,15 +22,16 @@ month=$(date +%m)
 year=$(date +%Y)
 SERVER_LOG="results/server_$day$month$year_01_$1.log" #change
 #python3=/home/usuaris/fduran/Python-3.8.4/python # rdlab local python
-#python3=python3 # comment if rdlab
-python3=python # personal setup
+python3=python3 # comment if rdlab, gaissa
+#python3=python # personal setup
 TOKENIZERS_PARALLELISM=true
 OMP_NUM_THREADS=8
 
-energibridge="/d/GAISSA/EnergiBridge-main/target/release/energibridge.exe"
+#energibridge="/d/GAISSA/EnergiBridge-main/target/release/energibridge.exe" # windows
+energibridge="/home/fjdur/EnergiBridge/target/release/energibridge" # linux
 
 runtime_engines=('torch' 'onnx' 'ov' 'torchscript')
-models=('codet5-base' 'codet5p-220' 'codeparrot-small' 'pythia-410m')
+models=('codeparrot-small' 'pythia-410m') # 'codet5-base' 'codet5p-220' 
 
 # Function to echo with a prefix
 print() {
@@ -60,7 +61,7 @@ if $INSTALL = true; then
 
     # Upgrade installed packages
     sudo apt-get upgrade -y
-    sudo apt-get -y install uvicorn
+    #sudo apt-get -y install uvicorn
     #pip3 install unicorn --user 
 
     $python3 -m pip install --upgrade pip
@@ -84,6 +85,14 @@ if [ $START_SERVER = true ]; then
 fi
 
 #nvidia-smi -i 1 --query-gpu=timestamp,gpu_name,utilization.gpu,utilization.memory,memory.total,memory.used,power.draw,power.max_limit,temperature.gpu --format=csv -l 1 -f output_gpu
+# Start GPU monitoring with nvidia-smi and log to a temporary file
+#nvidia-smi --query-gpu=timestamp,name,utilization.gpu,utilization.memory --format=csv -l 1 > gpu_log.csv &
+#nvidia_smi_command = f"nvidia-smi -i {GPU_ID} --query-gpu=timestamp,gpu_name,utilization.gpu,utilization.memory,memory.total,memory.used,power.draw,power.max_limit,temperature.gpu --format=csv -l {GPU_SMI_SEC} -f {GPU_RESULTS}"
+# nvidia command
+#nvidia-smi -i 0 --query-gpu=timestamp,gpu_name,utilization.gpu,utilization.memory,memory.total,memory.used,power.draw,power.max_limit,temperature.gpu --format=csv -lms 100 -f "output_gpu.csv" &
+
+# Save the PID of the nvidia-smi process
+#NVIDIA_PID=$!
 
 # python testing/main.py -i onnx -r 1 -m 'codet5-base' | tee -a results/out_$runtime.log;
 timestamps=()
@@ -106,25 +115,25 @@ if [ $ALL_RUNTIME_ENGINES = true ]; then
     #$python3 testing/main.py -i $runtime -r $REPS -m $model | tee -a results/out_$runtime.log;
     my_command="$python3 testing/main.py -i $runtime -r $REPS -m $model"
     $energibridge --output results/energy_$runtime-$model.csv --command-output results/out_$runtime-$model.log --interval 200 $my_command
-    
+    tail -10 results/gpu_results.csv 
     timestamps+=($(date))
     #$python3 testing/main.py -i $runtime -r $REPS -m 'codet5p-220' | tee -a results/out_$runtime.log;
     model=${models[1]}
     my_command="$python3 testing/main.py -i $runtime -r $REPS -m $model"
     $energibridge --output results/energy_$runtime-$model.csv --command-output results/out_$runtime-$model.log --interval 200 $my_command
-
+    tail -10 results/gpu_results.csv 
     timestamps+=($(date))
     #$python3 testing/main.py -i $runtime -r $REPS -m 'codeparrot-small' | tee -a results/out_$runtime.log;
     model=${models[2]}
     my_command="$python3 testing/main.py -i $runtime -r $REPS -m $model"
     $energibridge --output results/energy_$runtime-$model.csv --command-output results/out_$runtime-$model.log --interval 200 $my_command
-
+    tail -10 results/gpu_results.csv 
     timestamps+=($(date))
     #$python3 testing/main.py -i $runtime -r $REPS -m 'pythia-410m' | tee -a results/out_$runtime.log;
     model=${models[3]}
     my_command="$python3 testing/main.py -i $runtime -r $REPS -m $model"
     $energibridge --output results/energy_$runtime-$model.csv --command-output results/out_$runtime-$model.log --interval 200 $my_command
-
+    tail -10 results/gpu_results.csv 
     timestamps+=($(date))
 
     # Calculate the elapsed time
@@ -152,25 +161,25 @@ if [ $ALL_RUNTIME_ENGINES = true ]; then
     model=${models[0]}
     my_command="$python3 testing/main.py -i $runtime -r $REPS -m $model"
     $energibridge --output results/energy_$runtime-$model.csv --command-output results/out_$runtime-$model.log --interval 200 $my_command
-
+    tail -10 results/gpu_results.csv 
     timestamps+=($(date))
     #$python3 testing/main.py -i $runtime -r $REPS -m 'codet5p-220' | tee -a results/out_$runtime.log;
     model=${models[1]}
     my_command="$python3 testing/main.py -i $runtime -r $REPS -m $model"
     $energibridge --output results/energy_$runtime-$model.csv --command-output results/out_$runtime-$model.log --interval 200 $my_command
-
+    tail -10 results/gpu_results.csv 
     timestamps+=($(date))
     #$python3 testing/main.py -i $runtime -r $REPS -m 'codeparrot-small' | tee -a results/out_$runtime.log;
     model=${models[2]}
     my_command="$python3 testing/main.py -i $runtime -r $REPS -m $model"
     $energibridge --output results/energy_$runtime-$model.csv --command-output results/out_$runtime-$model.log --interval 200 $my_command
-
+    tail -10 results/gpu_results.csv 
     timestamps+=($(date))
     #$python3 testing/main.py -i $runtime -r $REPS -m 'pythia-410m' | tee -a results/out_$runtime.log;
     model=${models[3]}
     my_command="$python3 testing/main.py -i $runtime -r $REPS -m $model"
     $energibridge --output results/energy_$runtime-$model.csv --command-output results/out_$runtime-$model.log --interval 200 $my_command
-
+    tail -10 results/gpu_results.csv 
     timestamps+=($(date))
     # Calculate the elapsed time
     end_time=$(date +%s.%N)
@@ -294,6 +303,14 @@ else
     print "Time taken: $elapsed_time seconds"
     print "Time taken: $elapsed_time seconds"
 fi
+
+
+# Optionally wait for the Python script to finish
+wait $!
+
+# Kill the nvidia-smi monitoring process
+#kill $NVIDIA_PID
+
 
 print "---------------------------------------------------------------"
 print "runall.sh finished!!!"

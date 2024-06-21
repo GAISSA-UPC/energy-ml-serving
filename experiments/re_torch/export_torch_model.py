@@ -28,13 +28,18 @@ MAX_LENGTH = 128
 model_checkpoint = {'codet5-base':"Salesforce/codet5-base", 'codet5p-220':'Salesforce/codet5p-220m', 
                     'codegen-350-mono':"Salesforce/codegen-350M-mono", 'gpt-neo-125m':"EleutherAI/gpt-neo-125M",
                     'codeparrot-small':'codeparrot/codeparrot-small', 'pythia-410m':"EleutherAI/pythia-410m",
-                    'tinyllama':'TinyLlama/TinyLlama-1.1B-intermediate-step-1195k-token-2.5T'} # model:checkpoint
+                    'tinyllama':'TinyLlama/TinyLlama-1.1B-intermediate-step-1431k-3T',
+                    'llama3in':'meta-llama/Meta-Llama-3-8B-Instruct', # killed gaissa server
+                    'mistral7b':'mistralai/Mistral-7B-Instruct-v0.2',
+                    'pythia1-4b':'EleutherAI/pythia-1.4b',
+                    'mpt-1-4b':'mosaicml/mpt-1b-redpajama-200b',
+                    'phi2':'microsoft/phi-2'} # model:checkpoint
 # TinyLlama-1.1B-intermediate-step-1195k-token-2.5T
 # TinyLlama/TinyLlama-1.1B-Chat-v0.1
 
 #models = [ 'codet5-base', 'codet5p-220', 'codegen-350-mono', 'gpt-neo-125m', 'codeparrot-small', 'pythia-410m'] # bloom, pythia
 models = [ 'codet5-base', 'codet5p-220', 'codeparrot-small', 'pythia-410m'] # bloom, pythia
-#models = ['tinyllama']
+models = ['phi2']
 #model_name = models[5]
 
 #checkpoint = model_checkpoint[model_name]
@@ -72,6 +77,7 @@ def my_pipeline(model, input_text):
 
     # Prepare the device (GPU or CPU)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    device = 'cpu'
     torch_model.to(device)
 
     # Encode the input text and send to the appropriate device
@@ -136,7 +142,7 @@ for model in models:
             #torch_model = AutoModel.from_pretrained(checkpoint)
             torch_model = AutoModelForCausalLM.from_pretrained(checkpoint)
         else:
-            torch_model = AutoModelForCausalLM.from_pretrained(checkpoint, torch_dtype=torch.bfloat16)
+            torch_model = AutoModelForCausalLM.from_pretrained(checkpoint, trust_remote_code=True) #torch_dtype=torch.bfloat16
             #ORTModelForCausalLM.from_pretrained(checkpoint, export=True, use_cache = True) # codegen, gpt-neo, pythia (gptneox), codeparrot
 
         # [codegen]

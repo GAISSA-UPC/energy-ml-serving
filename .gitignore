@@ -1,5 +1,5 @@
 model*/
-results/
+results*
 scriptsenv/
 Lib/
 bert-base-uncased/
@@ -12,4 +12,6 @@ app/__pycache__/
 scripts/*.exe
 scripts/*activate*
 output.log
-results[0-9]*/
+results[0-9]*/}
+*.log
+*.out
