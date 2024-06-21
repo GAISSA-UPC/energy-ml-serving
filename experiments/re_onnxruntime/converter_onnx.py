@@ -29,12 +29,18 @@ re = 'onnx'
 #models = [ 'codet5-base', 'codet5p-220',  'gpt-neo-125m', 'codeparrot-small', 'pythia-410m'] # bloom, pythia
 models = [ 'codet5-base', 'codet5p-220',  'codeparrot-small', 'pythia-410m'] # bloom, pythia
 #models = [ 'tinyllama', ] 
-models = ['pythia-410m']
+models = ['olmo']
 
 model_checkpoint = {'codet5-base':"Salesforce/codet5-base", 'codet5p-220':'Salesforce/codet5p-220m', 
                     'codegen-350M-mono':"Salesforce/codegen-350M-mono", 'gpt-neo-125m':"EleutherAI/gpt-neo-125M",
                     'codeparrot-small':'codeparrot/codeparrot-small', 'pythia-410m':"EleutherAI/pythia-410m",
-                    'tinyllama':'TinyLlama/TinyLlama-1.1B-intermediate-step-1195k-token-2.5T'} # model:checkpoint
+                    'tinyllama':'TinyLlama/TinyLlama-1.1B-intermediate-step-1431k-3T',
+                    'phi3': 'microsoft/Phi-3-mini-128k-instruct',
+                    'llama3in':'meta-llama/Meta-Llama-3-8B-Instruct', # killed gaissa server
+                    'mistral7b':'mistralai/Mistral-7B-Instruct-v0.2',
+                    'pythia1-4b':'EleutherAI/pythia-1.4b',
+                    'phi2':'microsoft/phi-2',
+                    'olmo':'allenai/OLMo-1B-hf'} # model:checkpoint
 
 # codegen not converted in GCP vm
 for model in models:
