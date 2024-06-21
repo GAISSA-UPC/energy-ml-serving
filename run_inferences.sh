@@ -17,33 +17,42 @@
 
 #MODELS = [ 'codet5-base', 'codeparrot-small', 'pythia-410m', 'codet5p-220']  #'gpt-neo-125m', 'codet5p-220'
 
-python3 testing/main.py -i ov -r 1 -m 'codet5-base' | tee -a results/out_ov.log;
+# python3 testing/main.py -i ov -r 1 -m 'codet5-base' | tee -a results/out_ov.log;
+# echo "________________________________________" | tee -a results/out_ov.log;
+# python3 testing/main.py -i ov -r 1 -m 'codet5p-220' | tee -a results/out_ov.log;
+# echo "________________________________________" | tee -a results/out_ov.log;
+# python3 testing/main.py -i ov -r 1 -m 'codeparrot-small' | tee -a results/out_ov.log;
+# echo "________________________________________" | tee -a results/out_ov.log;
+# python3 testing/main.py -i ov -r 1 -m 'pythia-410m' | tee -a results/out_ov.log;
+# echo "________________________________________" | tee -a results/out_ov.log;
+
+
+# python3 testing/main.py -i onnx -r 1 -m 'codet5-base' | tee -a results/out_onnx.log;
+# python3 testing/main.py -i onnx -r 1 -m 'codet5p-220' | tee -a results/out_onnx.log;
+# python3 testing/main.py -i onnx -r 1 -m 'codeparrot-small' | tee -a results/out_onnx.log;
+# python3 testing/main.py -i onnx -r 1 -m 'pythia-410m' | tee -a results/out_onnx.log;
+
+
+# python3 testing/main.py -i torchscript -r 1 -m 'codet5-base' | tee -a results/out_torchscript.log;
+# python3 testing/main.py -i torchscript -r 1 -m 'codet5p-220' | tee -a results/out_torchscript.log;
+#python3 testing/main.py -i torchscript -r 1 -m 'codeparrot-small' | tee -a results/out_torchscript.log;
+#python3 testing/main.py -i torchscript -r 1 -m 'pythia-410m' | tee -a results/out_torchscript.log;
+
+
+# python3 testing/main.py -i torch -r 1 -m 'codet5-base' | tee -a results/out_torch.log;
+# echo "________________________________________" | tee -a results/out_torch.log;
+# python3 testing/main.py -i torch -r 1 -m 'codet5p-220' | tee -a results/out_torch.log;
+# echo "________________________________________" | tee -a results/out_torch.log;
+# python3 testing/main.py -i torch -r 1 -m 'codeparrot-small' | tee -a results/out_torch.log;
+# echo "________________________________________" | tee -a results/out_torch.log;
+# python3 testing/main.py -i torch -r 1 -m 'pythia-410m' | tee -a results/out_torch.log;
+# echo "________________________________________" | tee -a results/out_torch.log;
+
+python3 testing/main.py -i onnx -r 1 -m 'slm' | tee -a results/out_onnx.log;
+echo "________________________________________" | tee -a results/out_onnx.log;
+python3 testing/main.py -i ov -r 1 -m 'slm' | tee -a results/out_ov.log;
 echo "________________________________________" | tee -a results/out_ov.log;
-python3 testing/main.py -i ov -r 1 -m 'codet5p-220' | tee -a results/out_ov.log;
-echo "________________________________________" | tee -a results/out_ov.log;
-python3 testing/main.py -i ov -r 1 -m 'codeparrot-small' | tee -a results/out_ov.log;
-echo "________________________________________" | tee -a results/out_ov.log;
-python3 testing/main.py -i ov -r 1 -m 'pythia-410m' | tee -a results/out_ov.log;
-echo "________________________________________" | tee -a results/out_ov.log;
-
-
-python3 testing/main.py -i onnx -r 1 -m 'codet5-base' | tee -a results/out_onnx.log;
-python3 testing/main.py -i onnx -r 1 -m 'codet5p-220' | tee -a results/out_onnx.log;
-python3 testing/main.py -i onnx -r 1 -m 'codeparrot-small' | tee -a results/out_onnx.log;
-python3 testing/main.py -i onnx -r 1 -m 'pythia-410m' | tee -a results/out_onnx.log;
-
-
-python3 testing/main.py -i torchscript -r 1 -m 'codet5-base' | tee -a results/out_torchscript.log;
-python3 testing/main.py -i torchscript -r 1 -m 'codet5p-220' | tee -a results/out_torchscript.log;
-python3 testing/main.py -i torchscript -r 1 -m 'codeparrot-small' | tee -a results/out_torchscript.log;
-python3 testing/main.py -i torchscript -r 1 -m 'pythia-410m' | tee -a results/out_torchscript.log;
-
-
-python3 testing/main.py -i torch -r 1 -m 'codet5-base' | tee -a results/out_torch.log;
+python3 testing/main.py -i torch -r 1 -m 'slm' | tee -a results/out_torch.log;
 echo "________________________________________" | tee -a results/out_torch.log;
-python3 testing/main.py -i torch -r 1 -m 'codet5p-220' | tee -a results/out_torch.log;
-echo "________________________________________" | tee -a results/out_torch.log;
-python3 testing/main.py -i torch -r 1 -m 'codeparrot-small' | tee -a results/out_torch.log;
-echo "________________________________________" | tee -a results/out_torch.log;
-python3 testing/main.py -i torch -r 1 -m 'pythia-410m' | tee -a results/out_torch.log;
-echo "________________________________________" | tee -a results/out_torch.log;
+python3 testing/main.py -i torchscript -r 1 -m 'slm' | tee -a results/out_torchscript.log;
+echo "________________________________________" | tee -a results/out_torchscript.log;
