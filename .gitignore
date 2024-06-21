@@ -1,5 +1,5 @@
 model*/
-results/
+results*
 scriptsenv/
 Lib/
 bert-base-uncased/
