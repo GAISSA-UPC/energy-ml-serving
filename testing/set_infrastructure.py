@@ -4,12 +4,16 @@ Script to set up ML Serving infrastructure
 ToDo: One script per infrastructure to avoid loading more modules
 
 """
+import os
+import argparse
+import builtins
+
 # Sagemaker
 import sagemaker
 import boto3
 from sagemaker.huggingface import HuggingFaceModel
 
-from utils import *
+import utils
 
 script_name = os.path.basename(__file__)
 def print(*args, **kwargs):
@@ -70,11 +74,10 @@ def set_up_sagemaker(models):
             role = iam.get_role(RoleName='sagemaker_role')['Role']['Arn']
 
         print(f"sagemaker role arn: {role}")
-        #models = [ 'codet5-base', 'codet5p-220', 'codegen-350-mono', 'gpt-neo-125m', 'codeparrot-small', 'pythia-410m'] # bloom, pythia
         
 
         model_name = model
-        checkpoint = model_checkpoint[model_name]
+        checkpoint = utils.model_checkpoint[model_name]
         print(f'checkpoint: {checkpoint}')
 
         # Hub Model configuration. https://huggingface.co/models
@@ -104,14 +107,11 @@ def set_up_sagemaker(models):
 
 if __name__ == "__main__":
 
-    #models = [ 'codet5-base', 'codet5p-220', 'codegen-350-mono', 'gpt-neo-125m', 'codeparrot-small', 'pythia-410m'] # bloom, pythia
-    #models = [ 'codet5-base', 'codet5p-220', 'gpt-neo-125m', 'codeparrot-small',]
-    #models = models[:2]
     serving_infrastructures = ["torch","onnx", "torchserve", "sagemaker"]
     serving_infrastructure = infrastructure
 
     if models is None :
-        models_list = [ 'codet5-base', 'codet5p-220', 'gpt-neo-125m', 'codeparrot-small',]
+        models_list = utils.MODELS
     else:
         if "," in models:
             models_list = models.split(",")
@@ -119,7 +119,7 @@ if __name__ == "__main__":
             models_list = [models,]
         for model in models_list:
             print(model)
-            assert model in model_checkpoint.keys()
+            #assert model in model_checkpoint.keys()
     print(f'Models: {models_list}')
     set_up_infrastructure(models_list, serving_infrastructure)
     

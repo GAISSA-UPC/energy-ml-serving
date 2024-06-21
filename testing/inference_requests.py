@@ -1,9 +1,12 @@
 import requests
+import os
+import time
+import builtins
 
 #import boto3 # for aws
 #from codecarbon import track_emissions
 import json
-from utils import *
+import utils
 
 script_name = os.path.basename(__file__)
 def print(*args, **kwargs):
@@ -29,18 +32,18 @@ def inference_fastapi(model, serving_infrastructure, dataset):
     def infer(engine):
         # Make the POST request using the SageMaker runtime client
 
-        print(f"Endpoint: {url}{endpoints[model]}/{engine}")
+        print(f"Endpoint: {url}{utils.endpoints[model]}/{engine}")
         # Define the headers (usually "Content-Type: application/json")
         #headers = {"Content-Type": "application/json"}
         # problem: data: [inference_requests.py]  Raised exception: 'charmap' codec can't encode character '\u239b' in position 583: character maps to <undefined>
         headers = {"Content-Type": "application/json; charset=utf-8"} # 
-        response = requests.post(f"{url}{endpoints[model]}/{engine}"  , json=payload, headers=headers)
+        response = requests.post(f"{url}{utils.endpoints[model]}/{engine}"  , json=payload, headers=headers,)# timeout=3*60
         
         return response
 
     for line in dataset:
-        print(f"Waiting {WAIT_BETWEEN_INFERENCE} seconds between inferences")
-        time.sleep(WAIT_BETWEEN_INFERENCE)
+        print(f"Waiting {utils.WAIT_BETWEEN_INFERENCE} seconds between inferences")
+        time.sleep(utils.WAIT_BETWEEN_INFERENCE)
         print("___________________________________")
         # Define the data you want to send as a JSON payload
         payload = {
@@ -70,7 +73,7 @@ def inference_fastapi(model, serving_infrastructure, dataset):
             print(f"\nRaised exception: {e}")
             continue
 
-    print (f"CodeCarbon Results: {RESULTS_DIR}emissions_{model}.csv")
+    print (f"CodeCarbon Results: {utils.RESULTS_DIR}emissions_{model}.csv")
 
 
 def load_model(model, serving_infrastructure):
