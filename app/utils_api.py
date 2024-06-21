@@ -27,8 +27,8 @@ if torch.cuda.is_available():
 else:
     device = "cpu"
 
-device='cpu' #cpu cuda ## [CHANGE]
-exec_provider='CPUExecutionProvider' # CPUExecutionProvider, CUDAExecutionProvider ## [CHANGE]
+device='cuda' #cpu cuda ## [CHANGE]
+exec_provider='CUDAExecutionProvider' # CPUExecutionProvider, CUDAExecutionProvider ## [CHANGE]
 # VERIFY TORCHSCRIPT MODELS ARE EXPORTED WITH CUDA IF USING IT # [CHANGE]
 
 test_model = 'pythia1-4b'
