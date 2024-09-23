@@ -1,8 +1,12 @@
-# Energy consumption of ML serving infrastructure: runtime engines
+# Energy consumption of DL serving with runtime engines and execution providers for code generation SLMs
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## Summary
-Guidelines to serve models using runtime engine (+ web framework API) as serving infrastructure
+The contributions of this work are:
+
+- An analysis of the impact of different runtime engines and execution providers on energy consumption, execution time, and computing-resource utilization during the inference phase of code generation using SLMs. This included a detailed examination of seven different DL serving configurations.
+- Practical guidelines for practitioners to enhance their DL serving infrastructures, focusing on improving energy and performance efficiency.
+- This replication package.
 
 ## Repository Structure
 
@@ -11,8 +15,17 @@ The repository is structured as follows:
 <pre/>
 - app
   | API, schemas
+- diagrams
+  | 
+- experiments
+  | Notebooks and scripts to process profilers datasets
+  | 
 - models
   | This folder contains our trained or pretrained models
+- scripts
+  | environment scripts and bash scripts for automated experiments
+- testing
+  | scripts to send request to server
 - notebooks
   | This folder contains the jupyter notebooks
 - reports
@@ -24,16 +37,38 @@ The repository is structured as follows:
 - requirements.txt: The dependencies of our implementation
 </pre>
 
-Guide:
-1. [API creation](manuals/01_create_api.md). Guide to create an API to deploy ML models.
-2. [Add pretrained model](manuals/02_add_models.md). Guide to add pretrained ML models (from HuggingFace, hdf5 format, pickle format) to do inferences through an API.
-3. [Deploy ML models in a cloud provider (General)](manuals/03_deploy_general.md). Guide to deploy ML models using an API in a cloud provider.
 
-# Replication package
 
-1. Start environment
-   1. if energibridge, follow instructions: https://github.com/tdurieux/EnergiBridge
-2. Edit files with experiment parameters (time,files,...), check CONSTANTS in scripts:
+## Replication package
+
+### 1. Data management
+- Needed: HumanEval dataset
+- Output: New input dataset
+
+- files: 
+  - testing/dataset
+
+### 2. Modelling
+- Needed: Selection criteria
+- Output: Selected models
+
+- files:
+  - models_selection.csv
+### 3. Development
+- Needed: Development of serving infrastructure, selected models
+- Output: Serving infrastructure
+
+- files:
+  - app/
+
+### 4. Operation
+- Needed: Deployed serving infrastructure
+- Output: results (profilers datasets)
+
+- files:
+  - testing/
+
+1. Edit experiment parameters (time,files,...):
    1. server settings
       - ```app/models_code_load.py```: Model classes
         - MAX_LENGTH tokens
@@ -43,38 +78,41 @@ Guide:
       - ```runall.sh```: experiment settings, bash script
         - run server
         - run experiments for each runtime engine
-3. Run server and experiments: runall.sh
-   1. # linux
-      ```bash
-      nohup ./runall.sh > results/runall.out 2>&1 &
-      ```
-   2. # windows
-      ```bash
-      ./runall.sh > results/runall.out 2>&1
-      ```
-4. check ```results/*```
+2. Run server and experiments: runall.sh
+  ```bash
+  nohup ./runall.sh > results/runall.out 2>&1 &
+  ```
+3. Obtain ```results/*```
 
 
-# ML Serving
+### 5. Research output
+- Needed: Profilers datasets
+- Output: Research output, data analysis and, support files to answer RQs
 
-Guidelines to serve models using runtime engine (+ web framework API) as serving infrastructure
+- files:
+  - experiments/
+  - figures
+  - tables
+  - statistical results
 
-## Runtime Engine + Web framework
-### ONNX Runtime
-### OpenVINO
-### Torch.jit
-### No runtime (Using only ML framework)
+## Models
 
-
-## Models*
-
-MODELS = [ 'codet5-base', 'codeparrot-small', 'pythia-410m', 'codet5p-220']
+- [codeparrot-small](https://huggingface.co/codeparrot/codeparrot-small)
+- [phi2](https://huggingface.co/codeparrot/)
+- [pythia-410m](https://huggingface.co/codeparrot/)
+- [pythia1-4b](https://huggingface.co/codeparrot/)
+- [tinyllama](https://huggingface.co/codeparrot/)
 
 ## Energy tracking metrics
-- codecarbon
-- ...
+- [EnergiBridge](https://github.com/tdurieux/EnergiBridge)
+- [nvidia-smi](https://developer.nvidia.com/nvidia-system-management-interface)
+- [Wattmeter](https://vitriko.eu/regleta-inteligente-netio-powerbox-4kf)
 
-## Data collection
+
+
+## Help
+
+### Testing
 Dataset:
 [testing/inputs.txt](testing/inputs.txt)
 
@@ -97,17 +135,12 @@ python3 testing/main.py -i torchscript -r 2 | tee -a results/out_torchscript.log
 ```
 Results are saved in [results/](results/)
 
-- check steps in repo:
-https://github.com/MLOps-essi-upc/MLOps2023Course-demo/blob/main/docs/deployment/01_deploy_general.md
-
-Manual to configure proxy server
-- check service is up
-service nginx status
-
-## References
-See manuals/references
+### Useful Guides
+1. [API creation](manuals/01_create_api.md). Guide to create an API to deploy ML models.
+2. [Add pretrained model](manuals/02_add_models.md). Guide to add pretrained ML models (from HuggingFace, hdf5 format, pickle format) to do inferences through an API.
+3. [Deploy ML models in a cloud provider (General)](manuals/03_deploy_general.md). Guide to deploy ML models using an API in a cloud provider.
 
 
--------------------
-
-Experiment setup:
+### External
+1. https://madewithml.com, API
+2. https://github.com/se4ai2122-cs-uniba/SE4AI2021Course_FastAPI-demo, API
