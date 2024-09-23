@@ -11,6 +11,5 @@ app/__pycache__/
 scripts/*.exe
 scripts/*activate*
 output.log
-results[0-9]*/}
 *.log
 *.out
