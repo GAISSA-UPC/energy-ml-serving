@@ -1,9 +1,6 @@
 model*/
 scriptsenv/
 Lib/
-bert-base-uncased/
-pythia-70m/
-pythia-70m-deduped/
 app/__pycache__/
 .ipynb_checkpoints
 *.pyc
