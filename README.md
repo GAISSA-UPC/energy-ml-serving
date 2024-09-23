@@ -15,28 +15,21 @@ The repository is structured as follows:
 <pre/>
 - app
   | API, schemas
-- diagrams
-  | 
 - experiments
   | Notebooks and scripts to process profilers datasets
-  | 
-- models
-  | This folder contains our trained or pretrained models
-- scripts
-  | environment scripts and bash scripts for automated experiments
-- testing
-  | scripts to send request to server
-- notebooks
-  | This folder contains the jupyter notebooks
-- reports
-  | Generated PDFs, graphics and figures to be used in reporting
-- utils
-  | Python functions
 - manuals
-  | self-contained manuals
+  | Self-contained manuals related to the serving infrastructure
+- models
+  | This folder contains pretrained models
+- results
+  | Generated datasets, PDFs, graphics and figures to be used in reporting
+- scripts
+  | Environment scripts and bash scripts for automated experiments
+- testing
+  | Scripts to send request to server
 - requirements.txt: The dependencies of our implementation
+- runall: Bash script to start server and run experiments
 </pre>
-
 
 
 ## Replication package
@@ -95,6 +88,17 @@ The repository is structured as follows:
   - tables
   - statistical results
 
+Files in `experiments/`
+
+- `visualize_{profiler}` - Visualization of raw data obtained from profilers.
+- `01_get_info_{profiler}` - Preprocessing of raw data obtained from profilers.
+- `02_get_time_marks` - Get time marks of inferences done during experiment.
+- `03_analysis_{execution_provider}` - Data analysis.
+- `04_test` - Obtaining statistical results of used statistical tests
+- `05_test` - Merge test results, organized by dependent variable
+- `06_analysis` - Notebook to analyze results
+
+
 ## Models
 
 - [codeparrot-small](https://huggingface.co/codeparrot/codeparrot-small)
@@ -107,7 +111,6 @@ The repository is structured as follows:
 - [EnergiBridge](https://github.com/tdurieux/EnergiBridge)
 - [nvidia-smi](https://developer.nvidia.com/nvidia-system-management-interface)
 - [Wattmeter](https://vitriko.eu/regleta-inteligente-netio-powerbox-4kf)
-
 
 
 ## Help
