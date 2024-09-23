@@ -31,13 +31,13 @@ OMP_NUM_THREADS=8
 #energibridge="/d/GAISSA/EnergiBridge-main/target/release/energibridge.exe" # windows
 energibridge="/home/fjdur/EnergiBridge/target/release/energibridge" # linux
 
-runtime_engines=('torch' 'onnx' 'torchscript' ) # if  CUDAExecutionProvider # [CHANGE]
+runtime_engines=('onnx' 'torch' 'torchscript') # if  CUDAExecutionProvider # [CHANGE]
 #runtime_engines=('torch' 'onnx' 'torchscript' 'ov' ) #if CPUExecutionProvider  # [CHANGE]
 
 #runtime_engines=('torchscript' ) #'ov'
 #models=('codeparrot-small' 'pythia-410m') # 'codet5-base' 'codet5p-220' 
-models=('pythia1-4b' 'tinyllama' 'codeparrot-small' 'pythia-410m' ) #  [CHANGE] 'phi2'
-#models=('phi2') # 
+models=('pythia1-4b' 'tinyllama' 'codeparrot-small' 'pythia-410m' 'phi2') #  [CHANGE] 'phi2'
+#models=('phi2') # [CHANGE]
 
 
 mkdir results

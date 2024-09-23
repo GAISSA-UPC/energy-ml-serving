@@ -2,6 +2,7 @@
 
 # ./check_errors.sh > june_cpu_results_01/errors.out 2>&1 &
 
+#res_dir="./gpu_june_phi2_01/"
 res_dir="."
 
 echo ""
