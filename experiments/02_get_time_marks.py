@@ -1,7 +1,18 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+"""
+# Create one dataset for time marks
 
+- get time data organized by each serving configuration
+- run {script}.py to go trough all experiment runs
+
+- Input:
+  - results_*/runall_timestamps.csv
+  - results_*/load_times.csv
+- Output
+  - results_*/processed/time_marks.csv
+"""
 
 # In[2]:
 

@@ -1,11 +1,20 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# # Create one dataset for each profiler
-# 
-# - normalize datasets
-#  -  
-# 
+"""
+# Create one dataset for each profiler
+
+- get profiler data organized by each serving configuration
+- run {script}.py to go trough all experiment runs
+
+- Input:
+  - results_*/{profiler data}.csv
+- Output
+  - results_*/processed/{profiler}_processed.csv
+
+
+
+"""
 
 # In[1]:
 
