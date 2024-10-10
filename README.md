@@ -8,6 +8,18 @@ The contributions of this work are:
 - Measuring the impact of deep learning serving configurations on energy and performance
 - An analysis of deep learning serving configurations
 
+### DL serving configurations
+
+A duplet of a runtime engine and an execution provider: <[Runtime engine], [Execution provider]>
+- Runtime engines
+  - Default Torch (TORCH)
+  - ONNX Runtime engine (ONNX)
+  - OpenVINO runtime (OV)
+  - Torch JIT (JIT)
+- Execution providers
+  - CPU Execution Provider (CPU)
+  - CUDA Execution Provider (CUDA)
+
 ## Repository Structure
 
 The repository is structured as follows:
