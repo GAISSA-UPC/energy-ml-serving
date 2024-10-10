@@ -1,12 +1,25 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# # Hypothesis testing
-# 
-# - One factor, more than two treatments
-# 
-# - factor: config -> EP_runtime
-# - treatments: [GPUEP, CPUEP] * [torch, onnx, ov, torchscript]
+"""
+# Hypothesis testing
+
+- One factor, more than two treatments
+
+- factor: config -> EP_runtime
+- treatments: [GPUEP, CPUEP] * [torch, onnx, ov, torchscript]
+-----------------
+- Input:
+  - cpu*/tables/final_*.csv, gpu*/tables/final_*.csv
+  - 
+- Output:
+  - results_tests/[test]...  :results of statistical tests by model
+ 
+- first to define global_df: energy, nvidia,.. inference time
+
+
+- run {script name}.py to fgo through all experiment runs
+"""
 
 # ## Set env
 
