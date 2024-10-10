@@ -146,7 +146,7 @@ Results are saved in [results/](results/)
 1. [API creation](manuals/01_create_api.md). Guide to create an API to deploy ML models.
 2. [Add pretrained model](manuals/02_add_models.md). Guide to add pretrained ML models (from HuggingFace, hdf5 format, pickle format) to do inferences through an API.
 3. [Deploy ML models in a cloud provider (General)](manuals/03_deploy_general.md). Guide to deploy ML models using an API in a cloud provider.
-...
+4. [See more](manuals/)
 
 ### Other repos
 1. https://madewithml.com, API
