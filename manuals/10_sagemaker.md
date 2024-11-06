@@ -43,7 +43,7 @@ https://github.com/huggingface/notebooks/blob/main/sagemaker/13_deploy_and_autos
 1. Create role
   <https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-roles.html>
 
-  copy ARN arn:aws:iam::150660304444:role/sagamaker_role
+  copy ARN 
 5. Create group and add IAM permissions
   check_role.py
 
@@ -63,8 +63,8 @@ We can reuse the endpoint of the notebook and check
 - HF in sagemaker, supported by HF
 - https://github.com/philschmid/huggingface-sagemaker-workshop-series/blob/main/workshop_2_going_production/lab3_autoscaling.ipynb
 
---user ABCD:1234 --aws-sigv4 "aws:amz:us-east-1:execute-api"
-endpoint_url = 'https://runtime.sagemaker.eu-west-3.amazonaws.com/endpoints/huggingface-pytorch-inference-2023-09-14-08-26-53-037/invocations'
+--user ABCD:1234 --aws-sigv4 
+endpoint_url = 
 
 
 curl -X POST 'https://runtime.sagemaker.eu-west-3.amazonaws.com/endpoints/huggingface-pytorch-inference-2023-09-14-08-26-53-037/invocations' -d '{"inputs":"def hello_world():"}' --user "AKIAYHK3NOPPP44HKHH7:kR5HLdQlLBXfR4FO4rsBvLnoBVyuBV29MOUs7llj" --aws-sigv4 "aws:amz:eu-west-3:execute-api"
