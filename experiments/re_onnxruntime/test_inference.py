@@ -4,6 +4,12 @@ Script to test the exported models
 Modify before testing:
 - runtime engine
 - model
+
+if problems with CUDAEP:
+pip uninstall onnxruntime_gpu
+just install onnxruntime-gpu
+
+
 """
 
 from transformers import AutoModelForCausalLM, AutoTokenizer
@@ -14,15 +20,20 @@ from optimum.intel import OVModelForCausalLM
 from transformers import AutoTokenizer, pipeline
 
 MAX_LENGTH=128
-runtime_engine = 'ov'
+runtime_engine = 'onnx'
+
+exec_provider='CPUExecutionProvider' # CPUExecutionProvider, CUDAExecutionProvider ## [CHANGE]
+
+model_name = 'phi2'
 
 print(f"Testing for {runtime_engine}")
+
 model_dir = None
 if runtime_engine == 'onnx':
-    model_dir = 'models/onnx_2/pythia-410m'
+    model_dir = f'models/onnx/{model_name}'
     #model_dir = 'models/onnx/onnx_codegen_3'
-elif runtime_engine == 'ov':
-    model_dir = 'models/ov/pythia-410m'
+elif runtime_engine == 'ov' and exec_provider=='CPUExecutionProvider':
+    model_dir = f'models/ov/{model_name}'
 
 
 def predict( user_input: str):
@@ -30,15 +41,16 @@ def predict( user_input: str):
 
     # model = AutoModelForCausalLM.from_pretrained(onnx_dir, device_map = 'auto', torch_dtype = 'auto')
     
-    tokenizer = AutoTokenizer.from_pretrained("models/onnx/pythia-410m")
+    tokenizer = AutoTokenizer.from_pretrained(f"models/onnx/{model_name}")
 
     model = None
     if runtime_engine == 'onnx':
         #model = ORTModelForCausalLM.from_pretrained(model_dir, use_cache=False)
         
-        model = ORTModelForCausalLM.from_pretrained(model_dir, device_map = 'auto', torch_dtype = 'auto', use_cache=True)
-    elif runtime_engine == 'ov':
-        model = OVModelForCausalLM.from_pretrained(model_dir, device_map = 'auto', torch_dtype = 'auto', use_cache=True)
+        model = ORTModelForCausalLM.from_pretrained(model_dir, use_cache=True, provider=exec_provider)
+    elif runtime_engine == 'ov' and exec_provider == 'CPUExecutionProvider':
+        #model = OVModelForCausalLM.from_pretrained(model_dir, device_map = 'auto', torch_dtype = 'auto', use_cache=True, provider=exec_provider)
+        model = OVModelForCausalLM.from_pretrained(model_dir, use_cache=True, provider=exec_provider)
         
     #text = "def get_random_element(dictionary):"
 
@@ -66,4 +78,4 @@ def infer( text: str, model, tokenizer) -> str:
     return prediction
 
 
-print(predict("def hello_worl"))
+print(predict("def hello_world"))
