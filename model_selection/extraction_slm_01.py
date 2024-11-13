@@ -7,13 +7,12 @@ nohup python extraction_sml_01.py > extraction_models_02.log 2>&1 &
 from huggingface_hub import HfApi
 import pandas as pd
 
-
-# Initialize API
-api = HfApi()
-
 # Fetch models metadata
 limit = None # Change
 csv_file_name = "decoder_models_info_02.csv"
+
+# Initialize API
+api = HfApi()
 
 #models = api.list_models(task="text-generation", sort="downloads", limit=500)
 
@@ -21,7 +20,7 @@ def get_decoder_models(models):
         # Filter for decoder-only architectures
     decoder_models = []
     i = 0
-    num_models = 170000
+    num_models = 20 #[CHANGE], None to consider all models
 
     for model in models:
         print(f"{i}-->")
@@ -43,6 +42,8 @@ def get_decoder_models(models):
         
         if model_info.card_data == None:
             continue
+        
+        # if do not have the eval_results
         
         card_data = getattr(model_info, "card_data", "Unknown")
         # print("________________")
