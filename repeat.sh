@@ -1,14 +1,15 @@
 #!/bin/bash
 
-# nohup ./repeat.sh > repeat.out 2>&1 &
+# nohup ./repeat.sh > repeat.out 2>&1 & 
 
 # Define the number of repetitions
-N=2 #[CHANGE]
+N=10 #[CHANGE]
 
 pkill -f runall_update.sh
 pkill -f $python3
 pkill -f '/home/fjdur/EnergiBridge/target/release/energibridge'
 
+rm -r results
 mkdir results
 
 # Loop to execute the script n times

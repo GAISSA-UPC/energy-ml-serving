@@ -23,14 +23,17 @@ DATASET_PATH = "testing/inputs.txt" # [CHANGE]
 DATASET_WARM_UP = "testing/inputs_warm_up.txt"
 RESULTS_DIR = "results/"
 
-MODELS = [ 'codet5-base', 'codeparrot-small', 'pythia-410m', 'codet5p-220']  #'gpt-neo-125m', 'codet5p-220'
+MODELS = [ 'codet5-base', 'codeparrot-small', 'pythia-410m', 'codet5p-220',
+          'bloomz-560m', 'stablecode-3b',
+          'codegemma-2b', 'tiny_starcoder',
+          'starcoderbase-1b','bloomz-1b1','stablecode-3b-completion']  #'gpt-neo-125m', 'codet5p-220' #[ADD]
 #MODELS = [ 'codet5-base','codet5p-220']  #'gpt-neo-125m', 'codet5p-220'
 #MODELS=['codeparrot-small', 'pythia-410m',]
 #MODELS=['slm',]
 
 CHECK_URL = 'http://localhost:8000/'
 # FastAPI endpoints
-endpoints = {
+endpoints = { # [ADD]
   "codet5-base" : "/huggingface_models/codet5-base",
   "codet5p-220" : "/huggingface_models/codet5p-220",
   "codegen-350-mono" : "/huggingface_models/codegen-350-mono",
@@ -41,4 +44,11 @@ endpoints = {
   "phi2":"/huggingface_models/phi2",
   "pythia1-4b":"/huggingface_models/pythia1-4b",
   "slm":"/huggingface_models/slm",
+  'bloomz-560m':'/huggingface_models/bloomz-560m',
+  'stablecode-3b':'/huggingface_models/stablecode-3b',
+  'codegemma-2b':'/huggingface_models/codegemma-2b',
+  'tiny_starcoder':'/huggingface_models/tiny_starcoder',
+  'starcoderbase-1b':'/huggingface_models/starcoderbase-1b',
+  'bloomz-1b1':'/huggingface_models/bloomz-1b1',
+  'stablecode-3b-completion':'/huggingface_models/stablecode-3b-completion'
 }

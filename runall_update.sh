@@ -31,14 +31,20 @@ OMP_NUM_THREADS=8
 #energibridge="/d/GAISSA/EnergiBridge-main/target/release/energibridge.exe" # windows
 energibridge="/home/fjdur/EnergiBridge/target/release/energibridge" # linux
 
-runtime_engines=('onnx' 'torch' 'torchscript') # if  CUDAExecutionProvider # [CHANGE]
-#runtime_engines=('torch' 'onnx' 'torchscript' 'ov' ) #if CPUExecutionProvider  # [CHANGE]
+#runtime_engines=('onnx' 'torch' 'torchscript') # if  CUDAExecutionProvider # [CHANGE]
+runtime_engines=('torch' 'onnx' 'torchscript' 'ov' ) #if CPUExecutionProvider  # [CHANGE]
 
-#runtime_engines=('torchscript' ) #'ov'
 #models=('codeparrot-small' 'pythia-410m') # 'codet5-base' 'codet5p-220' 
-models=('pythia1-4b' 'tinyllama' 'codeparrot-small' 'pythia-410m' 'phi2') #  [CHANGE] 'phi2'
-#models=('phi2') # [CHANGE]
-
+#models=('pythia1-4b' 'tinyllama' 'codeparrot-small' 'pythia-410m' 'phi2') #  [CHANGE] 'phi2'
+#models=('bloomz-560m' 'stablecode-3b' 'codegemma-2b' 'tiny_starcoder')
+# 'codegemma-2b' 'tiny_starcoder' 'bloomz-560m' 'stablecode-3b' 'starcoderbase-1b' 'bloomz-1b1' 'stablecode-3b-completion'
+# 
+#
+# 'codegemma-2b' 'tiny_starcoder' 
+# 'bloomz-560m' 'stablecode-3b'
+# 'starcoderbase-1b' 'bloomz-1b1' 'stablecode-3b-completion'
+#models=('starcoderbase-1b' 'bloomz-1b1' 'stablecode-3b-completion') # [CHANGE]
+models=('stablecode-3b-completion' 'codegemma-2b' 'tiny_starcoder')
 
 mkdir results
 # Print all processes with ps aux
@@ -100,7 +106,7 @@ fi
 # python testing/main.py -i onnx -r 1 -m 'codet5-base' | tee -a results/out_$runtime.log;
 #timestamps=()
 
-./kill_nvidia.sh
+./scripts/kill_nvidia.sh
 
 # Initialize a file for timestamps
 timestamps_file="results/runall_timestamps.csv"
