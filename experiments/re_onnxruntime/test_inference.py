@@ -22,9 +22,9 @@ from transformers import AutoTokenizer, pipeline
 MAX_LENGTH=128
 runtime_engine = 'onnx'
 
-exec_provider='CPUExecutionProvider' # CPUExecutionProvider, CUDAExecutionProvider ## [CHANGE]
+exec_provider='CUDAExecutionProvider' # CPUExecutionProvider, CUDAExecutionProvider ## [CHANGE]
 
-model_name = 'phi2'
+model_name = 'pythia-410m'
 
 print(f"Testing for {runtime_engine}")
 

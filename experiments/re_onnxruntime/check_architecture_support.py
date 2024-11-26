@@ -21,6 +21,10 @@ Usage
 
     Replace the models_names list with your desired model IDs.
     Run the script in a Python environment with huggingface_hub and optimum installed.
+    
+    
+https://huggingface.co/docs/optimum/main/en/exporters/task_manager#optimum.exporters.TasksManager
+
 """
 from huggingface_hub import HfApi
 from optimum.exporters import TasksManager
@@ -34,11 +38,11 @@ models_names = [
     'smallcloudai/Refact-1_6B-fim', 'google/recurrentgemma-2b', 'bigcode/tiny_starcoder_py',
     'google/codegemma-2b', 'bigcode/starcoderbase-1b', 'ibm/PowerLM-3b', 'ibm/PowerMoE-3b',
     'smallcloudai/Refact-1_6B-fim', 'ibm-granite/granite-3.0-2b-base', 'TechxGenus/starcoder2-15b-GPTQ',
-    'TheBloke/starcoder-GPTQ', 'rtlabs/StableCode-3B'
+    'TheBloke/starcoder-GPTQ', 'rtlabs/StableCode-3B','google/recurrentgemma-2b',
 ]
 
 # Iterate over the model names and check their support
-for model_name in models_names:
+for model_name in models_names[-1:]:
     print(f"Checking model: {model_name}")
     try:
         # Fetch the full model info, including config
