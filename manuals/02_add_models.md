@@ -44,6 +44,8 @@ Guide to add pretrained ML models (from Hugging Face, hdf5 format, pickle format
 4. Load the Pretrained Model:
    - Use the Hugging Face library to load the pretrained model of your choice into your API code. You can use `pip` to install the `transformers` library.
 
+Note: if you need to export model to use it with onnx or ov, verify its model_type or architecture is supported with currently transformers version. See [../experiments/re_onnxruntime/check_architecture_support.py](../experiments/re_onnxruntime/check_architecture_support.py)
+
 5. Add new model class.
    File: [../app/models.py](../app/models.py)
    - Add a new class according to your new model, parent class is `Model()`. In this case we will add `Pythia_70mModel(Model)`.
@@ -53,6 +55,7 @@ Guide to add pretrained ML models (from Hugging Face, hdf5 format, pickle format
      - Tokenize input
      - Inference using the loaded model and the input
      - Return prediction
+   - generic class for text-generation models: SLMModel()
 
     ```python
     class Pythia_70mModel(Model):
@@ -93,6 +96,7 @@ Guide to add pretrained ML models (from Hugging Face, hdf5 format, pickle format
 6. Create a model schema.
    File: [../app/schemas.py](../app/schemas.py)
    - Create a schema with one example. See below example for Pythia-70m model.
+   - Generic text-generation schema: PredictSLM()
 
     ```python
     class PredictPythia_70m(BaseModel):
@@ -146,6 +150,7 @@ Guide to add pretrained ML models (from Hugging Face, hdf5 format, pickle format
 
 
 8.  Deploy and Test the API:
+   - python start_server.py or check below: 
    - Deploy your API to a server or cloud platform such as GCP, AWS, or Azure. Test the API by sending requests with sample input to ensure it is functioning as expected.
    - See [manuals](../manuals/) to check our guides to create the API or deploy the API.
    - In this case we run the API using:
@@ -175,7 +180,7 @@ Guide to add pretrained ML models (from Hugging Face, hdf5 format, pickle format
 </figure></center>
 <p style="text-align: center;">Response using Pythia-70m.</p>
 
-## Add a pretrained h5 (hdf5) model
+## Add a pretrained h5 (hdf5) model (not updated since 2023)
 
 1. Create a new directory for your API project called `models` and add here your pretrained model (h5 file).
 2. Load the Pretrained Model:
