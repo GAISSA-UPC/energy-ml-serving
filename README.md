@@ -33,10 +33,8 @@ The repository is structured as follows:
   | Notebooks and scripts to process profilers datasets
 - manuals
   | Self-contained manuals related to the serving infrastructure
-- models
-  | This folder contains pretrained models
-- results
-  | Generated datasets, PDFs, graphics and figures to be used in reporting
+- model_selection
+  | This folder contains model selection scripts and dataset
 - scripts
   | Environment scripts and bash scripts for automated experiments
 - testing
@@ -112,22 +110,31 @@ The repository is structured as follows:
 Files in `experiments/`
 
 - `visualize_{profiler}` - Visualization of raw data obtained from profilers.
-- `01_get_info_{profiler}` - Preprocessing of raw data obtained from profilers.
-- `02_get_time_marks` - Get time marks of inferences done during experiment.
-- `03_analysis_{execution_provider}` - Data analysis.
-- `04_test` - Obtaining statistical results of used statistical tests
-- `05_test` - Merge test results, organized by dependent variable
-- `06_analysis` - Notebook to analyze results
-- `07_result_tables` - Creation of paper table
+- `01_get_info_{profiler}` - Preprocessing of raw data obtained from profilers (script).
+- `02_get_time_marks` - Get time marks of inferences done during experiment (script).
+- `03_analysis_{execution_provider}` - Data analysis (notebook).
+- `03_02_aggregation` - Aggregated data (notebook).
+- `03_03_aggregated_plots` - Box plots (notebook).
+- `04_test` - Obtaining statistical results of used statistical tests (script).
+- `05_test` - Merge test results, organized by dependent variable (notebook).
+- `06_analysis` - Notebook to analyze results (notebook).
+- `07_result_tables` - Creation of paper table (notebook).
 
 
 ## Models
 
 - [codeparrot-small](https://huggingface.co/codeparrot/codeparrot-small)
-- [phi2](https://huggingface.co/codeparrot/)
-- [pythia-410m](https://huggingface.co/codeparrot/)
-- [pythia1-4b](https://huggingface.co/codeparrot/)
-- [tinyllama](https://huggingface.co/codeparrot/)
+- [tiny_starcoder](https://huggingface.co/bigcode/tiny_starcoder_py)
+- [pythia-410m](https://huggingface.co/EleutherAI/pythia-410m)
+- [bloomz-560m](https://huggingface.co/bigscience/bloom-560m)
+- [starcoderbase-1b](https://huggingface.co/bigcode/starcoderbase-1b)
+- [bloomz-1b1](https://huggingface.co/bigscience/bloomz-1b1)
+- [tinyllama](https://huggingface.co/TinyLlama/TinyLlama-1.1B-Chat-v1.0)
+- [pythia-1.4b](https://huggingface.co/EleutherAI/pythia-1.4b)
+- [codegemma-2b](https://huggingface.co/google/codegemma-2b)
+- [phi2](https://huggingface.co/microsoft/phi-2)
+- [stablecode-3b](https://huggingface.co/stabilityai/stablecode-instruct-alpha-3b)
+- [stablecode-3b-completion](https://huggingface.co/stabilityai/stablecode-completion-alpha-3b-4k)
 
 ## Energy tracking metrics
 - [EnergiBridge](https://github.com/tdurieux/EnergiBridge)
