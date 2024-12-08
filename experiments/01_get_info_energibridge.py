@@ -28,11 +28,14 @@ import os
 
 # In[2]:
 
+#device = "gpu"
 
-device = "gpu"
-all_dir = f"D:/GAISSA/energy-repo/last_repo/june_{device}/"
+# all_dir has results_*
+#all_dir = f"D:/GAISSA/energy-repo/last_repo/june_{device}/" # [CHANGE]
+#all_dir = f"D:/GAISSA/energy-repo/repo_sept_last_update/cudaep_nov_results/nov_cudaep_03/" # [CHANGE]
+all_dir = f"D:/GAISSA/energy-repo/repo_sept_last_update/cpuep_nov_results/nov_cpuep_05/" # [CHANGE]
 
-
+# python experiments/01_get_info_energibridge.py  > ../cudaep_nov_results/nov_cudaep_03/01_get_info_energibridge.log [CHANGE]
 # In[3]:
 
 
@@ -150,7 +153,7 @@ for i in range(1,11):
 
 
     # check the time in runall_timestamps.csv and compare with other profilers results' csv
-    combined_df['time'] += pd.Timedelta(hours=2) 
+    combined_df['time'] += pd.Timedelta(hours=1) # [CHANGE] if last output does not match, normal = 2
     combined_df.head()
 
 
@@ -177,8 +180,8 @@ for i in range(1,11):
     # In[16]:
 
 
-    for c in combined_df.columns:
-        print(c)
+    # for c in combined_df.columns:
+    #     print(c)
 
 
     # In[18]:
@@ -429,7 +432,7 @@ for i in range(1,11):
     print("energi")
     print(combined_df['time'].iloc[0])
     print(combined_df['time'].iloc[len(combined_df)-1])
-
+    print("if different: change the delta added in time")
 
     # In[ ]:
 

@@ -25,8 +25,12 @@ import os
 
 # In[3]:
 
-device = 'gpu'
-new_directory = f"D:/GAISSA/energy-repo/last_repo/june_{device}/" # change
+SAVE_CSV = True
+#device = 'gpu'
+#new_directory = f"D:/GAISSA/energy-repo/last_repo/june_{device}/" # change
+##new_directory = f"D:/GAISSA/energy-repo/repo_sept_last_update/cudaep_nov_results/nov_cudaep_03/" # change
+new_directory = f"D:/GAISSA/energy-repo/repo_sept_last_update/cpuep_nov_results/nov_cpuep_05/" # change
+
 os.chdir(new_directory)
 
 
@@ -40,9 +44,9 @@ for i in range(1,11):
     #results_dir = 'results_1/' #change
 
 
-    ENERGIBRIDGE_SAVE_CSV = 'energibridge_dataset.csv'
-    NVIDIA_SAVE_CSV = 'nvidia-smi_dataset.csv'
-    WATTMETER_SAVE_CSV = 'wattmeter_dataset.csv'
+    # ENERGIBRIDGE_SAVE_CSV = 'energibridge_dataset.csv'
+    # NVIDIA_SAVE_CSV = 'nvidia-smi_dataset.csv'
+    # WATTMETER_SAVE_CSV = 'wattmeter_dataset.csv'
 
 
     # In[5]:
@@ -50,10 +54,10 @@ for i in range(1,11):
 
     processed_dir = new_directory + results_dir +"processed/"
 
-    try:
-        os.mkdir(processed_dir)
-    except Exception as e:
-        print(e)
+    #try:
+    #    os.mkdir(processed_dir)
+    #except Exception as e:
+    #    print(e)
         
 
 
@@ -197,7 +201,6 @@ for i in range(1,11):
 
     general_df = general_df[['time', 'runtime', 'model', 'engine', 'model_name', 'start_end', 'file']]
 
-    general_df
 
 
     # In[22]:
@@ -210,7 +213,6 @@ for i in range(1,11):
     label_values = ['idle'] + [f"{runtime} {model}" for runtime, model in zip(df["runtime"][1:-2], df["model"][1:-2])] + ['name3'] * 2
     df['label'] = label_values
 
-    df
 
 
     # In[23]:
@@ -219,7 +221,6 @@ for i in range(1,11):
     # Reset index
     general_df.reset_index(drop=True, inplace=True)
 
-    general_df
 
 
     # In[24]:
@@ -290,8 +291,13 @@ for i in range(1,11):
 
     # In[28]:
 
-
-    df.to_csv(processed_dir + 'time_marks.csv', index=False)
+    if SAVE_CSV == True:
+        print(f"saving in: {processed_dir + 'time_marks.csv'}")
+        
+        df.to_csv(processed_dir + 'time_marks.csv', index=False)
+    else:
+        print(f"NOT saving in: {processed_dir + 'time_marks.csv'}")
+        
 
 
     # In[29]:

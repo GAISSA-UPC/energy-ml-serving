@@ -25,8 +25,13 @@ import matplotlib.pyplot as plt
 import os
 
 
-device = "gpu"
-all_dir = f"D:/GAISSA/energy-repo/last_repo/june_{device}/"
+#device = "gpu"
+#all_dir = f"D:/GAISSA/energy-repo/last_repo/june_{device}/"
+#all_dir = f"D:/GAISSA/energy-repo/repo_sept_last_update/cudaep_nov_results/nov_cudaep_03/" # [CHANGE]
+all_dir = f"D:/GAISSA/energy-repo/repo_sept_last_update/cpuep_nov_results/nov_cpuep_05/" # [CHANGE]
+
+# python experiments/01_get_info_nvidia.py  > ../cudaep_nov_results/nov_cudaep_03/01_get_info_nvidia.log # CHANGE
+
 #esults_dir = 'results_1/'
 
 for i in range(1,11):
@@ -395,6 +400,7 @@ for i in range(1,11):
     print("nvidia")
     print(nvidia_df['time'].iloc[0])
     print(nvidia_df['time'].iloc[len(nvidia_df)-1])
+    print("if different: change the delta added in time")
 
 
     # In[ ]:
