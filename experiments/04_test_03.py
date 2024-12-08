@@ -74,11 +74,22 @@ from scipy.stats import levene
 # In[37]:
 
 
-#num_models = 5 #CHANGE
+#num_models = 12 #CHANGE
 #device = 'gpu'
 #path = f"D:/GAISSA/energy-repo/last_repo/june_{device}/"  # Adjust this path to your CSV files location #CHANGE
-initial_save_dir = f"D:/GAISSA/energy-repo/last_repo/results_tests_03/" 
-general_dir = f"D:/GAISSA/energy-repo/last_repo/" 
+#initial_save_dir = f"D:/GAISSA/energy-repo/last_repo/results_tests_03/"  # dir path to save the tests results, dir name example: statistical_results_nov_nvidia
+#initial_save_dir = "D:/GAISSA/energy-repo/repo_sept_last_update/statistical_results_nov_nvidia/" #CHANGE
+initial_save_dir = "D:/GAISSA/energy-repo/repo_sept_last_update/statistical_results_nov_cudaep_02/" #CHANGE
+
+
+#general_dir = f"D:/GAISSA/energy-repo/last_repo/"
+general_dir_cuda = f"D:/GAISSA/energy-repo/repo_sept_last_update/cudaep_nov_results/nov_cudaep_00/" #CHANGE
+general_dir_cpu = f"D:/GAISSA/energy-repo/repo_sept_last_update/cpuep_nov_results/nov_cpuep_00/" #CHANGE
+
+CONSIDER_JIT=False #change
+
+SAVE_TABLES = True
+SAVE_FIGS = True
 
 try:
     os.mkdir(initial_save_dir )
@@ -89,13 +100,15 @@ except Exception as e:
 # In[38]:
 
 
-SAVE_TABLES = True
-SAVE_FIGS = True
-
 variable = 'duration'
 all_variables =['global_energy',
                 "avg_cpu_usage_config",'avg_used_memory_pct_config',
                 'avg_utilization_gpu_config','avg_utilization_memory_config','avg_used_memory_pct_mib',
+                'avg_Load', 'duration'
+                ]
+
+all_variables =['global_energy',
+                "avg_cpu_usage_config",'avg_used_memory_pct_config',
                 'avg_Load', 'duration'
                 ]
 
@@ -104,7 +117,7 @@ nvidia_variables =[ # change
                 ]
 
 
-for variable in nvidia_variables:
+for variable in nvidia_variables: #change
     try:
         print(f"DV: ------------------ {variable} -----------------")
 
@@ -166,9 +179,12 @@ for variable in nvidia_variables:
             filename = save_dir
             
             # Open the file in write mode
-            with open(filename, 'w') as file:
-                print(f"saving in {filename}")
-                file.write(latex_table) if SAVE_TABLES else print(f"SAVE_TABLES:{SAVE_TABLES}")
+            if SAVE_TABLES:
+                with open(filename, 'w') as file:
+                    print(f"saving in {filename}")
+                    file.write(latex_table)
+            else:
+                print(f"SAVE_TABLES:{SAVE_TABLES}, trying to save in {filename}")
                 
             # Print LaTeX table
             print(latex_table)
@@ -182,8 +198,8 @@ for variable in nvidia_variables:
         global_df = None
 
         if variable == 'global_energy':
-            cpu_global_energy = pd.read_csv("D:/GAISSA/energy-repo/last_repo/june_cpu/tables/final_energy_data.csv", index_col=None, header=0)
-            gpu_global_energy = pd.read_csv("D:/GAISSA/energy-repo/last_repo/june_gpu_test/tables/final_energy_data.csv", index_col=None, header=0)
+            cpu_global_energy = pd.read_csv(general_dir_cpu + "tables_nov/final_energy_data.csv", index_col=None, header=0) #CHANGE
+            gpu_global_energy = pd.read_csv(general_dir_cuda + "tables_nov/final_energy_data.csv", index_col=None, header=0) 
 
 
             # In[19]:
@@ -247,8 +263,8 @@ for variable in nvidia_variables:
         # In[65]:
 
         elif variable in ['avg_cpu_usage_config','avg_used_memory_pct_config']:
-            cpu_ep_data = pd.read_csv("D:/GAISSA/energy-repo/last_repo/june_cpu/tables/final_energibridge_data.csv", index_col=None, header=0)
-            gpu_ep_data = pd.read_csv("D:/GAISSA/energy-repo/last_repo/june_gpu_test/tables/final_energibridge_data.csv", index_col=None, header=0)
+            cpu_ep_data = pd.read_csv(general_dir_cpu + "tables_nov/final_energibridge_data.csv", index_col=None, header=0) #CHANGE
+            gpu_ep_data = pd.read_csv(general_dir_cuda + "tables_nov/final_energibridge_data.csv", index_col=None, header=0) #CHANGE
             print(len(cpu_ep_data))
             print(len(gpu_ep_data))
 
@@ -337,17 +353,17 @@ for variable in nvidia_variables:
 
         elif variable in ['avg_utilization_gpu_config','avg_utilization_memory_config','avg_used_memory_pct_mib','avg_power_draw_config']:
 
-            cpu_ep_data = pd.read_csv("D:/GAISSA/energy-repo/last_repo/june_cpu/tables/final_nvidia_data.csv", index_col=None, header=0)
-            gpu_ep_data = pd.read_csv("D:/GAISSA/energy-repo/last_repo/june_gpu_test/tables/final_nvidia_data.csv", index_col=None, header=0)
-            print(len(cpu_ep_data))
+            #cpu_ep_data = pd.read_csv(general_dir_cpu + "tables/final_nvidia_data.csv", index_col=None, header=0)
+            gpu_ep_data = pd.read_csv(general_dir_cuda + "tables_nov/final_nvidia_data.csv", index_col=None, header=0) #CHANGE
+            #print(len(cpu_ep_data))
             print(len(gpu_ep_data))
 
 
             # In[95]:
 
 
-            print(len(cpu_ep_data['label'].unique()))
-            print(cpu_ep_data['label'].unique())
+            #print(len(cpu_ep_data['label'].unique()))
+            #print(cpu_ep_data['label'].unique())
 
             print(len(gpu_ep_data['label'].unique()))
             print(gpu_ep_data['label'].unique())
@@ -356,20 +372,20 @@ for variable in nvidia_variables:
             # In[96]:
 
 
-            condition = cpu_ep_data['label'].str.endswith('idle')
-            cpu_ep_data = remove_condition_rows( condition, cpu_ep_data)
+            #condition = cpu_ep_data['label'].str.endswith('idle')
+            #cpu_ep_data = remove_condition_rows( condition, cpu_ep_data)
 
             condition = gpu_ep_data['label'].str.endswith('idle')
             gpu_ep_data = remove_condition_rows( condition, gpu_ep_data)
 
-            print(len(cpu_ep_data['label'].unique()))
+            #print(len(cpu_ep_data['label'].unique()))
             print(len(gpu_ep_data['label'].unique()))
 
 
             # In[97]:
 
 
-            print(cpu_ep_data.columns)
+            #print(cpu_ep_data.columns)
             print(gpu_ep_data.columns)
 
 
@@ -382,16 +398,16 @@ for variable in nvidia_variables:
             # In[99]:
 
 
-            cpu_ep_data = cpu_ep_data.groupby(['label', 'experiment'])[dependent_variables].mean().reset_index()
+            #cpu_ep_data = cpu_ep_data.groupby(['label', 'experiment'])[dependent_variables].mean().reset_index()
             gpu_ep_data = gpu_ep_data.groupby(['label', 'experiment'])[dependent_variables].mean().reset_index()
 
-            cpu_ep_data
+            #cpu_ep_data
 
 
             # In[100]:
 
 
-            cpu_ep_data['config'] = "cpuep_"+cpu_ep_data['label']
+            #cpu_ep_data['config'] = "cpuep_"+cpu_ep_data['label']
             gpu_ep_data['config'] = "gpuep_"+gpu_ep_data['label']
 
             gpu_ep_data
@@ -412,8 +428,8 @@ for variable in nvidia_variables:
         # In[120]:
 
         elif variable in ['avg_Load'] : 
-            cpu_ep_data = pd.read_csv("D:/GAISSA/energy-repo/last_repo/june_cpu/tables/final_wattmeter_data.csv", index_col=None, header=0)
-            gpu_ep_data = pd.read_csv("D:/GAISSA/energy-repo/last_repo/june_gpu_test/tables/final_wattmeter_data.csv", index_col=None, header=0)
+            cpu_ep_data = pd.read_csv(general_dir_cpu + "tables_nov/final_wattmeter_data.csv", index_col=None, header=0) #CHANGE
+            gpu_ep_data = pd.read_csv(general_dir_cuda + "tables_nov/final_wattmeter_data.csv", index_col=None, header=0) #CHANGE
             print(len(cpu_ep_data))
             print(len(gpu_ep_data))
 
@@ -480,8 +496,8 @@ for variable in nvidia_variables:
             global_df
 
         elif variable in ['duration']:
-            cpu_ep_data = pd.read_csv("D:/GAISSA/energy-repo/last_repo/june_cpu/tables/final_inference_time_data.csv", index_col=None, header=0)
-            gpu_ep_data = pd.read_csv("D:/GAISSA/energy-repo/last_repo/june_gpu_test/tables/final_inference_time_data.csv", index_col=None, header=0)
+            cpu_ep_data = pd.read_csv(general_dir_cpu + "tables_nov/final_inference_time_data.csv", index_col=None, header=0) #CHANGE
+            gpu_ep_data = pd.read_csv(general_dir_cuda + "tables_nov/final_inference_time_data.csv", index_col=None, header=0) #CHANGE
             print(len(cpu_ep_data))
             print(len(gpu_ep_data))
 
@@ -534,12 +550,21 @@ for variable in nvidia_variables:
 
 
         # input: df with DV, aggregated ?
-        global_df
+        global_df # It varies deppending on the variable: nvidia variables or all
 
+        print("-----Getting statistical tests results----")
+        print(f"DV: {variable}, global_df len: {len(global_df)}")
         # In[75]:
+        if not CONSIDER_JIT:
+            condition = global_df['label'].str.contains('torchscript')
+            global_df = remove_condition_rows( condition, global_df)
+            print(f"CONSIDER_JIT:{CONSIDER_JIT}, DV: {variable}, global_df len: {len(global_df)}")
 
         # [CHANGE] inputs
-        models = ['codeparrot-small','pythia-410m', 'tinyllama', 'pythia1-4b',  'phi2']
+        models = ['codeparrot-small','pythia-410m', 'tinyllama', 'pythia1-4b',  'phi2', 
+                  'codegemma-2b','tiny-starcoder', 'bloomz-560m', 'stablecode-3b',
+                  'starcoderbase-1b','bloomz-1b1','stablecode-3b-completion',
+                  ]
         for model in models:
             print(f"Model: ------------------ {model} -----------------")
             
@@ -548,7 +573,7 @@ for variable in nvidia_variables:
             independent_variable = 'config'
 
             df = global_df
-            df = df[df['label'].str.contains(model)]
+            df = df[df['label'].str.endswith(model)] # labels are like onnx_stablecode-3b-completion
             configs = df['config'].unique().tolist()
 
 
