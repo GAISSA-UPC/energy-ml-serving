@@ -27,8 +27,12 @@ import os
 
 
 
-device = "gpu"
-all_dir = f"D:/GAISSA/energy-repo/last_repo/june_{device}/"
+#device = "gpu"
+#all_dir = f"D:/GAISSA/energy-repo/last_repo/june_{device}/"
+#all_dir = f"D:/GAISSA/energy-repo/repo_sept_last_update/cudaep_nov_results/nov_cudaep_03/" # [CHANGE]
+all_dir = f"D:/GAISSA/energy-repo/repo_sept_last_update/cpuep_nov_results/nov_cpuep_05/" # [CHANGE]
+
+# python experiments/01_get_info_wattmeter.py  > ../cudaep_nov_results/nov_cudaep_03/01_get_info_wattmeter.log # CHANGE
 
 for i in range(1,11):
     print(i)
@@ -120,7 +124,8 @@ for i in range(1,11):
     # In[8]:
 
 
-    wattmeter_df['time'] = pd.to_datetime(wattmeter_df['True timestamp'],)
+    #wattmeter_df['time'] = pd.to_datetime(wattmeter_df['True timestamp'],)
+    wattmeter_df['time'] = pd.to_datetime(wattmeter_df['True timestamp'], format='mixed')
     wattmeter_df.head()
 
 
