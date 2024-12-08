@@ -25,6 +25,21 @@ SAVE_MODEL = True
 CHECK_MODEL = True
 MAX_LENGTH = 128
 
+#models = [ 'codet5-base', 'codet5p-220', 'codegen-350-mono', 'gpt-neo-125m', 'codeparrot-small', 'pythia-410m'] # bloom, pythia
+models = [ 'codet5-base', 'codet5p-220', 'codeparrot-small', 'pythia-410m'] # bloom, pythia
+models = ['phi2']
+models = ['model_02']
+models = ['codegemma-2b', 'bloomz-560m', 'starcoder2-3b']
+models = ['codegemma-2b','bloomz-560m', 'stablecode-3b','tiny_starcoder',
+          'starcoder-GPTQ','rtlabs-stablecode-3B']
+models = ['bloomz-560m', 'stablecode-3b',]
+models = ['codegemma-2b', 'tiny_starcoder',]
+models = ['gemma-2b']
+#models = ['starcoderbase-1b']
+models = ['bloomz-1b1']
+models = ['stablecode-3b-completion']
+
+
 model_checkpoint = {'codet5-base':"Salesforce/codet5-base", 'codet5p-220':'Salesforce/codet5p-220m', 
                     'codegen-350-mono':"Salesforce/codegen-350M-mono", 'gpt-neo-125m':"EleutherAI/gpt-neo-125M",
                     'codeparrot-small':'codeparrot/codeparrot-small', 'pythia-410m':"EleutherAI/pythia-410m",
@@ -33,13 +48,35 @@ model_checkpoint = {'codet5-base':"Salesforce/codet5-base", 'codet5p-220':'Sales
                     'mistral7b':'mistralai/Mistral-7B-Instruct-v0.2',
                     'pythia1-4b':'EleutherAI/pythia-1.4b',
                     'mpt-1-4b':'mosaicml/mpt-1b-redpajama-200b',
-                    'phi2':'microsoft/phi-2'} # model:checkpoint
+                    'phi2':'microsoft/phi-2',
+                    'model_01':'TheBloke/meditron-70B-GPTQ',
+                    'model_02':'berquetR/phi_first_train',
+                    
+                    'gemma-2-2b':'google/gemma-2-2b',
+                    
+                    'starcoder2-3b':'bigcode/starcoder2-3b', #no
+                    'starcoder-GPTQ':'TheBloke/starcoder-GPTQ',
+                    'rtlabs-stablecode-3B':'rtlabs/StableCode-3B',
+                    'PowerLM-3b':'ibm/PowerLM-3b',
+                    'refact':'smallcloudai/Refact-1_6B-fim' ,
+                    
+                    'bloomz-560m':'bigscience/bloomz-560m', #yes
+                    'stablecode-3b':'stabilityai/stablecode-instruct-alpha-3b',
+                    'tiny_starcoder':'bigcode/tiny_starcoder_py',
+                    'codegemma-2b':'google/codegemma-2b', #yes
+                    
+                    'gemma-2b':'google/gemma-2b',
+                    'starcoderbase-1b':'bigcode/starcoderbase-1b',
+                    'bloomz-1b1':'bigscience/bloomz-1b1',
+                    'stablecode-3b-completion':'stabilityai/stablecode-completion-alpha-3b-4k',
+                    
+                    
+                    } # model:checkpoint
 # TinyLlama-1.1B-intermediate-step-1195k-token-2.5T
 # TinyLlama/TinyLlama-1.1B-Chat-v0.1
 
-#models = [ 'codet5-base', 'codet5p-220', 'codegen-350-mono', 'gpt-neo-125m', 'codeparrot-small', 'pythia-410m'] # bloom, pythia
-models = [ 'codet5-base', 'codet5p-220', 'codeparrot-small', 'pythia-410m'] # bloom, pythia
-models = ['phi2']
+
+
 #model_name = models[5]
 
 #checkpoint = model_checkpoint[model_name]
@@ -117,6 +154,7 @@ def my_pipeline(model, input_text):
 for model in models:
     save_directory = f"models/torch/{model}/"
     if SAVE_MODEL:
+        print("------------------------------------")
         print(f"Saving {model} ...\n")
         if os.path.exists(save_directory):
             print(f"Model {model} is already exported...\n")

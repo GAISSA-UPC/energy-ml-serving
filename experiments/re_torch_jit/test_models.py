@@ -6,9 +6,9 @@ MAX_LENGTH=128
 # 'codegen-350M-mono',
 models = [ 'codet5-base', 'codet5p-220',  'gpt-neo-125m', 'codeparrot-small', 'pythia-410m'] # bloom, pythia
 models = [ 'codet5-base', 'codet5p-220',   'pythia-410m', 'codeparrot-small',] # bloom, pythia
-models = [ 'codeparrot-small', ]
+models = ['codegemma-2b', 'tiny_starcoder']
 
-device = 'cpu'
+device = 'cuda'
 
 model_checkpoint = {'codet5-base':"Salesforce/codet5-base",
                     'codet5p-220':'Salesforce/codet5p-220m',
@@ -16,7 +16,10 @@ model_checkpoint = {'codet5-base':"Salesforce/codet5-base",
                     'gpt-neo-125m':"EleutherAI/gpt-neo-125M",
                     'codeparrot-small':'codeparrot/codeparrot-small',
                     'pythia-410m':"EleutherAI/pythia-410m",
-                    'tinyllama':'TinyLlama/TinyLlama-1.1B-intermediate-step-1195k-token-2.5T'}
+                    'tinyllama':'TinyLlama/TinyLlama-1.1B-intermediate-step-1195k-token-2.5T',
+                    'codegemma-2b':'google/codegemma-2b',
+                    'tiny_starcoder':'bigcode/tiny_starcoder_py'
+                    }
 
 
 if True:
@@ -28,7 +31,7 @@ if True:
         print(f"------------------------ Loading model: {checkpoint} ------------------------")
 
         # Load the TorchScript model
-        loaded_model = torch.jit.load(f"models2/torchscript/{model_name}2.pt")
+        loaded_model = torch.jit.load(f"models/torchscript_cuda/{model_name}.pt") # CHANGE
         #print(loaded_model.code)
 
         loaded_model.eval()  # Set the model to evaluation mode, turn off gradients computation

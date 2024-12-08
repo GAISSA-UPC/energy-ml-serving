@@ -119,6 +119,18 @@ computation especially for vector operations. Starting from TensorFlow 1.6, pre-
 
 
 --------------------
+## How to install CUDA? problems with CUDA or cuDNN, check:
+
+2024-11-09 14:48:41.016222360 [E:onnxruntime:Default, provider_bridge_ort.cc:1862 TryGetProviderInfo_CUDA] /onnxruntime_src/onnxruntime/core/session/provider_bridge_ort.cc:1539 onnxruntime::Provider& onnxruntime::ProviderLibrary::Get() [ONNXRuntimeError] : 1 : FAIL : Failed to load library libonnxruntime_providers_cuda.so with error: libcudnn.so.9: cannot open shared object file: No such file or directory
+
+2024-11-09 14:48:41.016237619 [W:onnxruntime:Default, onnxruntime_pybind_state.cc:993 CreateExecutionProviderInstance] Failed to create CUDAExecutionProvider. Require cuDNN 9.* and CUDA 12.*. Please install all dependencies as mentioned in the GPU requirements page (https://onnxruntime.ai/docs/execution-providers/CUDA-ExecutionProvider.html#requirements), make sure they're in the PATH, and that your GPU is supported.
+[models_code_load.py]  response:<Response [200]>
+
+Install CUDA 12
+https://developer.nvidia.com/cuda-downloads
+cuDNN 9
+https://developer.nvidia.com/cudnn-downloads?target_os=Linux&target_arch=x86_64&Distribution=Ubuntu&target_version=24.04&target_type=deb_network
+
 
 
 

@@ -64,7 +64,10 @@ GPU_ID = 0
 
 models = [ 'codet5-base', 'codet5p-220', 'codegen-350-mono', 
           'gpt-neo-125m', 'codeparrot-small', 'pythia-410m',
-          'tinyllama', 'slm','pythia1-4b', 'phi2'] # bloom, pythia
+          'tinyllama', 'slm','pythia1-4b', 'phi2',
+          'bloomz-560m', 'stablecode-3b',
+          'codegemma-2b', 'tiny_starcoder',
+          'starcoderbase-1b','bloomz-1b1','stablecode-3b-completion'] # bloom, pythia [ADD]
 
 runtime_engines = ['onnx','ov','torchscript'] # torch not considered in this script as 'runtime_engine'
 
@@ -89,7 +92,7 @@ def get_wattmeter_data(task):
     while wattmeter:
         with open(filename, mode='a', newline='') as file:
             try:
-                response = requests.get(url)
+                response = requests.get(url,) # timeout=100
                 print(f"response:{response}")
                 # Parse JSON data
                 data = json.loads(response.text)
@@ -961,7 +964,7 @@ class Pythia_410mModel(Model):
             return result
         return wrapper
 
-
+#running
 class SLMModel(Model):
     """_summary_ Creates a SLM model. Inherits from Model()
 
@@ -1008,6 +1011,18 @@ class SLMModel(Model):
                 #inputs = tokenizer(text, return_tensors="pt",max_length=MAX_LENGTH,padding='max_length')
                 inputs = tokenizer(text, return_tensors="pt",)
                 inputs = inputs.to(device)
+                
+                
+                #print(f"ort_model.main_input_name: {model.main_input_name}")
+                #inputs = {key: value for key, value in inputs.items() if key in model.main_input_name}
+                
+                # Check if the model has 'main_input_name' (specific to ONNX Runtime)
+                if hasattr(model, "main_input_name"):
+                    inputs = {key: value for key, value in inputs.items() if key in model.main_input_name}
+                else:
+                    # For PyTorch models, no filtering is needed
+                    inputs = {key: value for key, value in inputs.items()}
+                
                 model.to(device)
                 
                 # generate
@@ -1020,6 +1035,9 @@ class SLMModel(Model):
                 #inputs = tokenizer(text, return_tensors="pt",max_length=MAX_LENGTH,padding='max_length')
                 
                 tokenizer.pad_token = tokenizer.eos_token # tinyllama tokenizer does not have pad token
+                if self.name in ['stablecode-3b-completion']: # 
+                    print("Adding token")
+                    tokenizer.add_special_tokens({'pad_token': '[PAD]'})
                 inputs = tokenizer.encode_plus(text,max_length = MAX_LENGTH, padding = 'max_length', return_tensors = 'pt',)
 
                 input_ids = inputs["input_ids"]

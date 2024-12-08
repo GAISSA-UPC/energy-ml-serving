@@ -71,7 +71,7 @@ nvidia-nccl-cu12==2.20.5
 nvidia-nvjitlink-cu12==12.4.127
 nvidia-nvtx-cu12==12.1.105
 onnx==1.16.0
-onnxruntime==1.17.3
+#onnxruntime==1.17.3
 onnxruntime-gpu==1.17.1
 openvino==2024.1.0
 openvino-telemetry==2024.1.0
@@ -136,3 +136,4 @@ websockets==12.0
 wrapt==1.16.0
 xxhash==3.4.1
 yarl==1.9.4
+accelerate==0.26.1
