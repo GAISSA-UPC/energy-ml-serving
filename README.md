@@ -1,15 +1,16 @@
 # Energy consumption of code small language models serving with runtime engines and execution providers
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.14320365.svg)](https://doi.org/10.5281/zenodo.14320365)
+[![arXiv](https://img.shields.io/badge/arXiv-0000.00000-b31b1b.svg)](https://arxiv.org/abs/0000.00000)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## Summary
-The contributions of this work are:
 
+### Contributions
 - Actionable guidelines for practitioners
 - Measuring the impact of deep learning serving configurations on energy and performance
 - An analysis of deep learning serving configurations
 
 ### DL serving configurations
-
 A duplet of a runtime engine and an execution provider: <[Runtime engine], [Execution provider]>
 - Runtime engines
   - Default Torch (TORCH)
@@ -171,3 +172,16 @@ Results are saved in [results/](results/)
 1. https://madewithml.com, API
 2. https://github.com/se4ai2122-cs-uniba/SE4AI2021Course_FastAPI-demo, API
 3. https://github.com/MLOps-essi-upc
+
+
+## Citation
+Please use the following BibTex entry:
+
+```bibtex
+@article{duran2024serving,
+  title={Identifying architectural design decisions for achieving green ML serving},
+  author={Dur{\'a}n, Francisco and Martinez, Matias and Lago, Patricia and Mart{\'\i}nez-Fern{\'a}ndez, Silverio},
+  journal={arXiv preprint arXiv:},
+  year={2024}
+}
+```
