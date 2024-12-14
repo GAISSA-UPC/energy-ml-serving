@@ -10,7 +10,7 @@ aws_region = "eu-west-3"  # Replace with your AWS region
 sagemaker_runtime = boto3.client("sagemaker-runtime", region_name=aws_region)
 
 # Define the SageMaker endpoint name
-endpoint_name = 'huggingface-pytorch-inference-2023-09-14-08-26-53-037'
+endpoint_name = 'huggingface-pytorch-inference'
 
 # Define the data you want to send as a JSON payload
 payload = {
