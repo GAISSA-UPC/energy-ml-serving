@@ -34,7 +34,7 @@ The repository is structured as follows:
 - manuals
   | Self-contained manuals related to the serving infrastructure
 - model_selection
-  | This folder contains model selection scripts and dataset
+  | This folder contains models selection scripts and metadata
 - scripts
   | Environment scripts and bash scripts for automated experiments
 - testing
@@ -111,14 +111,14 @@ Files in `experiments/`
 
 - `visualize_{profiler}` - Visualization of raw data obtained from profilers.
 - `01_get_info_{profiler}` - Preprocessing of raw data obtained from profilers (script).
-- `02_get_time_marks` - Get time marks of inferences done during experiment (script).
-- `03_analysis_{execution_provider}` - Data analysis (notebook).
-- `03_02_aggregation` - Aggregated data (notebook).
-- `03_03_aggregated_plots` - Box plots (notebook).
-- `04_test` - Obtaining statistical results of used statistical tests (script).
-- `05_test` - Merge test results, organized by dependent variable (notebook).
-- `06_analysis` - Notebook to analyze results (notebook).
-- `07_result_tables` - Creation of paper table (notebook).
+- `02_get_time_marks` - Get time marks of inferences done during experiment (script)
+- `03_analysis_{execution_provider}` - Process data for analysis (notebook).
+- `04_aggregation` - Aggregated data (notebook).
+- `05_aggregated_plots` - Box plots (notebook).
+- `06_tests` - Obtaining statistical results of used statistical tests (script).
+- `07_tests_merge` - Merge test results, organized by dependent variable (notebook).
+- `08_analysis` - Notebook to analyze results (notebook).
+- `09_result_tables` - Creation of paper table (notebook).
 
 
 ## Models
@@ -136,7 +136,7 @@ Files in `experiments/`
 - [stablecode-3b](https://huggingface.co/stabilityai/stablecode-instruct-alpha-3b)
 - [stablecode-3b-completion](https://huggingface.co/stabilityai/stablecode-completion-alpha-3b-4k)
 
-## Energy tracking metrics
+## Energy tracking tools
 - [EnergiBridge](https://github.com/tdurieux/EnergiBridge)
 - [nvidia-smi](https://developer.nvidia.com/nvidia-system-management-interface)
 - [Wattmeter](https://vitriko.eu/regleta-inteligente-netio-powerbox-4kf)
