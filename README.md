@@ -1,4 +1,4 @@
-# Energy consumption of code small language models serving with runtime engines and execution providers
+# Insights into resource utilization of code small language models serving with runtime engines and execution providers
 
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.14484001.svg)](https://doi.org/10.5281/zenodo.14484001)
@@ -184,6 +184,15 @@ Please use the following BibTex entry:
   title={Identifying architectural design decisions for achieving green ML serving},
   author={Dur{\'a}n, Francisco and Martinez, Matias and Lago, Patricia and Mart{\'\i}nez-Fern{\'a}ndez, Silverio},
   journal={arXiv preprint arXiv:},
+  year={2024}
+}
+```
+and 
+```bibtex
+@article{duran2024energy,
+  title={Energy consumption of code small language models serving with runtime engines and execution providers},
+  author={Dur{\'a}n, Francisco and Martinez, Matias and Lago, Patricia and Mart{\'\i}nez-Fern{\'a}ndez, Silverio},
+  journal={arXiv preprint arXiv:2412.15441},
   year={2024}
 }
 ```
